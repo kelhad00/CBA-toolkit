@@ -54,7 +54,7 @@ def count_mimicry_per_value_in_tier(ref, target, delta_t):
     So all are potential mimicry events.
 
     Args:
-        ref (dict): dictionary of values in tier begin mimicked.
+        ref (dict): dictionary of values in tier being mimicked.
         target (dict): dictionary of values in tier containing mimicry events.
         delta_t (float): time after which expression occuring still counts as mimicry.
                         Should be in the same unit as the times in ref and target.
@@ -74,6 +74,20 @@ def count_mimicry_per_value_in_tier(ref, target, delta_t):
         for tar in target:
             final[r][tar] = count_mimicry(ref[r], target[tar], delta_t = delta_t)
     return final
+
+def calculate_mimicking_ratio(total_mimicker_expressions, total_mimicked_expressions):
+    """return the ratio of the total number of expression that are mimicking to 
+    the total number of a certain expression.
+    
+    Args:
+        total_mimicker_expr ([type]): [description]
+        total_mimicked_expressions ([type]): [description]
+    
+    Returns:
+        [type]: [description]
+    """
+
+    return total_mimicked_expressions/total_mimicker_expressions
 
 def following_expressions(lst, delta_t=0):
     """succession of expressions in tier"""
@@ -101,4 +115,63 @@ def count_vals_in_tier(lst, vals_to_count = None):
             dct[lab]+=1
         else:
             dct[lab]=1
+    return dct
+
+def calculate_correlation(lstA, lstB):
+    pass
+
+def count_following(lst, n, max_distance):
+    labs = set([l for _,_,l in lst])
+    dct = {}
+    for l in labs:
+        dct[l] = {}
+    for i in range(len(lst)-n):
+        if lst[i][2] not in dct:
+            dct[lst[i][2]] = {}
+        if (lst[i+n][0] - lst[i][1]) <= max_distance:
+            for j in range(1, n+1):
+                dct[lst[i][2]][j]={}
+                if lst[i+j][2] not in dct[lst[i][2]][j]:
+                    dct[lst[i][2]][j][lst[i+j][2]] = 0
+                dct[lst[i][2]][j][lst[i+j][2]] += 1
+    return dct
+
+def get_next_n_exp(lst, n, max_distance, append_none = True):
+    dct = {}
+    for l in range(len(lst)-n):#skip the last n elements (cannot assume they are None)
+        lab = lst[l][2]
+        if lab not in dct:
+            dct[lab] = []
+        temp = []
+        for ind_next in range(1,n+1):
+            next_close = lst[l+ind_next-1][1]
+            next_far = lst[l+ind_next][0]
+            if (next_far-next_close)<=max_distance:
+                temp.append(lst[l+ind_next][2])
+            else:
+                if append_none:
+                    temp.extend([None]*(n-ind_next+1))
+                break
+        if len(temp)==n:
+            dct[lab].append(temp)
+    return dct
+
+def get_prev_n_exp(lst, n, max_distance, append_none = True):
+    dct = {}
+    for l in range(n, len(lst)):#skip the first n elements (cannot assume they are None)
+        lab = lst[l][2]
+        if lab not in dct:
+            dct[lab] = []
+        temp = []
+        for ind_next in range(1,n+1):
+            prev_close = lst[l-ind_next+1][0]
+            prev_far = lst[l-ind_next][1]
+            if (prev_close-prev_far)<=max_distance:
+                temp.append (lst[l-ind_next][2])
+            else:
+                if append_none:
+                    temp.extend([None]*(n-ind_next+1))
+                break
+        if len(temp)==n:
+            dct[lab].append(temp)
     return dct

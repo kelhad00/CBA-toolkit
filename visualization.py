@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def gantt_corresponding_segments(dct, lstA, lstB):
+def gantt_corresponding_segment_dctIndices(dct, lstA, lstB):
     """visualize segments of tiers in a gant graph.
     Colors alternate between successive segments.
     Same colors for both corresponding segments."""
@@ -25,6 +25,27 @@ def gantt_corresponding_segments(dct, lstA, lstB):
     plt.show()
     return
 
+def gantt_corresponding_segments_dctValues(dct):
+    _, ax = plt.subplots()
+    ypos = [1,0.5]
+    id_col = -1
+    col = {-1:"blue", 1:"orange"}
+    for segA, segB in dct.items():
+        widthA = segA[1] - segA[0]
+        leftA = segA[0]
+        for ind in range(len(segB)):
+            widthB = segB[ind][1] - segB[ind][0]
+            leftB = segB[ind][0]
+            ax.barh(y = ypos, width = [widthA, widthB], left = [leftA, leftB], height = 0.1, color = col[id_col])
+        id_col *= -1
+    first = list(dct.keys())[0]
+    last = list(dct.keys())[-1]
+    ax.set_yticks(ypos)
+    ax.set_yticklabels(["A", "B"])
+    plt.xlim([first[0]-0.1*first[0], last[1]+0.1*last[1]])
+    plt.show()
+    return
+
 def gantt(dct):
     """visualize segments of tiers in a gant graph.
     dct is a dict of name:list"""
@@ -35,7 +56,7 @@ def gantt(dct):
     for name, lst in dct.items():
         if len(lst) == 0:
             continue
-        for (strt, stp, lab) in lst:
+        for (strt, stp, _) in lst:
             width = stp-strt
             ax.barh(y, width = width, left = strt, height = 0.1, color = "blue")
         ticks_pos.append(y)
