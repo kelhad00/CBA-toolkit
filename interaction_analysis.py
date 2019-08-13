@@ -1,3 +1,88 @@
+#low levels
+def get_overlapping_segments_ind(lstA, lstB):
+    """Get segments in A and B that overlap.
+    
+    Args:
+        lstA (list of tuples): [(start time, stop time, lab),..].
+        lstB (list of tuples): [(start time, stop time, lab),..]
+    
+    Returns
+        dict: {index of segment in lstA: [indices of segments in lstB]}
+    """
+
+    indA = 0
+    indB = 0
+    dct = {}
+    while indA < len(lstA) and indB < len(lstB):
+        while lstA[indA][0] >= lstB[indB][1]:
+            indB += 1
+            if indB >= len(lstB):
+                return dct
+        while lstA[indA][1] <= lstB[indB][0]:
+            indA += 1
+            if indA >= len(lstA):
+                return dct
+        if (lstA[indA][1] > lstB[indB][1] > lstA[indA][0]) or (
+            lstA[indA][1] > lstB[indB][0] > lstA[indA][0]
+        ):
+            while indB < len(lstB) and lstB[indB][1] < lstA[indA][1]:
+                if indA in dct:
+                    dct[indA].append(indB)
+                else:
+                    dct[indA] = [indB]
+                indB += 1
+            indA += 1
+        elif (lstB[indB][0] <= lstA[indA][0]) and (lstB[indB][1] >= lstA[indA][1]):
+            while indA < len(lstA) and lstA[indA][1] < lstB[indB][1]:
+                if indA in dct:
+                    dct[indA].append(indB)
+                else:
+                    dct[indA] = [indB]
+                indA += 1
+            indB += 1
+    return dct
+
+
+def overlapping_dct_from_indices_to_vals(dct_inds, lstA, lstB):
+    """Convert dictionary of indices to dictionary of values.
+    
+    Args:
+        dct_inds ([type]): output of get_overlapping_segments_ind output.
+        lstA ([type]): list of labels only and not [(b,e,val), etc.]
+        lstB ([type]): list of labels only and not [(b,e,val), etc.]
+    
+    Returns:
+        dict: {val: [vals]}
+    """
+
+    dct_vals = {}
+    for indA, B in dct_inds.items():
+        dct_vals[lstA[indA]] = [lstB[indB] for indB in B]
+    return dct_vals
+
+
+def get_overlapping_segments(lstA, lstB, values_only = False):
+    """Get segments in lstB overlapping with segments of lstA.
+    
+    Args:
+        lstA ([type]): [description]
+        lstB ([type]): [description]
+        values_only (bool, optional): [description]. Defaults to False.
+    
+    Returns:
+        dict: {Segments in A: [Segments in B]}
+    """
+    dct_inds = get_overlapping_segments_ind(lstA, lstB)
+    if values_only:
+        lstA_tempo = [val for b, e, val in lstA]
+        lstB_tempo = [val for b, e, val in lstB]
+    else:
+        lstA_tempo = lstA[:]
+        lstB_tempo = lstB[:]
+    dct = overlapping_dct_from_indices_to_vals(dct_inds, lstA_tempo, lstB_tempo)
+    return dct
+
+#high levels
 def count_mimicry(tA, tB, delta_t=0):
     """Count the occurences of B mimicking A by delta_t.
 
@@ -48,7 +133,7 @@ def count_mimicry(tA, tB, delta_t=0):
     return count
 
 def count_mimicry_per_value_in_tier(ref, target, delta_t):
-    """Returns the number of times mimicry occured.
+    """Return the number of times mimicry occured.
     
     Considers that all expresssions in ref and target are the same.
     So all are potential mimicry events.
@@ -67,7 +152,7 @@ def count_mimicry_per_value_in_tier(ref, target, delta_t):
     """
 
     final = {}
-    if len(set(ref))!= len(ref):
+    if len(set(ref)) != len(ref):
         raise AttributeError("No parameter is allowed in the parameter ref")
     for r in ref:
         final[r] = {}
@@ -76,7 +161,7 @@ def count_mimicry_per_value_in_tier(ref, target, delta_t):
     return final
 
 def calculate_mimicking_ratio(total_mimicker_expressions, total_mimicked_expressions):
-    """return the ratio of the total number of expression that are mimicking to 
+    """Return the ratio of the total number of expression that are mimicking to 
     the total number of a certain expression.
     
     Args:
