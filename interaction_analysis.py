@@ -48,8 +48,8 @@ def overlapping_dct_from_indices_to_vals(dct_inds, lstA, lstB):
     
     Args:
         dct_inds ([type]): output of get_overlapping_segments_ind output.
-        lstA ([type]): list of labels only and not [(b,e,val), etc.]
-        lstB ([type]): list of labels only and not [(b,e,val), etc.]
+        lstA ([type]): list of labels only and not [(start, stop, label), etc.]
+        lstB ([type]): list of labels only and not [(start, stop, label), etc.]
     
     Returns:
         dict: {val: [vals]}
@@ -65,8 +65,8 @@ def get_overlapping_segments(lstA, lstB, values_only = False):
     """Get segments in lstB overlapping with segments of lstA.
     
     Args:
-        lstA ([type]): [description]
-        lstB ([type]): [description]
+        lstA ([type]): [(start, stop, label), etc.]
+        lstB ([type]): [(start, stop, label), etc.]
         values_only (bool, optional): [description]. Defaults to False.
     
     Returns:
@@ -85,13 +85,12 @@ def get_overlapping_segments(lstA, lstB, values_only = False):
 #high levels
 def count_mimicry(tA, tB, delta_t=0):
     """Count the occurences of B mimicking A by delta_t.
+   
+    This implementation counts mimicry based on method in [1]
+    and also returns the instances of mimickry.
 
     The times in each of tA and tB cannot overlap internally.
-    They have to be successive segments in each of tA and tB
-    count mimicry events of tB on tA.
-    delta_t is only to condition the start border of the tB
-    
-    This implementation counts mimicry based on method in [1].
+    They have to be successive segments in each of tA and tB.
 
     [1] Feese, Sebastian, et al. "Quantifying behavioral mimicry by automatic 
     detection of nonverbal cues from body motion." 2012 International Conference 
@@ -99,18 +98,22 @@ def count_mimicry(tA, tB, delta_t=0):
     Social Computing. IEEE, 2012.
     
     Args:
-        tA (list): list of tuples (start time, stop time, label) of expressions mimicked.
-        tB (list): list of tuples (start time, stop time, label) of expressions mimicking.
+        tA (list): list of tuples (start, stop, label) of expressions mimicked.
+        tB (list): list of tuples (start, stop, label) of expressions mimicking.
         delta_t (int, optional): Defaults to 0.
                                 Time after which expression occuring still counts as mimicry.
                                 Should be in the same unit as the times in tA and tB.    
     Returns:
-        int: number of times B mimicked A.
+        int: number of times B mimicked A (=len(the list described below)).
+        list: [(indA, indB),...]
+              where the indB element of B mimick the indA element of A
+              following the definition of mimickry described in the reference above.
     """
 
     indA = 0
     indB = 0
-    count = 0
+    count = 0 # number of mimicry events
+    mimic_ind = [] # indices of mimicry events in tB
     while (indA<len(tA) and indB<len(tB)):
         if tB[indB][0]<=tA[indA][0]:
             indB+=1
@@ -120,17 +123,18 @@ def count_mimicry(tA, tB, delta_t=0):
                 if tB[indB][0]>tA[indA+1][0]:
                     indA+=1#skip to next tA expression
                     continue
+            count+=1
+            mimic_ind.append((indA,indB))
             #if no double counting
             #check if several expressions from B overlap with A's
             while tB[indB][1]<=tA[indA][1]:
                 indB+=1 #skip to the following expression untill no more overlapping
                 if indB == len(tB):
                     break
-            count+=1
             indA+=1
         elif ((tB[indB][0]-delta_t)>tA[indA][1]):
             indA+=1
-    return count
+    return count, mimic_ind
 
 def count_mimicry_per_value_in_tier(ref, target, delta_t):
     """Return the number of times mimicry occured.

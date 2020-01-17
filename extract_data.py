@@ -40,8 +40,8 @@ def read_eaf_to_dict(filepath, mark=True):
     """
     eaf = pympi.Elan.Eaf(filepath)
     dct = {}
-    tiers = eaf.get_tier_names()
-    if mark:  # remove parent tiers if required
+    tiers = list(eaf.get_tier_names())
+    if mark:  # mark parents and children tiers with same ID
         # get parents and children
         par_child_dct = {}
         for tier in tiers:
@@ -53,7 +53,6 @@ def read_eaf_to_dict(filepath, mark=True):
                     par_child_dct[param["PARENT_REF"]].append(tier)
             except:  # no parents
                 continue
-        # mark parents and children with same ID
         par_child_id = 0
         for parent in par_child_dct:
             for t in range(len(tiers)):
@@ -62,7 +61,7 @@ def read_eaf_to_dict(filepath, mark=True):
             par_child_id += 1
     # create final dct
     for tier in tiers:
-        dct[tier] = eaf.get_data_for_tier(tier.split("_")[0])
+        dct[tier] = eaf.get_annotation_data_for_tier(tier.split("_")[0])
     return dct
 
 def get_tier_from_file(filepath, tier, values=None):
