@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 
+
 def plot_overlapping_tiers_same_colors(dct, lstA, lstB):
-    """Visualize segments of tiers in a gant graph.
+    """Visualize segments of 2 tiers in a gant graph.
     Colors alternate between successive segments.
     
     Args:
@@ -33,17 +34,15 @@ def plot_overlapping_tiers_same_colors(dct, lstA, lstB):
     ax.set_yticks(ypos)
     ax.set_yticklabels(["A", "B"])
     plt.xlim(
-        [
-            lstA[first][0] - 0.1 * lstA[first][0],
-            lstA[last][1] + 0.1 * lstA[last][1]
-        ]
+        [lstA[first][0] - 0.1 * lstA[first][0], lstA[last][1] + 0.1 * lstA[last][1]]
     )
     plt.show()
     return
 
+
 # def plot_overlapping_tiers_same_colors(dct):
 #     """Same as above but does not require lstA and lstB.
-    
+
 #     Args:
 #         dct (dict): output of get_overlapping_segments
 #     """
@@ -91,13 +90,7 @@ def plot_tiers(dct):
             continue
         for (strt, stp, _) in lst:
             width = stp - strt
-            ax.barh(
-                y,
-                width=width,
-                left=strt,
-                height=0.1,
-                color="blue"
-            )
+            ax.barh(y, width=width, left=strt, height=0.1, color="blue")
         ticks_pos.append(y)
         ticks_names.append(name)
         y += 1
