@@ -40,6 +40,7 @@ def read_eaf_to_dict(filepath, mark=True, tiers=None):
     Returns:
         [dict]: {tier name: [(begin, end, value)]}
     """
+
     eaf = pympi.Elan.Eaf(filepath)
     dct = {}
     if tiers is None:
@@ -70,6 +71,7 @@ def read_eaf_to_dict(filepath, mark=True, tiers=None):
 
 def get_tier_from_file(filepath, tier, values=None):
     """Return a dict of {value:[(strt, stp, val),...]} """
+    
     eaf = pympi.Elan.Eaf(filepath)
     if values is not None:  # if none keep all
         if not isinstance(values, (list, tuple, numpy.ndarray, str)):
@@ -92,7 +94,8 @@ def get_tier_from_file(filepath, tier, values=None):
 def replace_label(lst, to_replace, value=None, inplace=False, append=None):
     """Replace to_replace label with value in list lst.
     
-    Elements of lst should be in the (start time, stop time, label) format."""
+    Note: Elements of lst should be in the (start time, stop time, label) format.
+    """
 
     if not (value or append):
         raise AttributeError("both value and append parameters cannot be None.")
@@ -133,6 +136,7 @@ def keep_only(lst, tier_to_keep, inplace=False):
 
     Note: keep it whether file is entirely annotated or not.
     """
+
     if inplace:
         filter_lst = lst
     else:
