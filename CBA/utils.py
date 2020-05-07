@@ -38,3 +38,28 @@ def keep_pairs(paths_lst, patt1, patt2):
             if temp in ref:
                 pairs.extend([l, temp])
     return pairs
+
+
+class AttributeGenerator:
+    def _add(self, name, val):
+        setattr(self, "_" + name, val)
+        setattr(
+            self,
+            name,
+            property(self._getter("_" + name), self._setter("_" + name, val)),
+        )
+        setattr(self, name, val)
+
+    def _getter(self, attr):
+        # add condition if needed
+        return getattr(self, attr)
+
+    def _setter(self, attr, val):
+        # add condition if needed
+        return setattr(self, attr, val)
+
+    @property
+    def _list_attr(self):
+        """Get list of attributes added."""
+        lst = [l[1:] for l in self.__dict__ if l.startswith("_")]
+        return lst
