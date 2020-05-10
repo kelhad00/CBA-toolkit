@@ -14,14 +14,16 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 * CBA/interaction_model.py : object oriented models of interactions.
 * CBA/visualization.py : visualization functions.
 * CBA/utils.py : utility functions.
-* /examples: example code on using the CBA-toolkit
+* pair_data.py : example code
 
 ## Examples
 
 To print corresponding pairs of interlocutors in the ccdb, ifadv or ndc datasets, run the following from the examples directory:
 
+To print pairs from CCDB, IFADV or NDC-ME.
 ```python
-python 
-image = face_recognition.load_image_file("your_file.jpg")
-face_landmarks_list = face_recognition.face_landmarks(image)
+python pair_data.py --path_ccdb <path to the CCDB audio, video or eaf files>
+python pair_data.py --path_ifadv <path to the IFADV audio, video or eaf files>
+python pair_data.py --path_ndc <path to the NDC-ME audio, video or eaf files>
+
 ```
