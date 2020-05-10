@@ -1,3 +1,6 @@
+This toolkit is still under development...
+
+
 # CBA
 The Conversation Behavior Analysis toolkit aims at offering the means for analyzing phenomena occurring in conversations such as mimicry, overlapping expressions, expressions timing, etc.
 
@@ -11,5 +14,14 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 * CBA/interaction_model.py : object oriented models of interactions.
 * CBA/visualization.py : visualization functions.
 * CBA/utils.py : utility functions.
+* /examples: example code on using the CBA-toolkit
 
-Still under development...
+## Examples
+
+To print corresponding pairs of interlocutors in the ccdb, ifadv or ndc datasets, run the following from the examples directory:
+
+```python
+python 
+image = face_recognition.load_image_file("your_file.jpg")
+face_landmarks_list = face_recognition.face_landmarks(image)
+```
