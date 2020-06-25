@@ -70,7 +70,7 @@ def read_eaf_to_dict(filepath, mark=True, tiers=None):
 
 
 def get_tier_from_file(filepath, tier, values=None):
-    """Return a dict of {value:[(strt, stp, val),...]} """
+    """Return a dict of {tier:[(strt, stp, val),...]} if val in values"""
 
     eaf = pympi.Elan.Eaf(filepath)
     if values is not None:  # if none keep all
@@ -78,16 +78,13 @@ def get_tier_from_file(filepath, tier, values=None):
             raise AttributeError("Values must be a list like or a string")
         if isinstance(values, str):
             values = [values]
-    dct = {}
+    dct = {tier:[]}
     data = eaf.get_annotation_data_for_tier(tier)
     if values is None:
         values = set([lab for _, _, lab in data])
     for annot in data:
         if annot[2] in values:
-            if annot[2] in dct:
-                dct[annot[2]].append(annot)
-            else:
-                dct[annot[2]] = [annot]
+            dct[tier].append(annot)
     return dct
 
 

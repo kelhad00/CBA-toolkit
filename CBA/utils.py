@@ -41,6 +41,8 @@ def keep_pairs(paths_lst, patt1, patt2):
 
 
 class AttributeGenerator:
+    """create attributes from strings.
+    """
     def _add(self, name, val):
         setattr(self, "_" + name, val)
         setattr(
