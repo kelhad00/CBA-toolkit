@@ -1,6 +1,6 @@
 import sys
 import argparse
-from CBA.db import *
+from IBPY.db import *
 from os import listdir
 
 def check_dir_path(string):
