@@ -68,7 +68,7 @@ class Expression:
                 strt = str(strt / 1000)  # from ms to sec
                 stp = str(stp / 1000)
                 out_name, ext = os.path.splitext(os.path.basename(f))
-                out_name = '_'.join([out_name, self.name, strt.replace('.', ''), stp.replace('.','')])
+                out_name = '_'.join([out_name, self.label, strt.replace('.', ''), stp.replace('.','')])
                 out_name += ext
                 out_name = os.path.join(dest_path, out_name)
                 ffmpeg.input(f, **{"ss": strt, "t": stp}).output(out_name).run()
