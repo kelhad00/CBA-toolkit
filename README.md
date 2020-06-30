@@ -8,12 +8,12 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 ## Content
 
 * /annotations: contains ELAN Template Files (etf) for annotation to use in your own projects.
-* CBA/extract_data.py : general functions to read/extract data.
-* CBA/db.py : interface specific to the different datasets.
-* CBA/interaction_analysis.py : functions for analysing interaction behaviors (ex. counting mimicry).
-* CBA/interaction_model.py : object oriented models of interactions.
-* CBA/visualization.py : visualization functions.
-* CBA/utils.py : utility functions.
+* IBPY/extract_data.py : general functions to read/extract data.
+* IBPY/db.py : interface specific to the different datasets.
+* IBPY/interaction_analysis.py : functions for analysing interaction behaviors (ex. counting mimicry).
+* IBPY/interaction_model.py : object oriented models of interactions.
+* IBPY/visualization.py : visualization functions.
+* IBPY/utils.py : utility functions.
 * pair_data.py : example code
 
 ## Examples
