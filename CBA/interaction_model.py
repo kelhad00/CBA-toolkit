@@ -5,9 +5,9 @@ import os
 
 
 class Expression:
-    def __init__(self, name, val, linked_files=None):
+    def __init__(self, label, val, linked_files=None):
         """we don't know if val is ordered or not"""
-        self.name = name
+        self.label = label
         self.val = val
         self.linked_files = linked_files
 
@@ -48,7 +48,7 @@ class Expression:
         return dct
 
     def segment(self, linked_files=None, dest_path=None, to=False):
-        """split the corresponding file into the tier's values
+        """split the corresponding files into the tier's values
         linked_files must be: {key1:path_to_file1, key2:path_to_file2}"""
 
         if linked_files is None:
@@ -68,7 +68,7 @@ class Expression:
                 strt = str(strt / 1000)  # from ms to sec
                 stp = str(stp / 1000)
                 out_name, ext = os.path.splitext(os.path.basename(f))
-                out_name = '_'.join([out_name, strt.replace('.', ''), stp.replace('.','')])
+                out_name = '_'.join([out_name, self.name, strt.replace('.', ''), stp.replace('.','')])
                 out_name += ext
                 out_name = os.path.join(dest_path, out_name)
                 ffmpeg.input(f, **{"ss": strt, "t": stp}).output(out_name).run()
