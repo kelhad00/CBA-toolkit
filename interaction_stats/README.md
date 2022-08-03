@@ -1,4 +1,4 @@
-## ML Stats
+## interaction_stats
 
 This folder contains :
 
