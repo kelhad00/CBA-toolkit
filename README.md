@@ -15,6 +15,11 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 * IBPY/visualization.py : visualization functions.
 * IBPY/utils.py : utility functions.
 * pair_data.py : example code
+* [IBPY_files]: This folder comes from a repository providing tools for Interaction Behavior Processing. Link to access to the original repository : https://github.com/kelhad00/IBPY/
+* [ML Stats]: This folder contains all functions we need to extract data from our dataset for the machine learning part.
+* [SNL Stats]: This folder contains all extraction and vizualisation functions related to the statistics of smiles and laughs in our datasets.
+* [Streamlit]: This folder contains the needed files to display the SNL and ML statistics done in the corresponding folders in an interactive web page.
+
 
 ## Examples
 
