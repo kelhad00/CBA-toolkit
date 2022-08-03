@@ -573,7 +573,7 @@ def page4():
     database_choice=st.radio("Expression :", name_databases)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
     
-    with open('..\\..\\..\\snl_stats\\parameters.json', 'r') as f:
+    with open('..\\..\\CBA-toolkit\\snl_stats\\parameters.json', 'r') as f:
         parameters=json.load(f)
     PATH_IN = parameters[database_choice+"_IN_OUT"]['PATH_IN_'+database_choice]
     PATH_OUT = parameters[database_choice+"_IN_OUT"]['PATH_OUT_'+database_choice]

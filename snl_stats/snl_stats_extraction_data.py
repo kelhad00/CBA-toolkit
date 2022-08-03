@@ -15,7 +15,7 @@ import pandas as pd
 from scipy.stats import pearsonr 
 
 #Parameters_________________________________________________________
-with open('..\\..\\..\\snl_stats\\parameters.json', 'r') as f:
+with open('..\\..\\CBA-toolkit\\snl_stats\\parameters.json', 'r') as f:
     parameters=json.load(f)
 DIR=parameters["FOLDER_PATHS"]["DIR"]
 ccdb_pair = parameters["DATABASES_PAIR_PATHS"]['ccdb_pair']
