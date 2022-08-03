@@ -7,7 +7,7 @@ import json
 import pympi
 import numpy as np
 from IBPY_files.interaction_analysis import *
-from ML_stats.preprocessing import *
+from interaction_stats.preprocessing import *
 from IBPY_files.utils import *
 from IBPY_files.db import *
 from IBPY_files.extract_data import *
@@ -15,7 +15,7 @@ import pandas as pd
 from scipy.stats import pearsonr 
 
 #Parameters_________________________________________________________
-with open('..\\..\\snlstats\\SNL_Stats\\parameters.json', 'r') as f:
+with open('..\\..\\..\\snl_stats\\parameters.json', 'r') as f:
     parameters=json.load(f)
 DIR=parameters["FOLDER_PATHS"]["DIR"]
 ccdb_pair = parameters["DATABASES_PAIR_PATHS"]['ccdb_pair']

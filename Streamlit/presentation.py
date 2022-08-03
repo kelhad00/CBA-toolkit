@@ -1,13 +1,13 @@
 import streamlit as st
 import os, sys, json
-script_path = os.path.realpath(os.path.dirname("SNL_Stats"))
+script_path = os.path.realpath(os.path.dirname("snl_stats"))
 os.chdir(script_path)
 sys.path.append("..")
 
-from ML_stats.ml_stats import *
-from ML_stats.ml_stats_vizualisation import *
-from ML_stats.settings import *
-from SNL_Stats.snl_stats_visualization import *
+from interaction_stats.ml_stats import *
+from interaction_stats.ml_stats_vizualisation import *
+from interaction_stats.settings import *
+from snl_stats.snl_stats_visualization import *
 
 
 #______________________________________________________________________________________________
@@ -561,7 +561,7 @@ def page4():
     \nn (numeric): The video number we transformed into frames. 
     \nthreshold (numeric): Value for the function which calculate how many constant and mixed lists we have in out inputs and outputs.
     
-    \nNB : There are two parameters, FRAME_LEN and FRAME_TSTEP you can change in the code on ML_stats/settings.py. 
+    \nNB : There are two parameters, FRAME_LEN and FRAME_TSTEP you can change in the code on interaction_stats/settings.py. 
     They respectively represent the length of a frame (in ms) for one sequence and how many milliseconds the frame move.
     \nNow let's start !
     '''
@@ -573,7 +573,7 @@ def page4():
     database_choice=st.radio("Expression :", name_databases)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
     
-    with open('..\\..\\snlstats\\SNL_Stats\\parameters.json', 'r') as f:
+    with open('..\\..\\..\\snl_stats\\parameters.json', 'r') as f:
         parameters=json.load(f)
     PATH_IN = parameters[database_choice+"_IN_OUT"]['PATH_IN_'+database_choice]
     PATH_OUT = parameters[database_choice+"_IN_OUT"]['PATH_OUT_'+database_choice]
