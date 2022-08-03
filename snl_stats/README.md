@@ -1,4 +1,4 @@
-## SNL Stats
+## snl_stats
 
 This folder contains :
 
