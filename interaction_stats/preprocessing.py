@@ -8,6 +8,7 @@ from  IBPY_files.extract_data import *
 from .settings import *
 from IBPY_files.db import *
 
+import os
 import numpy as np
 import Levenshtein
 
@@ -288,15 +289,9 @@ def get_model_datas_eaf(input_path, output_path, format):
   all_videos_datas = {}
   for file in eaf_files:
     eaf_files_short.append(file[findIndexes(file, '\\')[-1]+1:])
-  if format == 'ndc':
-    eaf_pairs = form_pairs_ndc(eaf_files_short)
-  elif format == 'ccdb':
-    eaf_files_short_copy=eaf_files_short.copy()
-    eaf_pairs = form_pairs_ccdb(eaf_files_short)
-    eaf_files_short=eaf_files_short_copy
-  elif format == 'ifadv':
-    eaf_pairs = form_pairs_ifadv(eaf_files_short)
-    
+  eaf_files_short_copy = eaf_files_short.copy()
+  eaf_pairs = EAF_FORMATS[format](eaf_files_short)
+  eaf_files_short = eaf_files_short_copy
   for couple in eaf_pairs:
     input = eaf_files[eaf_files_short.index(couple[0])]
     output = eaf_files[eaf_files_short.index(couple[1])]
@@ -329,7 +324,7 @@ def get_model_datas_ifadv(input_path, output_path):
         all_videos_datas['video_'+str(len(all_videos_datas))] = model_datas
 
       elif len(findIndexes(file1, '_')) != 0 and len(findIndexes(file2, '_')) != 0 and file1[findIndexes(file1, '\\')[-1]+1:findIndexes(file1, '_')[-1]] == file2[findIndexes(file2, '\\')[-1]+1:findIndexes(file2, '_')[-1]]:    # recover couple of eaf files (for ccbd videos)
-        print("INFO:: CCBD eaf couple detected")
+        print("INFO:: CCDB eaf couple detected")
         print("INFO:: input datas", file1, "and output datas", file2, "treatment in progress.")
 
         model_datas = dict_preprocess(read_eaf_to_dict(file1), read_eaf_to_dict(file2))
