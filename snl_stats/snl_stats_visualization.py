@@ -22,18 +22,31 @@ def plot_absolute_duration(expression):
     """Arg: expression (str) -> smiles or laughs"""
     dg=get_db_from_func_no_pair(DIR,eval("get_"+expression+"_dict_folder"))
     
+    if expression == "laughs":
+        labels = ["low", "medium", "high"]
+    if expression == "smiles":
+        labels = ["subtle", "low", "medium", "high"] 
+
     fig=pg.Figure()
     for database in (dg['database'].unique()):
-        #df_plot=dg[dg['database']==database]
-        fig.add_trace(pg.Box(x=dg.label, y=dg.diff_time,
-                            notched=True,boxmean='sd',
+        df_plot=dg[dg['database']==database]
+        df_plot = df_plot[df_plot['label'].isin(labels)]
+        fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                            notched=True, boxmean='sd',
                             name='database=' + database))
 
     fig.update_layout(boxmode='group', xaxis_tickangle=0)
     fig.update_layout(title_text=f'Mean, median and standard deviation on {expression} - Absolute Duration', title_x=0.5, 
-    xaxis_title="intensity",
-    yaxis_title="",
-    legend_title="Datasets")
+    xaxis_title="Intensity",
+    yaxis_title="Time (ms)",
+    legend_title="Datasets",
+    xaxis=dict(
+        categoryarray=labels,
+        categoryorder='array',
+        tickmode='array',
+        tickvals=labels,
+        ticktext=labels
+    ))
     
     return fig
     
@@ -43,17 +56,33 @@ def plot_relative_duration(expression):
     dg=get_rd_stats(df)
     dg=list_to_df(dg[0], dg[1])
 
+    if expression == "laughs":
+        labels = ["low", "medium", "high"]
+    if expression == "smiles":
+        labels = ["subtle", "low", "medium", "high"] 
+        
     fig = make_subplots(rows=1, cols=3, subplot_titles=['Standard deviation', 'Mean', 'Median'])
     for database in (dg['database'].unique()):
-        #df_plot=dg[dg['database']==database]
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.std_p, name=database), row=1, col=1)
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.mean_p, name=database), row=1, col=2)
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.median_p, name=database), row=1, col=3)
+        df_plot=dg[dg['database']==database]
+        df_plot = df_plot[df_plot['label'].isin(labels)]
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database), row=1, col=1)
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database), row=1, col=2)
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database), row=1, col=3)
+    fig.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=2)
+    fig.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=3)
     fig.update_layout(boxmode='group', xaxis_tickangle=0)
-    fig.update_layout(title_text=f'Mean, median and standard deviation on {expression} - Relative Duration', title_x=0.5, 
-    xaxis_title="intensity",
+    fig.update_layout(title_text=f'Mean, median and standard deviation on {expression} - Relative Duration', 
+    title_x=0.5, 
+    xaxis_title="Intensity",
     yaxis_title="Percentage",
-    legend_title="Datasets")
+    legend_title="Datasets",
+    xaxis=dict(
+        categoryarray=labels,
+        categoryorder='array',
+        tickmode='array',
+        tickvals=labels,
+        ticktext=labels,
+    ))
     
     return fig
 
@@ -61,18 +90,31 @@ def plot_relative_duration(expression):
 def plot_absolute_duration_from_spk(expression):
     dg=get_db_from_func_no_pair(DIR,eval("get_"+expression+"_from_spk_folder"))
 
+    if expression == "laughs":
+        labels = ["low", "medium", "high"]
+    if expression == "smiles":
+        labels = ["subtle", "low", "medium", "high"] 
+
     fig=pg.Figure()
     for database in (dg['database'].unique()):
-        #df_plot=dg[dg['database']==database]
-        fig.add_trace(pg.Box(x=dg.label, y=dg.diff_time,
+        df_plot=dg[dg['database']==database]
+        df_plot = df_plot[df_plot['label'].isin(labels)]
+        fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
                             notched=True,boxmean='sd',
                             name='database=' + database))
 
     fig.update_layout(boxmode='group', xaxis_tickangle=0)
     fig.update_layout(title_text=f'Mean, median and standard deviation for speaker {expression} absolute duration', title_x=0.5, 
-    xaxis_title="intensity",
-    yaxis_title="",
-    legend_title="Datasets")
+    xaxis_title="Intensity",
+    yaxis_title="Time (ms)",
+    legend_title="Datasets",
+    xaxis=dict(
+        categoryarray=labels,
+        categoryorder='array',
+        tickmode='array',
+        tickvals=labels,
+        ticktext=labels
+    ))
     return fig
 
 def plot_relative_duration_from_spk(expression):
@@ -80,33 +122,62 @@ def plot_relative_duration_from_spk(expression):
     dg=get_rd_stats_byrole(df)
     dg=list_to_df(dg[0], dg[1])
 
+    if expression == "laughs":
+        labels = ["low", "medium", "high"]
+    if expression == "smiles":
+        labels = ["subtle", "low", "medium", "high"] 
+
     fig = make_subplots(rows=1, cols=3, subplot_titles=['Standard deviation', 'Mean', 'Median'])
     for database in (dg['database'].unique()):
-        #df_plot=dg[dg['database']==database]
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.std_p, name=database), row=1, col=1)
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.mean_p, name=database), row=1, col=2)
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.median_p, name=database), row=1, col=3)
+        df_plot=dg[dg['database']==database]
+        df_plot = df_plot[df_plot['label'].isin(labels)]
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database), row=1, col=1)
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database), row=1, col=2)
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database), row=1, col=3)
+    fig.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=2)
+    fig.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=3)
     fig.update_layout(boxmode='group', xaxis_tickangle=0)
     fig.update_layout(title_text=f'Mean, median and standard deviation for speakers {expression} relative duration', title_x=0.5, 
-    xaxis_title="intensity",
+    xaxis_title="Intensity",
     yaxis_title="Percentage",
-    legend_title="Datasets")
+    legend_title="Datasets",
+    xaxis=dict(
+        categoryarray=labels,
+        categoryorder='array',
+        tickmode='array',
+        tickvals=labels,
+        ticktext=labels
+    ))
     return fig
 
 def plot_absolute_duration_from_lsn(expression):
     dg=get_db_from_func_no_pair(DIR,eval("get_"+expression+"_from_lsn_folder"))
+
+    if expression == "laughs":
+        labels = ["low", "medium", "high"]
+    if expression == "smiles":
+        labels = ["subtle", "low", "medium", "high"] 
+
     fig=pg.Figure()
     for database in (dg['database'].unique()):
-        #df_plot=dg[dg['database']==database]
-        fig.add_trace(pg.Box(x=dg.label, y=dg.diff_time,
+        df_plot=dg[dg['database']==database]
+        df_plot = df_plot[df_plot['label'].isin(labels)]
+        fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
                             notched=True,boxmean='sd',
                             name='database=' + database))
 
     fig.update_layout(boxmode='group', xaxis_tickangle=0)
     fig.update_layout(title_text=f'Mean, median and standard deviation for listners {expression} absolute duration', title_x=0.5, 
-    xaxis_title="intensity",
-    yaxis_title="",
-    legend_title="Datasets")
+    xaxis_title="Intensity",
+    yaxis_title="Time (ms)",
+    legend_title="Datasets",
+    xaxis=dict(
+        categoryarray=labels,
+        categoryorder='array',
+        tickmode='array',
+        tickvals=labels,
+        ticktext=labels
+    ))
 
     return fig  
 
@@ -115,17 +186,32 @@ def plot_relative_duration_from_lsn(expression):
     dg=get_rd_stats_byrole(df)
     dg=list_to_df(dg[0], dg[1])
 
+    if expression == "laughs":
+        labels = ["low", "medium", "high"]
+    if expression == "smiles":
+        labels = ["subtle", "low", "medium", "high"] 
+
     fig = make_subplots(rows=1, cols=3, subplot_titles=['Standard deviation', 'Mean', 'Median'])
     for database in (dg['database'].unique()):
-        #df_plot=dg[dg['database']==database]
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.std_p, name=database), row=1, col=1)
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.mean_p, name=database), row=1, col=2)
-        fig.add_trace(pg.Bar(x=dg.label, y=dg.median_p, name=database), row=1, col=3)
+        df_plot=dg[dg['database']==database]
+        df_plot = df_plot[df_plot['label'].isin(labels)]
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database), row=1, col=1)
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database), row=1, col=2)
+        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database), row=1, col=3)
+    fig.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=2)
+    fig.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=3)
     fig.update_layout(boxmode='group', xaxis_tickangle=0)
     fig.update_layout(title_text=f'Mean, median and standard deviation for listeners {expression} relative duration', title_x=0.5, 
-    xaxis_title="intensity",
+    xaxis_title="Intensity",
     yaxis_title="Percentage",
-    legend_title="Datasets")
+    legend_title="Datasets",
+    xaxis=dict(
+        categoryarray=labels,
+        categoryorder='array',
+        tickmode='array',
+        tickvals=labels,
+        ticktext=labels
+    ))
     return fig
 
 

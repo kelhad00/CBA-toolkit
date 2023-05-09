@@ -1,9 +1,9 @@
 {
     "FOLDER_PATHS": {
-        "DIR": "..\\..\\data",
-        "ROOT1": "..\\..\\data\\ccdb",
-        "ROOT2": "..\\..\\data\\ifadv",
-        "ROOT3": "..\\..\\data\\ndc"
+        "DIR": "..\\snl_stats\\data",
+        "ROOT1": "..\\snl_stats\\data\\ccdb",
+        "ROOT2": "..\\snl_stats\\data\\ifadv",
+        "ROOT3": "..\\snl_stats\\data\\ndc"
     },
     "DATABASES_PATHS": {
         "ccdb_paths": [
