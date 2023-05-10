@@ -81,7 +81,11 @@ def form_pairs_ifadv(lst):#assuming all have pairs.
             lst2[ind - 1] = l
     return list(zip(lst1, lst2))
 
-## Endroit ou l'utilisateur rentre ses fonctions from_pairs_nomDossier 
+## Place for the user to enter his functions from_pairs_nomDossier 
+
+
+
+####
 
 #ADDED
 def form_pairs(ROOT1,ROOT2,ROOT3):
