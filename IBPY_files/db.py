@@ -27,7 +27,7 @@ def form_pairs_ndc(lst):
             final.append((lst_sorted[i], lst_sorted[i+1]))
             i+=2
         else:
-            print("File {} has no pair.".format(lst_sorted[i]))
+            # print("File {} has no pair.".format(lst_sorted[i]))
             i+=1
     return final
 
@@ -53,10 +53,11 @@ def form_pairs_ccdb(lst):
             lst.remove(lst[i])
             lst.remove(pair)
         else:
-            print("File {} has no pair".format(l))
+            # print("File {} has no pair".format(l))
             i=+1
     for l in lst:
-        print("File {} has no pair".format(l))
+        # print("File {} has no pair".format(l))
+        continue
     return final
 
 ## ifadv
