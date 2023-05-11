@@ -73,7 +73,8 @@ def read_eaf_to_dict(filepath, mark=True, tiers=None):
 
 
 def get_tier_from_file(filepath, tier, values=None):
-    """Return a dict of {tier:[(strt, stp, val),...]} if val in values"""   
+    """Return a dict of {tier:[(strt, stp, val),...]} if val in values"""  
+     
     eaf = pympi.Elan.Eaf(filepath)
     if values is not None:  # if none keep all
         if not isinstance(values, (list, tuple, numpy.ndarray, str)):
