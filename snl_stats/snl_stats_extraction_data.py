@@ -1862,6 +1862,8 @@ def get_inter_smiles_ad_spk_vs_lsn_folder(listpaths,string):
     
     lst=df_to_list(dg1)
     col=['database','conv','role','label','sum_time','time']
+    print("La liste : ", lst)
+    print("La col : ", col)
     return lst,col
 
 def get_inter_smiles_rd_spk_vs_lsn_folder(listpaths,string):

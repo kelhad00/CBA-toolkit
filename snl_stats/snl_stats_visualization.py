@@ -720,56 +720,78 @@ def plot_relative_duration_from_lsn(expression):
 
 #Scatter plots - Intra _______________________________________________
 def plot_intra_absolute_duration(database):
-    
-    dg = get_db_from_func_no_pair(DIR, get_intra_smiles_absolute_duration_folder)
-   
-    scatter_fig_smiles=px.scatter(dg[dg.database.eq(f'{database}')], x='subject', y='sum_time', color='label'#,text='time'
-    , orientation='v', title='Smiles Absolute Duration - Intra',labels={"sum_time":"Absolute Duration",
-    "label":"Intensity"})
-    line_fig_smiles=px.line(dg[dg.database.eq(f'{database}')], x='subject', y='sum_time', color='label', symbol='label',
-    orientation='v', title='Smiles Absolute Duration - Intra', labels={"sum_time":"Absolute Duration",
-    "label":"Intensity"})
+
+    if database != None :
+
+        D = []
+        for database_single in database : 
+
+            
+            dg = get_db_from_func_no_pair(DIR, get_intra_smiles_absolute_duration_folder)
+            
+            print(dg[dg.database.eq(f'{database_single}')])
+            scatter_fig_smiles=px.scatter(dg[dg.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label'#,text='time'
+            , orientation='v', title='Smiles Absolute Duration - Intra , Database : ' + database_single,labels={"sum_time":"Absolute Duration",
+            "label":"Intensity"})
+            line_fig_smiles=px.line(dg[dg.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label', symbol='label',
+            orientation='v', title='Smiles Absolute Duration - Intra , Database : ' + database_single, labels={"sum_time":"Absolute Duration",
+            "label":"Intensity"})
 
 
-    df=get_db_from_func_no_pair(DIR,get_intra_laughs_absolute_duration_folder)
-    scatter_fig_laughs=px.scatter(df[df.database.eq(f'{database}')], x='subject', y='sum_time', color='label'#,text='time'
-    , orientation='v', title='Laughs Absolute Duration - Intra',labels={"sum_time":"Absolute Duration",
-    "label":"Intensity"})
-    line_fig_laughs=px.line(df[df.database.eq(f'{database}')], x='subject', y='sum_time', color='label', symbol='label',
-    orientation='v', labels={"sum_time":"Absolute Duration", "label":"Intensity"},title='Laughs Absolute Duration - Intra')
+            df=get_db_from_func_no_pair(DIR,get_intra_laughs_absolute_duration_folder)
+            scatter_fig_laughs=px.scatter(df[df.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label'#,text='time'
+            , orientation='v', title='Laughs Absolute Duration - Intra , Database : ' + database_single,labels={"sum_time":"Absolute Duration",
+            "label":"Intensity"})
+            line_fig_laughs=px.line(df[df.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label', symbol='label',
+            orientation='v', labels={"sum_time":"Absolute Duration", "label":"Intensity"},title='Laughs Absolute Duration - Intra , Database : '+ database_single)
 
-    #scatter_fig_smiles.show()
-    # fig2.show()
-    L= [scatter_fig_smiles, line_fig_smiles, scatter_fig_laughs, line_fig_laughs ]
-    return L
+            #scatter_fig_smiles.show()s
+            # fig2.show()
+            L= [scatter_fig_smiles, line_fig_smiles, scatter_fig_laughs, line_fig_laughs ]
+            D.append(L)
+            
+        
+        return D
 
 def plot_intra_relative_duration(database):
     
-    dg = get_db_from_func_no_pair(DIR, get_intra_smiles_relative_duration_folder)
 
-    scatter_fig_smiles=px.scatter(dg[dg.database.eq(f'{database}')], x='subject', y='percentage', color='label',
-    orientation='v', title='Smiles Relative Duration - Intra', labels={"label":"Intensity"})
-    # fig1=px.scatter(dg, x='subject', y='percentage', color='label',facet_col='database',
-    # orientation='v', title='Smiles Relative Duration - Intra', labels={"label":"Intensity"},trendline='rolling',trendline_options=dict(window=5))
-    line_fig_smiles=px.line(dg[dg.database.eq(f'{database}')], x='subject', y='percentage', color='label', symbol='label',
-    orientation='v', title='Smiles Relative Duration - Intra', labels={"label":"Intensity"})
+    if database != None :
+
+        D = []
+       
+
+        for database_single in database : 
+
+            print(database_single)
+
+            dg = get_db_from_func_no_pair(DIR, get_intra_smiles_relative_duration_folder)
+
+            scatter_fig_smiles=px.scatter(dg[dg.database.eq(f'{database_single}')], x='subject', y='percentage', color='label',
+            orientation='v', title='Smiles Relative Duration - Intra , Database : ' + database_single, labels={"label":"Intensity"})
+            # fig1=px.scatter(dg, x='subject', y='percentage', color='label',facet_col='database',
+            # orientation='v', title='Smiles Relative Duration - Intra', labels={"label":"Intensity"},trendline='rolling',trendline_options=dict(window=5))
+            line_fig_smiles=px.line(dg[dg.database.eq(f'{database_single}')], x='subject', y='percentage', color='label', symbol='label',
+            orientation='v', title='Smiles Relative Duration - Intra , Database : ' + database_single, labels={"label":"Intensity"})
 
 
-    df=get_db_from_func_no_pair(DIR, get_intra_laughs_relative_duration_folder)
+            df=get_db_from_func_no_pair(DIR, get_intra_laughs_relative_duration_folder)
 
-    scatter_fig_laughs=px.scatter(df[df.database.eq(f'{database}')], x='subject', y='percentage', color='label',
-    orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra')
-    # fig2=px.scatter(df, x='subject', y='percentage', color='label',facet_col='database',
-    # orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra',trendline='rolling',trendline_options=dict(window=5))
-    line_fig_laughs=px.line(df[df.database.eq(f'{database}')], x='subject', y='percentage', color='label', symbol='label',
-    orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra')
-
-    # scatter_fig_smiles.show()
-    # #line_fig_smiles.show()
-    # scatter_fig_laughs.show()
-    # #line_fig_laughs.show()
-    L= [scatter_fig_smiles, line_fig_smiles, scatter_fig_laughs, line_fig_laughs ]
-    return L
+            scatter_fig_laughs=px.scatter(df[df.database.eq(f'{database_single}')], x='subject', y='percentage', color='label',
+            orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra , Database : ' + database_single)
+            # fig2=px.scatter(df, x='subject', y='percentage', color='label',facet_col='database',
+            # orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra',trendline='rolling',trendline_options=dict(window=5))
+            line_fig_laughs=px.line(df[df.database.eq(f'{database_single}')], x='subject', y='percentage', color='label', symbol='label',
+            orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra , Database : ' + database_single)
+            # scatter_fig_smiles.show()
+            # #line_fig_smiles.show()
+            # scatter_fig_laughs.show()
+            # #line_fig_laughs.show()
+            L= [scatter_fig_smiles, line_fig_smiles, scatter_fig_laughs, line_fig_laughs ]
+            
+            D.append(L)
+        
+        return D
 
 #Filter by role
 def plot_absolute_duration_from_lsn_folder(listpaths,string):
@@ -852,62 +874,82 @@ def plot_relative_duration_from_spk_folder(listpaths,string):
 
 #Scatter plots - Inter _______________________________________________
 def plot_inter_absolute_duration(database):
-    dg = get_db_from_func_pair(DIR, get_inter_smiles_absolute_duration_folder)
 
-    fig1=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Smiles Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"})
-    fig1_1=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Smiles Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
-
-    df = get_db_from_func_pair(DIR, get_inter_laughs_absolute_duration_folder)
-
-    fig2=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Laughs Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"})
-    fig2_2=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Laughs Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
+    if database != None :
     
-    # #fig1.show()
-    # fig1_1.show()
-    # #fig2.show()
-    # fig2_2.show()
-    return [fig1, fig1_1, fig2, fig2_2]
+        D=[]    
+
+        for database_single in database : 
+
+            dg = get_db_from_func_pair(DIR, get_inter_smiles_absolute_duration_folder)
+
+            fig1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
+            #,text='time'
+            , orientation='v', title='Smiles Absolute Duration per interaction',labels={"conv":"Interaction",
+            "duration":"Time difference","label":"Intensity"})
+            fig1_1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
+            #,text='time'
+            , orientation='v', title='Smiles Absolute Duration per interaction',labels={"conv":"Interaction",
+            "duration":"Time difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
+
+            df = get_db_from_func_pair(DIR, get_inter_laughs_absolute_duration_folder)
+
+            fig2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
+            #,text='time'
+            , orientation='v', title='Laughs Absolute Duration per interaction',labels={"conv":"Interaction",
+            "duration":"Time difference","label":"Intensity"})
+            fig2_2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
+            #,text='time'
+            , orientation='v', title='Laughs Absolute Duration per interaction',labels={"conv":"Interaction",
+            "duration":"Time difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
+            
+            # #fig1.show()
+            # fig1_1.show()
+            # #fig2.show()
+            # fig2_2.show()
+            L = [fig1, fig1_1, fig2, fig2_2]
+            D.append(L)
+        
+        return D
 
 def plot_inter_relative_duration(database):
-    dg = get_db_from_func_pair(DIR, get_inter_smiles_relative_duration_folder)
 
-    fig1=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='percentage', color='label'
-    , orientation='v', title='Smiles Relative Duration per interaction', labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Intensity"})
-    fig1_1=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='percentage', color='label'
-    #,text='time'
-    , orientation='v', title='Smiles Relative Duration per interaction',labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
+    if database != None :
 
-    df = get_db_from_func_pair(DIR, get_inter_laughs_relative_duration_folder)
+        D=[]
 
-    fig2=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='percentage', color='label'
-    , orientation='v', labels={"conv":"Interaction","percentage":"Percentage difference",
-    "label":"Intensity"},title='Laughs Relative Duration per interaction')
-    fig2_2=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='percentage', color='label'
-    #,text='time'
-    , orientation='v', title='Laughs Relative Duration per interaction',labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
-    
-    # fig1.show()
-    # fig2.show()
+        for database_single in database : 
 
-    return [fig1, fig1_1, fig2, fig2_2]
+            dg = get_db_from_func_pair(DIR, get_inter_smiles_relative_duration_folder)
+
+            fig1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
+            , orientation='v', title='Smiles Relative Duration per interaction', labels={"conv":"Interaction",
+            "percentage":"Percentage difference","label":"Intensity"})
+            fig1_1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
+            #,text='time'
+            , orientation='v', title='Smiles Relative Duration per interaction',labels={"conv":"Interaction",
+            "percentage":"Percentage difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
+
+            df = get_db_from_func_pair(DIR, get_inter_laughs_relative_duration_folder)
+
+            fig2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
+            , orientation='v', labels={"conv":"Interaction","percentage":"Percentage difference",
+            "label":"Intensity"},title='Laughs Relative Duration per interaction')
+            fig2_2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
+            #,text='time'
+            , orientation='v', title='Laughs Relative Duration per interaction',labels={"conv":"Interaction",
+            "percentage":"Percentage difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
+            
+            # fig1.show()
+            # fig2.show()
+            L = [fig1, fig1_1, fig2, fig2_2]
+            D.append(L)
+        
+        return D
 
 #Filter by Roles
 def plot_inter_ad_spk_vs_lsn(database):
+    
     df = get_db_from_func_pair(DIR, get_inter_smiles_ad_spk_vs_lsn_folder)
     fig1=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='sum_time', color='label', symbol='role'
     #,text='time'
