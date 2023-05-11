@@ -61,7 +61,7 @@ def form_pairs_ccdb(lst):
     return final
 
 ## ifadv
-def form_pairs_ifadv(lst):#assuming all have pairs.
+def form_pairs_ifadv(lst):
     """Return list of filename pairs
 
     Note: Assuming all elements in lst have pairs.
@@ -72,17 +72,30 @@ def form_pairs_ifadv(lst):#assuming all have pairs.
     Returns:
         list: [(),(),...]
     """
-    lst1 = [0] * int(len(lst) / 2)
-    lst2 = [0] * int(len(lst) / 2)
+    lst1 = [] 
+    lst2 = [] 
     for l in lst:
         ind = int(re.findall("\d+", l)[0])
         if l[2] == "A":
-            lst1[ind - 1] = l
+            lst1.append(l)
         else:
-            lst2[ind - 1] = l
-    return list(zip(lst1, lst2))
+            lst2.append(l)
 
-## Place for the user to enter his functions from_pairs_nomDossier 
+    new_lst2 = []
+    for i in range(len(lst1)):
+        pair_name = lst1[i].replace("A", "B", 1)[:4] + '{}'
+        pair_exists = any(name.startswith(pair_name[:4]) for name in lst2)
+        if not pair_exists:
+            lst1[i] = None
+        else :
+            index = [j for j, name in enumerate(lst2) if name.startswith(pair_name[:4])][0]
+            new_lst2.append(lst2[index])
+    lst1 = [name for name in lst1 if name is not None]
+    lst1.sort()
+    new_lst2.sort()
+    return list(zip(lst1, new_lst2))
+
+## Place for the user to enter his functions form_pairs_FolderName
 
 
 
