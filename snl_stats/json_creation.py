@@ -4,33 +4,49 @@ import json
 from bs4 import BeautifulSoup
 from pympi import Eaf
 
+# Set the script path and add it to the system path
 script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 
+# Import the db module from the IBPY package
 from IBPY import db
 
 def create_json_from_directory(root):
+    """Creates a JSON file containing information about a directory of ELAN files.
+
+    Args:
+        root (str): The path of the directory containing ELAN files.
+
+    Returns:
+        None
+    """
+
+    # Get a list of directories in the root directory
     datasets = os.listdir(root)
+
+    # Create a list of the full paths to the directories
     datasets_full = [join(root, d) for d in datasets]
+
+    # Create an empty dictionary to store the data
     dct = {}
     
-    # Ajout du sous-dictionnaire pour les FOLDER_PATHS
+    # Add a sub-dictionary for the folder paths
     dct['FOLDER_PATHS'] = {}
     dct['FOLDER_PATHS']['DIR'] = relpath(root, os.getcwd())
     for i, folder_path in enumerate(datasets_full):
         dct['FOLDER_PATHS'][f'ROOT{i+1}'] = relpath(folder_path, os.getcwd())
     
-    # Ajout du sous-dictionnaire pour les DATABASES_PATHS
+    # Add a sub-dictionary for the database paths
     dct['DATABASES_PATHS'] = {}
-    dct['DATABASES_PAIR_PATHS'] = {} # nouveau sous-dictionnaire pour les pairs
+    dct['DATABASES_PAIR_PATHS'] = {} # new sub-dictionary for pairs
     for d in range(len(datasets_full)):
         folder_name = datasets[d]
         temp = os.listdir(datasets_full[d])
         eaf_files = [f for f in temp if f.endswith('.eaf')]
         dct['DATABASES_PATHS'][f'{folder_name}_paths'] = [relpath(join(datasets_full[d], f), os.getcwd()) for f in eaf_files]
         
-        # Création des pairs pour le sous-dictionnaire "DATABASES_PAIR_PATHS"
+        # Create pairs for the "DATABASES_PAIR_PATHS" sub-dictionary
         pair_func_name = f"form_pairs_{folder_name.lower()}"
         if hasattr(db, pair_func_name):
             pair_func = getattr(db, pair_func_name)
@@ -49,7 +65,7 @@ def create_json_from_directory(root):
                         pair_paths.append(relpath(join(str(datasets_full[d]), str(f)), os.getcwd()))
                 dct['DATABASES_PAIR_PATHS'][f'{folder_name}_pairs'] = pair_paths
 
-    # Création du dictionnaire pour les tiers et les annotations
+    # Create a dictionary for the tiers and annotations
     dct['TIER_LISTS'] = {}
     for d in range(len(datasets_full)):
         temp = os.listdir(datasets_full[d])
@@ -65,16 +81,30 @@ def create_json_from_directory(root):
                         if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
                             dct['TIER_LISTS'][tier_name].append(value)
 
+    # Write the data to a JSON file
     with open('data.json', 'w') as f:
         json.dump(dct, f, indent=4)
 
+
 def delete_file_if_exists(filename):
+    """Deletes a file if it exists.
+
+    Args:
+        filename (str): The path of the file to delete.
+
+    Returns:
+        None
+    """
     if os.path.exists(filename):
         os.remove(filename)
         
-
+# Absolute path of the "data" directory
 root = os.path.abspath("data")
+
+# Deletes any existing "data.json" file
 delete_file_if_exists('data.json')
+
+# Creates a JSON file with the directory structure and annotation information
 create_json_from_directory(root)
 
 

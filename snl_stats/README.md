@@ -14,7 +14,10 @@ This file has a function test(). This function is there just to help try out fun
 **4) to_improve.py :**
 This file contains the functions to be improved in order to succeed in certain specific actions.
 
-**5) parameters.json :**
+**5) json_creation.py :**
+This file generates a JSON file from the directory data containing EAF files.
+
+**6) data.json :**
 This file contains a dictionnary where you can find some parameters you need to work with.
 Here are precisions you need to know to understand the parameters. This is the explanation of how you need to manage directories.
 
@@ -25,6 +28,7 @@ Here are precisions you need to know to understand the parameters. This is the e
  - ROOT1 is the path for ccdb database. This directory is inside data directory.
  - ROOT2 is the path for ifadv database. This directory is inside data directory.
  - ROOT3 is the path for ndc database. This directory is inside data directory.
+ - ROOTX is the path for your database and so on. This directory is inside data directory
 
  **In DATABASES_PATHS :**
  You find the paths of files of each database.
@@ -32,12 +36,15 @@ Here are precisions you need to know to understand the parameters. This is the e
  **In DATABASES_PAIR_PATHS :**
  You find the paths of the pair files of each database.
 
- **In INTENSITY_LISTS :**
- Here are intensities for smiles and laughs.
+ **In TIER_LISTS :**
+ Here are tiers and annotations values present in the EAF files.
+ 
+ **TO IMPROVE**
 
+ **In the previous JSON : parameters.json**
  **In _databasename_IN_OUT:**
  - PATH_IN_databasename : path of all person 1 in the database pairs
- - PAYH_OUT_databasename : path of all person 2 in the database pairs
+ - PATH_OUT_databasename : path of all person 2 in the database pairs
 
  Here we have paths for video pairs from each database. 
  Create a folder "data_in_out" (it has to be in the same folder as the repository (snlstats) you cloned.)
