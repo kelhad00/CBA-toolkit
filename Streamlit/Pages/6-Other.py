@@ -2,6 +2,8 @@
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
+import threading
+
 script_path = os.path.realpath(os.path.dirname("snl_stats"))
 os.chdir(script_path)
 sys.path.append("..")

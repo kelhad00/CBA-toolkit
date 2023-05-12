@@ -2,6 +2,7 @@
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
+import time
 script_path = os.path.realpath(os.path.dirname("snl_stats"))
 os.chdir(script_path)
 sys.path.append("..")
@@ -34,13 +35,13 @@ def page2():
 
         figs_ad = st.selectbox("Absolute duration Figures: ", lst_ad) 
         options = st.multiselect('What are your favorite colors', name_databases, key = 1)
-        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
         list1= plot_intra_absolute_duration(options)
         for i in range(len(list1)) :
             for d in range(len(list1[i])) :
                 if figs_ad == lst_ad[d] :
                     st.write(list1[i][d])
-
+        
         # fig_choice=st.radio(label="Figures :", options=lst_ad)
         # st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         # for i in range(len(lst_ad)):
@@ -85,12 +86,10 @@ def page2():
         figs_ab=st.selectbox("Absolute duration figures : ", lst_ab)
         options3 = st.multiselect('What are your favorite colors', name_databases, key = 1)
         lst_1=plot_inter_absolute_duration(options3)
-
         for i in range(len(lst_1)):
             for d in range(len(lst_1[i])):
                 if figs_ab == lst_ab[d]:
                     st.write(lst_1[i][d])
-
         figs_rd = st.selectbox("Relative duration Figures: ", lst_rd) 
         options4 = st.multiselect('What are your favorite colors', name_databases, key = 2)
 
