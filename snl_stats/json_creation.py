@@ -81,6 +81,9 @@ def create_json_from_directory(root):
                         if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
                             dct['TIER_LISTS'][tier_name].append(value)
 
+    # TO IMPROVE
+    # Create a dictionary for the ML stats : IN_OUT
+
     # Write the data to a JSON file
     with open('data.json', 'w') as f:
         json.dump(dct, f, indent=4)
