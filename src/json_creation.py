@@ -12,17 +12,22 @@ sys.path.append("..")
 # Import the db module from the IBPY package
 from IBPY import db
 
-def create_json_from_directory(root):
+def create_json_from_directory():
     """Creates a JSON file containing information about a directory of ELAN files.
 
     Args:
-        root (str): The path of the directory containing ELAN files.
+        None
 
     Returns:
         None
     """
-    # Get the directory of the current Python script
+
+    # Absolute path of the "data" directory
     script_dir = dirname(os.path.abspath(__file__))
+    root = os.path.abspath(os.path.join(script_dir, '..', 'data'))
+
+    # Deletes any existing "data.json" file
+    delete_file_if_exists('data.json')
 
     # Specify the relative path to the parent folder from the script directory
     parent_path = abspath(os.path.join(script_dir, '..'))
@@ -106,14 +111,6 @@ def delete_file_if_exists(filename):
     if os.path.exists(filename):
         os.remove(filename)
         
-# Absolute path of the "data" directory
-script_dir = dirname(os.path.abspath(__file__))
-root = os.path.abspath(os.path.join(script_dir, '..', 'data'))
-
-# Deletes any existing "data.json" file
-delete_file_if_exists('data.json')
-
-# Creates a JSON file with the directory structure and annotation information
-create_json_from_directory(root)
+# create_json_from_directory()
 
 

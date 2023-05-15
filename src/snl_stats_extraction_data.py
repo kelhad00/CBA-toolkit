@@ -13,7 +13,10 @@ from IBPY.db import *
 from IBPY.extract_data import *
 import pandas as pd
 from scipy.stats import pearsonr 
+from .json_creation import create_json_from_directory
 
+# Creates a JSON file with the directory structure and annotation information
+create_json_from_directory()
 #Parameters_________________________________________________________
 with open('..\\..\\CBA-toolkit\\src\\data.json', 'r') as f:
     parameters=json.load(f)
