@@ -1,12 +1,12 @@
 import os, sys
-script_path = os.path.realpath(os.path.dirname("IBPY_files"))
+script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 
-from  IBPY_files.processing import *
-from  IBPY_files.extract_data import *
+from  IBPY.processing import *
+from  IBPY.extract_data import *
 from .settings import *
-from IBPY_files.db import *
+from IBPY.db import *
 
 import os
 import numpy as np
