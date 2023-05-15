@@ -107,7 +107,8 @@ def delete_file_if_exists(filename):
         os.remove(filename)
         
 # Absolute path of the "data" directory
-root = os.path.abspath("data")
+script_dir = dirname(os.path.abspath(__file__))
+root = os.path.abspath(os.path.join(script_dir, '..', 'data'))
 
 # Deletes any existing "data.json" file
 delete_file_if_exists('data.json')

@@ -7,7 +7,7 @@ import json
 import pympi
 import numpy as np
 from IBPY.interaction_analysis import *
-from interaction_stats.preprocessing import *
+from .preprocessing import *
 from IBPY.utils import *
 from IBPY.db import *
 from IBPY.extract_data import *
@@ -15,7 +15,7 @@ import pandas as pd
 from scipy.stats import pearsonr 
 
 #Parameters_________________________________________________________
-with open('..\\..\\CBA-toolkit\\snl_stats\\data.json', 'r') as f:
+with open('..\\..\\CBA-toolkit\\src\\data.json', 'r') as f:
     parameters=json.load(f)
 DIR=parameters["FOLDER_PATHS"]["DIR"]
 ccdb_pair = parameters["DATABASES_PAIR_PATHS"]['ccdb_pairs']
