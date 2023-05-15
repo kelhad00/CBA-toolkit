@@ -1,6 +1,7 @@
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
+
 script_path = os.path.realpath(os.path.dirname("snl_stats"))
 os.chdir(script_path)
 sys.path.append("..")
@@ -18,6 +19,7 @@ Affichage_pattern.affichage()
 
 def main_page():
     #st.markdown("# Main page")
+
     st.sidebar.markdown("Main page")
     st.title('Smiles and Laughs Study ')
     st.markdown('''This is an interactive web page where we are going to show some statistics based on a given database.
