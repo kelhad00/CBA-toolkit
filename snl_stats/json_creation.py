@@ -1,5 +1,5 @@
 import os, sys 
-from os.path import join, relpath
+from os.path import join, relpath, abspath, dirname
 import json
 from bs4 import BeautifulSoup
 from pympi import Eaf
@@ -21,6 +21,11 @@ def create_json_from_directory(root):
     Returns:
         None
     """
+    # Get the directory of the current Python script
+    script_dir = dirname(os.path.abspath(__file__))
+
+    # Specify the relative path to the parent folder from the script directory
+    parent_path = abspath(os.path.join(script_dir, '..'))
 
     # Get a list of directories in the root directory
     datasets = os.listdir(root)
@@ -33,9 +38,9 @@ def create_json_from_directory(root):
     
     # Add a sub-dictionary for the folder paths
     dct['FOLDER_PATHS'] = {}
-    dct['FOLDER_PATHS']['DIR'] = relpath(root, os.getcwd())
+    dct['FOLDER_PATHS']['DIR'] = join('..', relpath(relpath(root, os.getcwd()), parent_path))
     for i, folder_path in enumerate(datasets_full):
-        dct['FOLDER_PATHS'][f'ROOT{i+1}'] = relpath(folder_path, os.getcwd())
+        dct['FOLDER_PATHS'][f'ROOT{i+1}'] = join('..', relpath(relpath(folder_path, os.getcwd()), parent_path))
     
     # Add a sub-dictionary for the database paths
     dct['DATABASES_PATHS'] = {}
@@ -44,7 +49,7 @@ def create_json_from_directory(root):
         folder_name = datasets[d]
         temp = os.listdir(datasets_full[d])
         eaf_files = [f for f in temp if f.endswith('.eaf')]
-        dct['DATABASES_PATHS'][f'{folder_name}_paths'] = [relpath(join(datasets_full[d], f), os.getcwd()) for f in eaf_files]
+        dct['DATABASES_PATHS'][f'{folder_name}_paths'] = [join('..', relpath(relpath(join(datasets_full[d], f), os.getcwd()), parent_path)) for f in eaf_files]
         
         # Create pairs for the "DATABASES_PAIR_PATHS" sub-dictionary
         pair_func_name = f"form_pairs_{folder_name.lower()}"
@@ -60,9 +65,9 @@ def create_json_from_directory(root):
                 pair_paths = []
                 for f in pair_files:
                     if isinstance(f, tuple):
-                        pair_paths.extend([relpath(join(str(datasets_full[d]), str(p)), os.getcwd()) for p in f])
+                        pair_paths.extend([join('..', relpath(relpath(join(str(datasets_full[d]), str(p)), os.getcwd()), parent_path)) for p in f])
                     else:
-                        pair_paths.append(relpath(join(str(datasets_full[d]), str(f)), os.getcwd()))
+                        pair_paths.append(join('..', relpath(relpath(join(str(datasets_full[d]), str(f)), os.getcwd()), parent_path)))
                 dct['DATABASES_PAIR_PATHS'][f'{folder_name}_pairs'] = pair_paths
 
     # Create a dictionary for the tiers and annotations
