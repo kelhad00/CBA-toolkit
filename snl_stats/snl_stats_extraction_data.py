@@ -1,31 +1,31 @@
 import itertools
 import os, sys
-script_path = os.path.realpath(os.path.dirname("IBPY_files"))
+script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 import json
 import pympi
 import numpy as np
-from IBPY_files.interaction_analysis import *
+from IBPY.interaction_analysis import *
 from interaction_stats.preprocessing import *
-from IBPY_files.utils import *
-from IBPY_files.db import *
-from IBPY_files.extract_data import *
+from IBPY.utils import *
+from IBPY.db import *
+from IBPY.extract_data import *
 import pandas as pd
 from scipy.stats import pearsonr 
 
 #Parameters_________________________________________________________
-with open('..\\..\\CBA-toolkit\\snl_stats\\parameters.json', 'r') as f:
+with open('..\\..\\CBA-toolkit\\snl_stats\\data.json', 'r') as f:
     parameters=json.load(f)
 DIR=parameters["FOLDER_PATHS"]["DIR"]
-ccdb_pair = parameters["DATABASES_PAIR_PATHS"]['ccdb_pair']
-ifadv_pair = parameters["DATABASES_PAIR_PATHS"]['ifadv_pair']
-ndc_pair = parameters["DATABASES_PAIR_PATHS"]['ndc_pair']
+ccdb_pair = parameters["DATABASES_PAIR_PATHS"]['ccdb_pairs']
+ifadv_pair = parameters["DATABASES_PAIR_PATHS"]['ifadv_pairs']
+ndc_pair = parameters["DATABASES_PAIR_PATHS"]['ndc_pairs']
 ccdb_paths = parameters["DATABASES_PATHS"]['ccdb_paths']  
 ifadv_paths = parameters["DATABASES_PATHS"]['ifadv_paths']
 ndc_paths = parameters["DATABASES_PATHS"]['ndc_paths']
-intensity_smiles=parameters["INTENSITY_LISTS"]['intensity_smiles']
-intensity_laughs= parameters["INTENSITY_LISTS"]['intensity_laughs']
+intensity_smiles=parameters["TIER_LISTS"]['Smiles']
+intensity_laughs= parameters["TIER_LISTS"]['Laughs']
 
 #____________________________________________________________________
 

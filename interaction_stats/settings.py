@@ -1,8 +1,8 @@
 import os, sys
-script_path = os.path.realpath(os.path.dirname("IBPY_files"))
+script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
-from IBPY_files.db import *
+from IBPY.db import *
 
 
 OHE = True         # One hot encoding option for the datasets.
