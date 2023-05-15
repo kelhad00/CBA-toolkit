@@ -1,0 +1,9 @@
+numpy
+pandas
+streamlit
+matplotlib
+plotly
+pympi-ling
+scipy
+python-Levenshtein
+seaborn
