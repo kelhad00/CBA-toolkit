@@ -2,7 +2,7 @@
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
-script_path = os.path.realpath(os.path.dirname("snl_stats"))
+script_path = os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
 sys.path.append("..")
 
@@ -12,7 +12,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.ml_stats import *
 # from interaction_stats.ml_stats_vizualisation import *
 # from interaction_stats.settings import *
-from snl_stats.snl_stats_visualization import *
+from src.snl_stats_visualization import *
 
 
 

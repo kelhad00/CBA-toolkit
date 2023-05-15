@@ -1,4 +1,4 @@
-## snl_stats
+## src
 
 This folder contains :
 
@@ -8,16 +8,29 @@ This file contains all extraction functions for the statistics.
 **2) snl_stats_visualization.py :**
 This file contains all the vizualisation functions to vizualise the statistics.
 
-**3) tests.py :**
+**3) preprocessing.py :**
+This file contains functions that help to extract data from eaf files coming from the datasets.
+setup_label_database() and divide_seq_to_frames() are the main functions used.
+
+**4) settings.py :**
+This file contains somes variables used in the other python files of this folder.
+
+**5) ml_stats.py :**
+This file contains the functions that make the necessary statistics.
+
+**6) ml_stats_vizusalisation.py :**
+This file contains the function to vizualise the statistics.
+
+**7) tests.py :**
 This file has a function test(). This function is there just to help try out functions inside other files.
 
-**4) to_improve.py :**
+**8) to_improve.py :**
 This file contains the functions to be improved in order to succeed in certain specific actions.
 
-**5) json_creation.py :**
+**9) json_creation.py :**
 This file generates a JSON file from the directory data containing EAF files.
 
-**6) data.json :**
+**10) data.json :**
 This file contains a dictionnary where you can find some parameters you need to work with.
 Here are precisions you need to know to understand the parameters. This is the explanation of how you need to manage directories.
 
