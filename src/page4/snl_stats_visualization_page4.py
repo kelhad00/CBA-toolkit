@@ -70,6 +70,11 @@ def plot_track_previous_SL_byI(dg, track_choice):
 def plot_track_following_SL_byI(dg, track_choice):
     """Args : The dataframe come from SL_track_byI function"""
     
+    if track_choice == 'S':
+        track_choice = 'Smiles'
+    elif track_choice == 'L':
+        track_choice = 'Laughs'
+        
     fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
     facet_col=dg.iloc[:,2].name,
     text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
