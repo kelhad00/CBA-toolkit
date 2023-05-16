@@ -25,7 +25,7 @@ def page5():
         st.title('Expression per minute')
         st.markdown("We count the number of smiles or laughs we have in one minute in each database.")
         name_databases=['CCDB','IFADV','NDC']
-        databases_=[ccdb_pair, ifadv_pair, ndc_pair]
+        databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
         databases_choice=st.selectbox("Databases list :", name_databases)
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
