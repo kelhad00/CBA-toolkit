@@ -93,10 +93,9 @@ def page2():
         options4 = st.multiselect('What are your favorite colors', name_databases, key = 2)
 
         lst_2=plot_inter_relative_duration(options4)
-
         for k in range(len(lst_2)):
             for l in range(len(lst_2[k])):
-                if figs_ab == lst_rd[l]:
+                if figs_rd == lst_rd[l]:
                     st.write(lst_2[k][l])
 
         st.subheader('By dataset and role')

@@ -3,7 +3,6 @@ script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 import time
-result_thread = ""
 import matplotlib.pyplot as plt
 import seaborn as sn
 import plotly.express as px
@@ -16,76 +15,16 @@ import numpy as np
 import pandas as pd
 from plotly.subplots import make_subplots
 import threading
+from .function_thread_page3 import *
+from multiprocessing import Queue
 
-def create_inter_absolute_plot(database_single) :
-
-    print("Nom de la database : " , database_single)
-    dg = get_db_from_func_pair(DIR, get_inter_smiles_absolute_duration_folder)
-        
-    print(dg)
-    fig1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Smiles Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"})
-    fig1_1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Smiles Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
-
-    df = get_db_from_func_pair(DIR, get_inter_laughs_absolute_duration_folder)
-
-    fig2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Laughs Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"})
-    fig2_2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title='Laughs Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
-        
-    # #fig1.show()
-    # fig1_1.show()
-    # #fig2.show()
-    # fig2_2.show()
-    L = [fig1, fig1_1, fig2, fig2_2]
-    global result_thread
-    result_thread = L
-
-def create_inter_relative_plot(database_single) :
-
-    dg = get_db_from_func_pair(DIR, get_inter_smiles_relative_duration_folder)
-
-    fig1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
-    , orientation='v', title='Smiles Relative Duration per interaction', labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Intensity"})
-    fig1_1=px.scatter(dg[dg.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
-    #,text='time'
-    , orientation='v', title='Smiles Relative Duration per interaction',labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
-
-    df = get_db_from_func_pair(DIR, get_inter_laughs_relative_duration_folder)
-
-    fig2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
-    , orientation='v', labels={"conv":"Interaction","percentage":"Percentage difference",
-    "label":"Intensity"},title='Laughs Relative Duration per interaction')
-    fig2_2=px.scatter(df[df.database.eq(f'{database_single}')], x='conv', y='percentage', color='label'
-    #,text='time'
-    , orientation='v', title='Laughs Relative Duration per interaction',labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Intensity"},trendline='rolling',trendline_options=dict(window=2))
-            
-    # fig1.show()
-    # fig2.show()
-    L = [fig1, fig1_1, fig2, fig2_2]
-
-    global result_thread
-    result_thread = L        
-        
 #Scatter plots - Intra _______________________________________________
 def plot_intra_absolute_duration(database):
 
     if database != None :
 
         D = []
+        
         for database_single in database : 
 
             
@@ -243,9 +182,11 @@ def plot_inter_absolute_duration(database):
 
         D=[]
         Thread = []
+        queue = Queue()
+
         for database_single in database : 
    
-            Thread.append(threading.Thread(target=create_inter_absolute_plot, args=(database_single,)))
+            Thread.append(threading.Thread(target=create_inter_absolute_plot, args=(database_single,queue,)))
 
         for thread in Thread :
 
@@ -254,8 +195,7 @@ def plot_inter_absolute_duration(database):
         for thread in Thread :
             
             thread.join()
-            global result_thread
-            D.append(result_thread)
+            D.append(queue.get())
 
         return D
 
@@ -265,9 +205,11 @@ def plot_inter_relative_duration(database):
 
         D=[]
         Thread = []
+        queue = Queue()
+
         for database_single in database : 
              
-             Thread.append(threading.Thread(target=create_inter_relative_plot, args=(database_single,)))
+            Thread.append(threading.Thread(target=create_inter_relative_plot, args=(database_single,queue,)))
             
         for thread in Thread :
 
@@ -276,8 +218,7 @@ def plot_inter_relative_duration(database):
         for thread in Thread : 
 
             thread.join()
-            global result_thread
-            D.append(result_thread)
+            D.append(queue.get())
 
         return D
             
