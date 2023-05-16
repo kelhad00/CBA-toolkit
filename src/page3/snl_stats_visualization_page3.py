@@ -24,32 +24,21 @@ def plot_intra_absolute_duration(database):
     if database != None :
 
         D = []
-        
+        Threads = []
+        queue = Queue()
+
         for database_single in database : 
 
+            Threads.append(threading.Thread(target=create_inter_absolute_plot(database_single, queue,)))
             
-            dg = get_db_from_func_no_pair(DIR, get_intra_smiles_absolute_duration_folder)
-            
-            print(dg[dg.database.eq(f'{database_single}')])
-            scatter_fig_smiles=px.scatter(dg[dg.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label'#,text='time'
-            , orientation='v', title='Smiles Absolute Duration - Intra , Database : ' + database_single,labels={"sum_time":"Absolute Duration",
-            "label":"Intensity"})
-            line_fig_smiles=px.line(dg[dg.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label', symbol='label',
-            orientation='v', title='Smiles Absolute Duration - Intra , Database : ' + database_single, labels={"sum_time":"Absolute Duration",
-            "label":"Intensity"})
+        for thread in Threads:
 
+            thread.start()
 
-            df=get_db_from_func_no_pair(DIR,get_intra_laughs_absolute_duration_folder)
-            scatter_fig_laughs=px.scatter(df[df.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label'#,text='time'
-            , orientation='v', title='Laughs Absolute Duration - Intra , Database : ' + database_single,labels={"sum_time":"Absolute Duration",
-            "label":"Intensity"})
-            line_fig_laughs=px.line(df[df.database.eq(f'{database_single}')], x='subject', y='sum_time', color='label', symbol='label',
-            orientation='v', labels={"sum_time":"Absolute Duration", "label":"Intensity"},title='Laughs Absolute Duration - Intra , Database : '+ database_single)
+        for thread in Threads:
 
-            #scatter_fig_smiles.show()s
-            # fig2.show()
-            L= [scatter_fig_smiles, line_fig_smiles, scatter_fig_laughs, line_fig_laughs ]
-            D.append(L)
+            thread.join()
+            D.append(queue.get())
             
         
         return D
@@ -60,39 +49,23 @@ def plot_intra_relative_duration(database):
     if database != None :
 
         D = []
-       
+        Threads = []
+        queue = Queue()
 
         for database_single in database : 
 
-            print(database_single)
+            Threads.append(threading.Thread(target=create_intra_relative_plot, args=(database_single, queue,)))
 
-            dg = get_db_from_func_no_pair(DIR, get_intra_smiles_relative_duration_folder)
+        for thread in Threads:
 
-            scatter_fig_smiles=px.scatter(dg[dg.database.eq(f'{database_single}')], x='subject', y='percentage', color='label',
-            orientation='v', title='Smiles Relative Duration - Intra , Database : ' + database_single, labels={"label":"Intensity"})
-            # fig1=px.scatter(dg, x='subject', y='percentage', color='label',facet_col='database',
-            # orientation='v', title='Smiles Relative Duration - Intra', labels={"label":"Intensity"},trendline='rolling',trendline_options=dict(window=5))
-            line_fig_smiles=px.line(dg[dg.database.eq(f'{database_single}')], x='subject', y='percentage', color='label', symbol='label',
-            orientation='v', title='Smiles Relative Duration - Intra , Database : ' + database_single, labels={"label":"Intensity"})
-
-
-            df=get_db_from_func_no_pair(DIR, get_intra_laughs_relative_duration_folder)
-
-            scatter_fig_laughs=px.scatter(df[df.database.eq(f'{database_single}')], x='subject', y='percentage', color='label',
-            orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra , Database : ' + database_single)
-            # fig2=px.scatter(df, x='subject', y='percentage', color='label',facet_col='database',
-            # orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra',trendline='rolling',trendline_options=dict(window=5))
-            line_fig_laughs=px.line(df[df.database.eq(f'{database_single}')], x='subject', y='percentage', color='label', symbol='label',
-            orientation='v', labels={"label":"Intensity"},title='Laughs Relative Duration - Intra , Database : ' + database_single)
-            # scatter_fig_smiles.show()
-            # #line_fig_smiles.show()
-            # scatter_fig_laughs.show()
-            # #line_fig_laughs.show()
-            L= [scatter_fig_smiles, line_fig_smiles, scatter_fig_laughs, line_fig_laughs ]
-            
-            D.append(L)
+            thread.start()
         
-        return D
+        for thread in Threads:
+
+            thread.join()
+            D.append(queue.get())
+           
+    return D
 
 #Filter by role
 def plot_absolute_duration_from_lsn_folder(listpaths,string):
