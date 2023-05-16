@@ -11,7 +11,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.ml_stats import *
 # from interaction_stats.ml_stats_vizualisation import *
 # from interaction_stats.settings import *
-from src.snl_stats_visualization import *
+from src.page4.snl_stats_visualization_page4 import *
 
 
 
@@ -35,8 +35,8 @@ def page3():
         check_choice=st.radio("Check choice ->", ['L', 'S'])
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         # #st.subheader('Previous')
-        fig1= plot_track_previous_SL(SL_track(check_choice,track_choice, DIR))
-        fig2= plot_track_following_SL(SL_track(check_choice,track_choice, DIR))
+        fig1= plot_track_previous_SL(SL_track(check_choice,track_choice, DIR), track_choice)
+        fig2= plot_track_following_SL(SL_track(check_choice,track_choice, DIR), track_choice)
         st.plotly_chart(fig1)
         # #st.subheader('Following')
         st.plotly_chart(fig2) 
@@ -49,8 +49,8 @@ def page3():
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
         # #st.subheader('Previous')
-        fig1= plot_track_previous_SL_byI(SL_track_byI(check_choice,track_choice,DIR)[0])
-        fig2= plot_track_following_SL_byI(SL_track_byI(check_choice,track_choice,DIR)[1])
+        fig1= plot_track_previous_SL_byI(SL_track_byI(check_choice,track_choice,DIR)[0], track_choice)
+        fig2= plot_track_following_SL_byI(SL_track_byI(check_choice,track_choice,DIR)[1], track_choice)
         st.plotly_chart(fig1)
         # #st.subheader('Following')
         st.plotly_chart(fig2) 

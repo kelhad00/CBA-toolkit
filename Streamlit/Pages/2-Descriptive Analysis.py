@@ -11,7 +11,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.ml_stats import *
 # from interaction_stats.ml_stats_vizualisation import *
 # from interaction_stats.settings import *
-from src.snl_stats_visualization import *
+from src.page2.snl_stats_visualization_page2 import *
 
 
 def page1():
@@ -23,7 +23,9 @@ def page1():
     st.subheader('By datasets')
 
     name_list=["Absolute duration", "Relative duration"]
-    name_list_by_role=["absolute duration spk","absolute duration lsn","relative duration spk","relative duration lsn" ]
+    name_list_by_role_kind1=["absolute duration spk","absolute duration lsn"]
+    name_list_by_role_kind2=["relative duration spk","relative duration lsn" ]
+    name_list_by_role = name_list_by_role_kind1 + name_list_by_role_kind2
     expression_choice=st.radio("Expression choice ->", ['smiles', 'laughs','both'])
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
@@ -66,7 +68,7 @@ def page1():
 
         count = 0
 
-        figs=st.selectbox(" Basic statistics plots by role - Absolute duration : ", name_list_by_role) 
+        figs=st.selectbox(" Basic statistics plots by role : ", name_list_by_role) 
 
         if "absolute" in figs :
 
@@ -76,16 +78,16 @@ def page1():
             
             L= [plot_absolute_duration_from_spk(expression_choice, choice3), plot_absolute_duration_from_lsn(expression_choice, choice3)]
 
-            for i in range(len(name_list_by_role)):
-                if figs == name_list_by_role[i]:
+            for i in range(len(name_list_by_role_kind1)):
+                if figs == name_list_by_role_kind1[i]:
                     st.write(L[i])
         
         else :
 
             L=[plot_relative_duration_from_spk(expression_choice), plot_relative_duration_from_lsn(expression_choice)]
-
-            for i in range(len(name_list_by_role)):
-                if figs == name_list_by_role[i]:
+            print("La figures :", figs)
+            for i in range(len(name_list_by_role_kind2)):
+                if figs == name_list_by_role_kind2[i]:
                     st.write(L[i])
    
     else : 

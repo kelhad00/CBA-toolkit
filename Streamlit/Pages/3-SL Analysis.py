@@ -11,7 +11,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.ml_stats import *
 # from interaction_stats.ml_stats_vizualisation import *
 # from interaction_stats.settings import *
-from src.snl_stats_visualization import *
+from src.page3.snl_stats_visualization_page3 import *
 
 
 def page2():
@@ -59,7 +59,7 @@ def page2():
         st.subheader('By role')
         #st.text("On CCDB")
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        databases_lists=[ccdb_paths, ifadv_paths, ndc_paths]
+        databases_lists=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
         database_choice=st.radio("Database choice --> ", name_databases)
         for i in range(3):
             if database_choice==name_databases[i]:
