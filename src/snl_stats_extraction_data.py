@@ -15,20 +15,30 @@ import pandas as pd
 from scipy.stats import pearsonr 
 from .json_creation import create_json_from_directory
 
-# Creates a JSON file with the directory structure and annotation information
-create_json_from_directory()
 #Parameters_________________________________________________________
+
+# Creates JSON file with the directory structure and annotation information
+create_json_from_directory()
+
 with open('..\\..\\CBA-toolkit\\src\\data.json', 'r') as f:
     parameters=json.load(f)
+
 DIR=parameters["FOLDER_PATHS"]["DIR"]
-ccdb_pair = parameters["DATABASES_PAIR_PATHS"]['ccdb_pairs']
-ifadv_pair = parameters["DATABASES_PAIR_PATHS"]['ifadv_pairs']
-ndc_pair = parameters["DATABASES_PAIR_PATHS"]['ndc_pairs']
-ccdb_paths = parameters["DATABASES_PATHS"]['ccdb_paths']  
-ifadv_paths = parameters["DATABASES_PATHS"]['ifadv_paths']
-ndc_paths = parameters["DATABASES_PATHS"]['ndc_paths']
-intensity_smiles=parameters["TIER_LISTS"]['Smiles']
-intensity_laughs= parameters["TIER_LISTS"]['Laughs']
+databases_pair_paths = parameters["DATABASES_PAIR_PATHS"]
+databases_paths = parameters["DATABASES_PATHS"]
+tier_lists = parameters["TIER_LISTS"]
+
+# Parcours des jeux de données pair
+for db_name, db_path in databases_pair_paths.items():
+    globals()[db_name] = db_path
+
+# Parcours des jeux de données
+for db_name, db_path in databases_paths.items():
+    globals()[db_name] = db_path
+
+# Parcours des tiers d'expressions
+for tier_name, tier_list in tier_lists.items():
+    globals()[f"intensity_{tier_name.lower()}"] = tier_list
 
 #____________________________________________________________________
 
@@ -56,7 +66,7 @@ def correct_dict_role_smiles(dict_,listpaths,string):
     for _ in dict_:dict_sub.append(_[0])
     for subject in subjects:
         if subject not in dict_sub:
-            for i in intensity_smiles:
+            for i in tier_lists["Smiles"]:
                 dict_.append((subject,string,i,0,0,dict_[0][5]))
         else:
             #Si un sujet existe 
@@ -65,7 +75,7 @@ def correct_dict_role_smiles(dict_,listpaths,string):
                     dict_present_subject.append(_) 
                     for i in dict_present_subject : label_present_subject.append(i[2]) #je prends les labels du sujet qui existe que je stocke 
             #Si un des labels normaux n'est pas dans cette liste de label, on le mets à 0
-                    for l in intensity_smiles :
+                    for l in tier_lists["Smiles"] :
                         if l not in label_present_subject :
                             dict_.append((subject, string,l,0,0,dict_[0][5]))# dict_=list(df_to_correct.to_records(index=False))
     #print(len(dict_))
@@ -95,7 +105,7 @@ def correct_dict_role_laughs(dict_,listpaths,string):
     for _ in dict_:dict_sub.append(_[0])
     for subject in subjects:
         if subject not in dict_sub:
-            for i in intensity_laughs:
+            for i in tier_lists["Laughs"]:
                 dict_.append((subject,string,i,0,0,dict_[0][5]))
         else:
             #Si un sujet existe 
@@ -104,7 +114,7 @@ def correct_dict_role_laughs(dict_,listpaths,string):
                     dict_present_subject.append(_) 
                     for i in dict_present_subject : label_present_subject.append(i[2]) #je prends les labels du sujet qui existe que je stocke 
             #Si un des labels normaux n'est pas dans cette liste de label, on le mets à 0
-                    for l in intensity_laughs :
+                    for l in tier_lists["Laughs"] :
                         if l not in label_present_subject :
                             dict_.append((subject, string,l,0,0,dict_[0][5]))# dict_=list(df_to_correct.to_records(index=False))
     #print(len(dict_))
@@ -1430,7 +1440,7 @@ def get_inter_smiles_absolute_duration_folder(listpaths,string):
     dict_=list(dg1.to_records(index=False))
 
     conv = list(np.unique(conv))
-    labels=intensity_smiles
+    labels=tier_lists["Smiles"]
     for a in conv:
         #print("For conv n°",a)
         J_A=[]
@@ -1541,7 +1551,7 @@ def get_inter_smiles_relative_duration_folder(listpaths,string):
 
 
     conv = list(np.unique(conv))
-    labels=intensity_smiles
+    labels=tier_lists["Smiles"]
     for a in conv:
         #print("For conv n°",a)
         J_A=[]
@@ -1653,7 +1663,7 @@ def get_inter_laughs_absolute_duration_folder(listpaths,string):
 
     #print(dict_)
     conv = list(np.unique(conv))
-    labels=intensity_laughs
+    labels=tier_lists["Laughs"]
     for a in conv:
         #print("For conv n°",a)
         J_A=[]
@@ -1779,7 +1789,7 @@ def get_inter_laughs_relative_duration_folder(listpaths,string):
     dict_=list(dg1.to_records(index=False))
 
 
-    labels=intensity_laughs
+    labels=tier_lists["Laughs"]
     for a in conv:
         #print("For conv n°",a)
         J_A=[]
@@ -2031,11 +2041,11 @@ def fill_sl_track(track, check, folder):
     Returns:
         tuple: (database concerned, number of the expression, list of previous expressions, list of next expressions). Each element of the tuple is a list.
     """
-    if folder==ccdb_paths:
+    if folder==databases_paths["ccdb_paths"]:
         string='ccdb'
-    if folder==ifadv_paths:
+    if folder==databases_paths["ifadv_paths"]:
         string='ifadv'
-    if folder==ndc_paths:
+    if folder==databases_paths["ndc_paths"]:
         string='ndc'
 
     track_p,track_f,sl_number,subjects=([] for _ in range(4))
@@ -2223,13 +2233,21 @@ def SL_track(check, track,dir):
             data=["ccdb","ifadv","ndc"]
             for i in data:
                 if path==i:
-                    L.append(get_all_filepaths((os.path.join(dir, path)), "eaf", None))
+                    L.append(get_all_filepaths((os.path.join(dir, path)), "eaf", None))   
 
     for i in range (len(L)) :
 
         a=fill_sl_track(track, check,L[i])
-        df1 = pd.DataFrame({'Database':a[0],'N°'+track:a[1], 'Trackp': a[2], 'Trackf':a[3]})
-        dg.append(df1)
+        # Check list lengths
+        if len(a[0]) == len(a[1]) == len(a[2]) == len(a[3]):
+            df1 = pd.DataFrame({'Database': a[0], 'N°' + track: a[1], 'Trackp': a[2], 'Trackf': a[3]})
+            dg.append(df1)
+        else:
+            desired_length = min(len(a[0]), len(a[1]), len(a[2]), len(a[3]))  # Desired length based on existing listings
+            # Create a new tuple with the first desired length elements
+            a = (a[0][:desired_length], a[1][:desired_length], a[2][:desired_length], a[3][:desired_length])
+            df1 = pd.DataFrame({'Database': a[0], 'N°' + track: a[1], 'Trackp': a[2], 'Trackf': a[3]})
+            dg.append(df1)
 
     df= pd.concat(dg)
 
@@ -2292,9 +2310,18 @@ def SL_track_byI(check, track, dir):
 
     for i in range (len(L)) :
         a=fill_trackfp_byIR(L[i][0], L[i][1], eval('get_'+check+'dict'), eval('get_'+track+'dict'), track, False )
-        df1 = pd.DataFrame({'Database':a[0],'Current_level_'+track : a[1], 'N°'+track: a[2],'Intensityp': a[3],
-    'Intensityf':a[4]})        
-        dg.append(df1)
+        # Check list lengths
+        if len(a[0]) == len(a[1]) == len(a[2]) == len(a[3]) == len(a[4]):
+            df1 = pd.DataFrame({'Database':a[0],'Current_level_'+track : a[1], 'N°'+track: a[2],'Intensityp': a[3],
+    'Intensityf':a[4]}) 
+            dg.append(df1)
+        else:
+            desired_length = min(len(a[0]), len(a[1]), len(a[2]), len(a[3]), len(a[4]))  # Desired length based on existing listings
+            # Create a new tuple with the first desired length elements
+            a = (a[0][:desired_length], a[1][:desired_length], a[2][:desired_length], a[3][:desired_length], a[4][:desired_length])
+            df1 = pd.DataFrame({'Database':a[0],'Current_level_'+track : a[1], 'N°'+track: a[2],'Intensityp': a[3],
+    'Intensityf':a[4]}) 
+            dg.append(df1)
 
     df= pd.concat(dg)
     
@@ -2361,11 +2388,11 @@ def give_mimicry_folder1(function,folder,filter=None,label=None):
     Returns:
         list: A list of tuples [(count, probability),....]
     """
-    if folder==ccdb_pair:
+    if folder==databases_pair_paths["ccdb_pairs"]:
         string='ccdb'
-    if folder==ifadv_pair:
+    if folder==databases_pair_paths["ifadv_pairs"]:
         string='ifadv'
-    if folder==ndc_pair:
+    if folder==databases_pair_paths["ndc_pairs"]:
         string='ndc'
     
     dt=apply_function1(function,folder,string)  
@@ -2423,11 +2450,11 @@ def give_mimicry_folder2(folder,function1,function2,filter=None,label=None):
     Returns:
         list: A list of tuples [(count, probability),....]
     """
-    if folder==ccdb_pair:
+    if folder==databases_pair_paths["ccdb_pairs"]:
         string='ccdb'
-    if folder==ifadv_pair:
+    if folder==databases_pair_paths["ifadv_pairs"]:
         string='ifadv'
-    if folder==ndc_pair:
+    if folder==databases_pair_paths["ndc_pairs"]:
         string='ndc'
 
     dA=apply_function1(function1,folder,string)
