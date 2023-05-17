@@ -21,6 +21,14 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 
 * [Streamlit]: This folder contains the needed files to display the SNL and ML statistics done in the corresponding folders in an interactive web page.
 
+## How to run the code 
+
+To launch Streamlit, run the following command from the terminal:
+```python
+python main.py 
+
+```
+
 ## IMPORTANT
 
 For the proper functioning of this toolbox, it is necessary to create a "data" folder containing your different datasets with annotated files in EAF format. This folder must be at the same level as the "src" or "Streamlit" folder, for example, at the root level.
