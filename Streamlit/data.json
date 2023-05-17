@@ -50,7 +50,6 @@
         ]
     },
     "TIER_LISTS": {
-        "S&L": [],
         "Laughs": [
             "medium",
             "low",
@@ -62,14 +61,9 @@
             "medium",
             "high"
         ],
-        "Transcriptions": [],
-        "Nods": [],
-        "Shakes": [],
-        "Tilt": [],
         "Role": [
             "lsn",
             "spk"
-        ],
-        "EyeBrows": []
+        ]
     }
 }

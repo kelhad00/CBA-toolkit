@@ -20,8 +20,17 @@ from .json_creation import create_json_from_directory
 # Creates JSON file with the directory structure and annotation information
 create_json_from_directory()
 
-with open('..\\..\\CBA-toolkit\\src\\data.json', 'r') as f:
-    parameters=json.load(f)
+current_dir = os.getcwd()
+json_file_path = os.path.join(current_dir, 'data.json')
+print(json_file_path)
+# Check if the JSON file exists
+if os.path.exists(json_file_path):
+    # Read the data from the JSON file
+    with open(json_file_path, 'r') as f:
+        parameters = json.load(f)
+else:
+    # Handle the case when the JSON file doesn't exist
+    print("data.json file not found.")
 
 DIR=parameters["FOLDER_PATHS"]["DIR"]
 databases_pair_paths = parameters["DATABASES_PAIR_PATHS"]
