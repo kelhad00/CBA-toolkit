@@ -213,7 +213,7 @@ def plot_absolute_duration_from_spk(expression, choice):
         Emotions = ['laughs','smiles']
         queue = Queue()
 
-        for i in range(2) : 
+        for i in range(len(Emotions)) : 
             print(Emotions[i])
             Threads.append(threading.Thread(target=create_absolute_duration_from_spk_thread, args=(Emotions[i], choice,queue,)))
 
@@ -270,7 +270,7 @@ def plot_relative_duration_from_spk(expression):
         D = []
         queue = Queue()
 
-        for i in range(2):
+        for i in range(len(Emotions)):
 
             Threads.append(threading.Thread(target=create_relative_duration_from_spk_thread, args=(Emotions[i],queue,)))
         
@@ -341,7 +341,7 @@ def plot_absolute_duration_from_lsn(expression, choice):
         Emotion = ['laughs', 'smiles']
         queue = Queue()
 
-        for i in range(2):
+        for i in range(len(Emotions)):
             Threads.append(threading.Thread(target=create_absolute_duration_from_lsn_thread, args=(Emotion[i], choice,queue,)))
 
         for thread in Threads :
@@ -400,7 +400,7 @@ def plot_relative_duration_from_lsn(expression):
         D = []
         queue = Queue()
 
-        for i in range(2) :
+        for i in range(len(Emotions)) :
             Threads.append(threading.Thread(target=create_relative_duration_from_lsn_thread, args=(Emotion[i],queue,)))
         
         for thread in Threads:
