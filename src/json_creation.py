@@ -82,18 +82,31 @@ def create_json_from_directory():
         for f in temp:
             if f.endswith('.eaf'):
                 eaf = Eaf(join(datasets_full[d], f))
-                for tier_name in eaf.get_tier_names():
-                    if tier_name not in dct['TIER_LISTS']:
+                tiers = list(eaf.get_tier_names())
+                parent_tiers = set()
+
+                for tier_name in tiers:
+                    param = eaf.get_parameters_for_tier(tier_name)
+                    if "PARENT_REF" in param:
+                        parent_tier = param["PARENT_REF"]
+                        parent_tiers.add(parent_tier)
+                for tier_name in tiers:
+                    if tier_name not in parent_tiers:
                         dct['TIER_LISTS'][tier_name] = []
-                    annotations = eaf.get_annotation_data_for_tier(tier_name)
-                    for annotation in annotations:
-                        value = annotation[2].strip()
-                        if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
-                            dct['TIER_LISTS'][tier_name].append(value)
+
+                for tier_name in tiers:
+                    if tier_name not in parent_tiers:
+                        annotations = eaf.get_annotation_data_for_tier(tier_name)
+                        for annotation in annotations:
+                            value = annotation[2].strip()
+                            if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
+                                dct['TIER_LISTS'][tier_name].append(value)
+
+
 
                     # Remove empty tiers because they are useless        
-                    if not dct['TIER_LISTS'][tier_name]:  # Check if the tier list is empty
-                        del dct['TIER_LISTS'][tier_name]  # Exclude the tier from the dictionary
+                    # if not dct['TIER_LISTS'][tier_name]:  # Check if the tier list is empty
+                    #     del dct['TIER_LISTS'][tier_name]  # Exclude the tier from the dictionary
 
     # TO IMPROVE
     # Create a dictionary for the ML stats : IN_OUT

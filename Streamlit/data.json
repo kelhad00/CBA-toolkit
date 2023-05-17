@@ -51,19 +51,23 @@
     },
     "TIER_LISTS": {
         "Laughs": [
-            "medium",
             "low",
-            "high"
+            "medium"
         ],
         "Smiles": [
-            "subtle",
             "low",
+            "subtle",
             "medium",
             "high"
         ],
+        "Transcriptions": [],
+        "Nods": [],
+        "Shakes": [],
+        "Tilt": [],
         "Role": [
             "lsn",
             "spk"
-        ]
+        ],
+        "EyeBrows": []
     }
 }
