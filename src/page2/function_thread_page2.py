@@ -18,10 +18,10 @@ import threading
 
 
 
-def create_plot_absolute_duration_thread(emotions,choice, queue) :
+def create_plot_absolute_duration_thread(Tiers,choice, queue) :
 
-    dg1=get_db_from_func_no_pair(DIR,eval("get_"+emotions+"_dict_folder"))
-    if emotions == "laughs" :
+    dg1=get_db_from_func_no_pair(DIR,eval("get_"+Tiers+"_dict_folder"))
+    if Tiers == "laughs" :
         labels1 = ["low", "medium", "high"]
         
     else : 
@@ -53,7 +53,7 @@ def create_plot_absolute_duration_thread(emotions,choice, queue) :
                                 name='database=' + database))
 
     fig1.update_layout(boxmode='group', xaxis_tickangle=0)
-    fig1.update_layout(title_text=f'Mean, median and standard deviation on '+emotions+' - Absolute Duration', title_x=0.5, 
+    fig1.update_layout(title_text=f'Mean, median and standard deviation on '+Tiers+' - Absolute Duration', title_x=0.5, 
     xaxis_title="Intensity",
     yaxis_title="Time (ms)",
     legend_title="Datasets",
@@ -69,13 +69,13 @@ def create_plot_absolute_duration_thread(emotions,choice, queue) :
 
 
 
-def create_plot_relative_duration_thread(emotions, queue) :
+def create_plot_relative_duration_thread(Tiers, queue) :
         
         
-    df1=get_db_from_func_no_pair(DIR,eval("get_"+emotions+"_dict_folder"))
+    df1=get_db_from_func_no_pair(DIR,eval("get_"+Tiers+"_dict_folder"))
     dg1=get_rd_stats(df1)
     dg1=list_to_df(dg1[0], dg1[1])
-    if emotions == "laughs":
+    if Tiers == "laughs":
         labels1 = ["low", "medium", "high"]
         
     else :
@@ -91,7 +91,7 @@ def create_plot_relative_duration_thread(emotions, queue) :
     fig1.update_xaxes(categoryorder='array', categoryarray=labels1, row=1, col=2)
     fig1.update_xaxes(categoryorder='array', categoryarray=labels1, row=1, col=3)
     fig1.update_layout(boxmode='group', xaxis_tickangle=0)
-    fig1.update_layout(title_text=f'Mean, median and standard deviation on '+emotions+'- Relative Duration', title_x=0.5, 
+    fig1.update_layout(title_text=f'Mean, median and standard deviation on '+Tiers+'- Relative Duration', title_x=0.5, 
     xaxis_title="Intensity",
     yaxis_title="Percentage",
     legend_title="Datasets",
@@ -106,9 +106,9 @@ def create_plot_relative_duration_thread(emotions, queue) :
     queue.put(fig1)
     
    
-def create_absolute_duration_from_spk_thread(Emotions, choice, queue) :
+def create_absolute_duration_from_spk_thread(Tiers, choice, queue) :
 
-        if Emotions == 'laughs' :
+        if Tiers == 'laughs' :
 
             labels = ["low", "medium", "high"]
 
@@ -116,7 +116,7 @@ def create_absolute_duration_from_spk_thread(Emotions, choice, queue) :
 
             labels = ["subtle", "low", "medium", "high"]
         
-        dg1=get_db_from_func_no_pair(DIR,eval("get_"+Emotions+"_from_spk_folder"))
+        dg1=get_db_from_func_no_pair(DIR,eval("get_"+Tiers+"_from_spk_folder"))
         fig1=pg.Figure()
         for database in (dg1['database'].unique()):
             df_plot=dg1[dg1['database']==database]
@@ -142,7 +142,7 @@ def create_absolute_duration_from_spk_thread(Emotions, choice, queue) :
                                     name='database=' + database))
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
-        fig1.update_layout(title_text=f'Mean, median and standard deviation for speaker '+Emotions+' absolute duration', title_x=0.5, 
+        fig1.update_layout(title_text=f'Mean, median and standard deviation for speaker '+Tiers+' absolute duration', title_x=0.5, 
         xaxis_title="Intensity",
         yaxis_title="Time (ms)",
         legend_title="Datasets",
@@ -157,16 +157,16 @@ def create_absolute_duration_from_spk_thread(Emotions, choice, queue) :
         queue.put(fig1)
 
 
-def create_relative_duration_from_spk_thread(Emotions, queue) :
+def create_relative_duration_from_spk_thread(Tiers, queue) :
 
         
-        if Emotions == 'laughs':
+        if Tiers == 'laughs':
             labels = ["low", "medium", "high"]
 
         else : 
             labels = ["subtle", "low", "medium", "high"]
 
-        df1=get_db_from_func_no_pair(DIR,eval("get_"+Emotions+"_from_spk_folder"))
+        df1=get_db_from_func_no_pair(DIR,eval("get_"+Tiers+"_from_spk_folder"))
         dg1=get_rd_stats_byrole(df1)
         dg1=list_to_df(dg1[0], dg1[1])
         fig1 = make_subplots(rows=1, cols=3, subplot_titles=['Standard deviation', 'Mean', 'Median'])
@@ -179,7 +179,7 @@ def create_relative_duration_from_spk_thread(Emotions, queue) :
         fig1.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=2)
         fig1.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=3)
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
-        fig1.update_layout(title_text=f'Mean, median and standard deviation for speakers '+Emotions+' relative duration', title_x=0.5, 
+        fig1.update_layout(title_text=f'Mean, median and standard deviation for speakers '+Tiers+' relative duration', title_x=0.5, 
         xaxis_title="Intensity",
         yaxis_title="Percentage",
         legend_title="Datasets",
@@ -244,14 +244,14 @@ def create_absolute_duration_from_lsn_thread(Emotion, choice, queue):
     queue.put(fig1)
 
     
-def create_relative_duration_from_lsn_thread(Emotion, queue):
+def create_relative_duration_from_lsn_thread(Tiers, queue):
 
-    if Emotion == "laughs":
+    if Tiers == "laughs":
         labels = ["low", "medium", "high"]
-    if Emotion == "smiles":
+    if Tiers == "smiles":
         labels = ["subtle", "low", "medium", "high"] 
     
-    df1=get_db_from_func_no_pair(DIR,eval("get_"+Emotion+"_from_lsn_folder"))
+    df1=get_db_from_func_no_pair(DIR,eval("get_"+Tiers+"_from_lsn_folder"))
     dg1=get_rd_stats_byrole(df1)
     dg1=list_to_df(dg1[0], dg1[1])
 
@@ -265,7 +265,7 @@ def create_relative_duration_from_lsn_thread(Emotion, queue):
     fig1.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=2)
     fig1.update_xaxes(categoryorder='array', categoryarray=labels, row=1, col=3)
     fig1.update_layout(boxmode='group', xaxis_tickangle=0)
-    fig1.update_layout(title_text=f'Mean, median and standard deviation for listeners '+Emotion+' relative duration', title_x=0.5, 
+    fig1.update_layout(title_text=f'Mean, median and standard deviation for listeners '+Tiers+' relative duration', title_x=0.5, 
     xaxis_title="Intensity",
     yaxis_title="Percentage",
     legend_title="Datasets",
