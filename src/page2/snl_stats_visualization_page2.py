@@ -73,15 +73,15 @@ def plot_absolute_duration(expression, choice):
         return fig
     
     else :
-
+        #TODO: Changer Emotions par tiers
         Emotions = ['laughs', 'smiles']
         Threads = []
         D = []
         queue = Queue()
-        for i in range(2) :
-
+        for i in range(len(Emotions)) :
+            
             Threads.append(threading.Thread(target=create_plot_absolute_duration_thread, args=(Emotions[i], choice,queue,)))
-        
+
         for thread in Threads :
 
             thread.start()
@@ -142,7 +142,7 @@ def plot_relative_duration(expression):
         Threads = []
         D = []
         queue = Queue()
-        for i in range(2) :
+        for i in range(len(Emotions)) :
             Threads.append(threading.Thread(target=create_plot_relative_duration_thread, args=(Emotions[i],queue,)))
           
         for thread in Threads:

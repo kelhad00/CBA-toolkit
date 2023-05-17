@@ -92,8 +92,8 @@ def create_json_from_directory():
                             dct['TIER_LISTS'][tier_name].append(value)
 
                     # Remove empty tiers because they are useless        
-                    if not dct['TIER_LISTS'][tier_name]:  # Check if the tier list is empty
-                        del dct['TIER_LISTS'][tier_name]  # Exclude the tier from the dictionary
+                    # if not dct['TIER_LISTS'][tier_name]:  # Check if the tier list is empty
+                    #    del dct['TIER_LISTS'][tier_name]  # Exclude the tier from the dictionary
 
     # TO IMPROVE
     # Create a dictionary for the ML stats : IN_OUT
