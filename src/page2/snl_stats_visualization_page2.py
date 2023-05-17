@@ -73,15 +73,15 @@ def plot_absolute_duration(expression, choice):
         return fig
     
     else :
-
-        Emotions = ['laughs', 'smiles']
+        #TODO: Changer Emotions par tiers
+        Tiers = ['laughs', 'smiles']
         Threads = []
         D = []
         queue = Queue()
-        for i in range(2) :
+        for i in range(len(Tiers)) :
+            
+            Threads.append(threading.Thread(target=create_plot_absolute_duration_thread, args=(Tiers[i], choice,queue,)))
 
-            Threads.append(threading.Thread(target=create_plot_absolute_duration_thread, args=(Emotions[i], choice,queue,)))
-        
         for thread in Threads :
 
             thread.start()
@@ -138,12 +138,12 @@ def plot_relative_duration(expression):
     
     else :
 
-        Emotions = ['laughs', 'smiles']
+        Tiers = ['laughs', 'smiles']
         Threads = []
         D = []
         queue = Queue()
-        for i in range(2) :
-            Threads.append(threading.Thread(target=create_plot_relative_duration_thread, args=(Emotions[i],queue,)))
+        for i in range(len(Tiers)) :
+            Threads.append(threading.Thread(target=create_plot_relative_duration_thread, args=(Tiers[i],queue,)))
           
         for thread in Threads:
 
@@ -210,12 +210,12 @@ def plot_absolute_duration_from_spk(expression, choice):
 
         Threads = []
         D = []
-        Emotions = ['laughs','smiles']
+        Tiers = ['laughs','smiles']
         queue = Queue()
 
-        for i in range(2) : 
-            print(Emotions[i])
-            Threads.append(threading.Thread(target=create_absolute_duration_from_spk_thread, args=(Emotions[i], choice,queue,)))
+        for i in range(len(Tiers)) : 
+            print(Tiers[i])
+            Threads.append(threading.Thread(target=create_absolute_duration_from_spk_thread, args=(Tiers[i], choice,queue,)))
 
         for thread in Threads : 
 
@@ -265,14 +265,14 @@ def plot_relative_duration_from_spk(expression):
 
     else :
 
-        Emotions = ['laughs', 'smiles']
+        Tiers = ['laughs', 'smiles']
         Threads = []
         D = []
         queue = Queue()
 
-        for i in range(2):
+        for i in range(len(Tiers)):
 
-            Threads.append(threading.Thread(target=create_relative_duration_from_spk_thread, args=(Emotions[i],queue,)))
+            Threads.append(threading.Thread(target=create_relative_duration_from_spk_thread, args=(Tiers[i],queue,)))
         
         for thread in Threads :
 
@@ -338,11 +338,11 @@ def plot_absolute_duration_from_lsn(expression, choice):
 
         Threads = []
         D= []
-        Emotion = ['laughs', 'smiles']
+        Tiers = ['laughs', 'smiles']
         queue = Queue()
 
-        for i in range(2):
-            Threads.append(threading.Thread(target=create_absolute_duration_from_lsn_thread, args=(Emotion[i], choice,queue,)))
+        for i in range(len(Tiers)):
+            Threads.append(threading.Thread(target=create_absolute_duration_from_lsn_thread, args=(Tiers[i], choice,queue,)))
 
         for thread in Threads :
 
@@ -395,13 +395,13 @@ def plot_relative_duration_from_lsn(expression):
 
     else :
 
-        Emotion = ['laughs', 'smiles']
+        Tiers = ['laughs', 'smiles']
         Threads = []
         D = []
         queue = Queue()
 
-        for i in range(2) :
-            Threads.append(threading.Thread(target=create_relative_duration_from_lsn_thread, args=(Emotion[i],queue,)))
+        for i in range(len(Tiers)) :
+            Threads.append(threading.Thread(target=create_relative_duration_from_lsn_thread, args=(Tiers[i],queue,)))
         
         for thread in Threads:
             thread.start()
