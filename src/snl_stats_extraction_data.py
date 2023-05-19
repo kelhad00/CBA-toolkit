@@ -1,4 +1,5 @@
 import itertools
+import re
 import os, sys
 script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
@@ -15,7 +16,7 @@ import pandas as pd
 from scipy.stats import pearsonr 
 from .json_creation import create_json_from_directory
 
-#Parameters_________________________________________________________
+#JSON_________________________________________________________
 
 # Creates JSON file with the directory structure and annotation information
 create_json_from_directory()
@@ -32,23 +33,27 @@ else:
     # Handle the case when the JSON file doesn't exist
     print("data.json file not found.")
 
+#____________________________________________________________________
 DIR=parameters["FOLDER_PATHS"]["DIR"]
 databases_pair_paths = parameters["DATABASES_PAIR_PATHS"]
 databases_paths = parameters["DATABASES_PATHS"]
 tier_lists = parameters["TIER_LISTS"]
 
+#____________________________________________________________________
+databases = {}
+databases_pairs = {}
+tiers = {}
 # Parcours des jeux de données pair
 for db_name, db_path in databases_pair_paths.items():
-    globals()[db_name] = db_path
+    databases_pairs[db_name] = db_path
 
 # Parcours des jeux de données
 for db_name, db_path in databases_paths.items():
-    globals()[db_name] = db_path
+    databases[db_name] = db_path
 
 # Parcours des tiers d'expressions
 for tier_name, tier_list in tier_lists.items():
-    globals()[f"intensity_{tier_name.lower()}"] = tier_list
-
+    tiers[f"intensity_{tier_name.lower()}"] = tier_list
 #____________________________________________________________________
 
 
@@ -2648,10 +2653,10 @@ def get_database_name(folder):
    
 def expression_per_min(folder, expression, case=None):
     """
-    This function calculates the number of smiles or laughs we have per minute.   
+    This function calculates the number of one tier we have per minute.   
     Args:
         folder (list) -> list of all files paths
-        expression (str) -> Smiles_0 or Laughs_0
+        expression (str) -> tiers_0
         case (int, optional): Express if you want to look into conversations ; for that, you put 2. Defaults to None.
 
     Returns:
@@ -2660,7 +2665,7 @@ def expression_per_min(folder, expression, case=None):
     """
     L=[]
     M=[]
-    smiles_=[]
+    tiers_=[]
     m = 60000
     m_multiples = [m, m*2, m*3, m*4, m*5, m*6, m*7]
     threshold_value = 20000
@@ -2670,7 +2675,14 @@ def expression_per_min(folder, expression, case=None):
             n=0
             nb=0                            #variable which represent the number of smiles by minute
             to_dict = read_eaf_to_dict (folder[j] , mark=True, tiers=None)
-            lst = to_dict[expression]
+            lst = None
+            if expression in to_dict:
+               lst = to_dict[expression]
+            else:
+                match = re.search(r'^([a-zA-Z]+)', expression)
+                if match:
+                    word = match.group(1)
+                lst = to_dict[word]
             n=len(lst)  #number of expression in the file
 
             eaf = pympi.Elan.Eaf(folder[j])
@@ -2686,14 +2698,21 @@ def expression_per_min(folder, expression, case=None):
             
             for i in range(0, len(lst),1):
                 M.append(lst[i])
-            smiles_.append(M)
+            tiers_.append(M)
     else:
         for j in range(0, len(folder),2):
             n,n2, nb, nb2=0,0,0,0       # nb and nb2 are variables which represent the number of smiles by minute for person 1 and person 2
             to_dict = read_eaf_to_dict (folder[j] , mark=True, tiers=None)
             to_dict2 = read_eaf_to_dict (folder[j+1] , mark=True, tiers=None)
-            lst = to_dict[expression]
-            lst2 = to_dict2[expression]
+            lst = to_dict.get(expression)
+            lst2 = to_dict2.get(expression)
+
+            if lst is None:
+                match = re.search(r'^([a-zA-Z]+)', expression)
+                if match:
+                    word = match.group(1)
+                    lst = to_dict.get(word)
+                    lst2 = to_dict2.get(word)
             n=len(lst)
             n2=len(lst2)
 
@@ -2716,16 +2735,15 @@ def expression_per_min(folder, expression, case=None):
             for k in range(0, len(lst2),1):
                     M.append(lst2[k])
 
-            smiles_.append(M)
+            tiers_.append(M)
      
-    return L, smiles_
+    return L, tiers_
 
 def expression_per_min_I(folder, expression, intensity):
-    """This function calculates the number of smiles or laughs we have per minute for one intensity.  
-
+    """This function calculates the number of one tier we have per minute for one intensity.  
     Args:
         folder (list) -> list of all files paths
-        expression (str) -> Smiles or Laughs
+        expression (str) -> tiers
         intensity (str) -> This is the intensity we search. You can type : subtle, low, medium, high for smiles and same for laughs (without subtle)
 
     Returns:
