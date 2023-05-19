@@ -24,21 +24,22 @@ def page5():
         # # #Barplots ______________________________________________________
         st.title('Expression per minute')
         st.markdown("We count the number of smiles or laughs we have in one minute in each database.")
-        name_databases=['CCDB','IFADV','NDC']
-        databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
+        name_databases = [key.split('_')[0].upper() for key in databases.keys()]
+        databases_ = [value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Databases list :", name_databases)
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
                 databases_choice=databases_[i]
 
         if st.checkbox("All intensities"):
-            expression_choice=st.radio("Expression :", ['Smiles', 'Laughs'])
+            expression_choice=st.radio("Expression :", list(tier_lists.keys()))
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-            if expression_choice=='Smiles':
-                expression_choice='Smiles_0'
-            else:
-                expression_choice='Laughs_0'
+            # if expression_choice=='Smiles':
+            #     expression_choice='Smiles_0'
+            # else:
+            #     expression_choice='Laughs_0'
+            expression_choice = expression_choice + '_0'
             choices_case=["Intra","Inter"]
             case_choice = st.radio("Case :", choices_case)
             case_list=[None, 2]
@@ -49,10 +50,10 @@ def page5():
             st.plotly_chart(plot_expression_per_min(databases_choice, expression_choice, case_choice))
 
         if st.checkbox("By intensity"):
-            expression_choice=st.radio("Expression : ", ['Smiles', 'Laughs'])
+            expression_choice=st.radio("Expression : ", list(tier_lists.keys()))
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-            intensity_choice= st.radio("Intensity : ", ["SUBTLE", "LOW", "MEDIUM", "HIGH"])
+            intensity_choice= st.radio("Intensity : ", tier_lists[expression_choice])
             st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice)))
 
     page5_names_to_funcs = {
