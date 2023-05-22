@@ -17,13 +17,13 @@ from src.page5.snl_stats_visualization_page5 import *
 
 
 def page5():
-    st.markdown("Here, we explore other areas to describe and see what we have in our databeses. \nLet's see each page !")
+    st.markdown("Here, we explore other areas to describe and see what we have in our database. \nLet's see each page !")
     
     def page5_1():
         st.sidebar.markdown("Expression per minute")
         # # #Barplots ______________________________________________________
         st.title('Expression per minute')
-        st.markdown("We count the number of smiles or laughs we have in one minute in each database.")
+        st.markdown("We count the number of smiles or laughs we have in one minute in each dataset.")
         name_databases = [key.split('_')[0].upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Datasets list :", name_databases)
