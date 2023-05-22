@@ -78,6 +78,7 @@ def create_json_from_directory():
     # Create a dictionary for the tiers and annotations
     dct['TIER_LISTS'] = {}
     for d in range(len(datasets_full)):
+        print("Yo : ",dct['TIER_LISTS'])
         temp = os.listdir(datasets_full[d])
         for f in temp:
             if f.endswith('.eaf'):
@@ -92,7 +93,8 @@ def create_json_from_directory():
                         parent_tiers.add(parent_tier)
                 for tier_name in tiers:
                     if tier_name not in parent_tiers:
-                        dct['TIER_LISTS'][tier_name] = []
+                        if tier_name not in dct['TIER_LISTS'] :
+                            dct['TIER_LISTS'][tier_name] = []
 
                 for tier_name in tiers:
                     if tier_name not in parent_tiers:
@@ -101,12 +103,10 @@ def create_json_from_directory():
                             value = annotation[2].strip()
                             if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
                                 dct['TIER_LISTS'][tier_name].append(value)
-
-
-
-                    # Remove empty tiers because they are useless        
+                    # Remove empty tiers because they are useless        print("Dico avant : ", dct['TIER_LISTS'][tier_name])
                     # if not dct['TIER_LISTS'][tier_name]:  # Check if the tier list is empty
                     #     del dct['TIER_LISTS'][tier_name]  # Exclude the tier from the dictionary
+
 
     # TO IMPROVE
     # Create a dictionary for the ML stats : IN_OUT
