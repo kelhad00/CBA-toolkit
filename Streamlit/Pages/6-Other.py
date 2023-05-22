@@ -47,14 +47,36 @@ def page5():
             for _ in range (len(case_list)):
                 if case_choice==choices_case[_]:
                     case_choice=case_list[_]
-            st.plotly_chart(plot_expression_per_min(databases_choice, expression_choice, case_choice))
+            if(plot_expression_per_min(databases_choice, expression_choice, case_choice) == None):
+
+                st.write("Pas de données")
+            
+            else :
+
+                st.plotly_chart(plot_expression_per_min(databases_choice, expression_choice, case_choice))
 
         if st.checkbox("By intensity"):
             expression_choice=st.radio("Expression : ", list(tier_lists.keys()))
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
             intensity_choice= st.radio("Intensity : ", tier_lists[expression_choice])
-            st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice)))
+            try :
+                if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice) == None)) :
+                    str.write("Pas de données")
+                else :
+                    st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice)))
+            except :
+
+                try :
+
+                    if (plot_expression_per_min_I(databases_choice, expression_choice, intensity_choice == None)) :
+                        str.write("Pas de données")
+                    else :
+                        st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, intensity_choice))
+                
+                except :
+
+                    st.write("Pas de données")
 
     page5_names_to_funcs = {
         "Expression per minute": page5_1,
