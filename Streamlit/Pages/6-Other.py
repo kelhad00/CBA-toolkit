@@ -26,7 +26,7 @@ def page5():
         st.markdown("We count the number of smiles or laughs we have in one minute in each database.")
         name_databases = [key.split('_')[0].upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
-        databases_choice=st.selectbox("Databases list :", name_databases)
+        databases_choice=st.selectbox("Datasets list :", name_databases)
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
                 databases_choice=databases_[i]
