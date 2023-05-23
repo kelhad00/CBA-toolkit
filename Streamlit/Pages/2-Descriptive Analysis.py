@@ -1,5 +1,6 @@
 import streamlit as st
 import os, sys, json
+from fuzzywuzzy import fuzz
 import Affichage_pattern
 script_path = os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
@@ -19,105 +20,99 @@ def page1():
     # #Barplots ______________________________________________________
     st.title('Descriptive analysis')
     st.header('Basic statistics on smiles and laughs')
-    st.markdown("We look at the mean, median and standard deviation on the database.")
+    st.markdown("We look at the maximum, minimum, mean, median and standard deviation on the database.")
+
     st.subheader('By datasets')
 
     name_list=["Absolute duration", "Relative duration"]
-    name_list_by_role_kind1=["absolute duration spk","absolute duration lsn"]
-    name_list_by_role_kind2=["relative duration spk","relative duration lsn" ]
-    name_list_by_role = name_list_by_role_kind1 + name_list_by_role_kind2
-    expression_choice=st.radio("Expression choice ->", ['smiles', 'laughs','both'])
+    expression_choices = list(tier_lists.keys())
+    expression_choices.append('all')
+    expression_choice=st.radio("Expression choice :", expression_choices)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+    name_databases = [key.split('_')[0].upper() for key in databases.keys()]
+    figs=st.selectbox(" Basic statistics plots : ", name_list) 
+    choice_list=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
+    choice=st.radio("Which feature do you want see ?  ", choice_list)
 
-    if expression_choice != 'both' :
-
-        
-        fig2 = plot_relative_duration(expression_choice)
-        
-        figs=st.selectbox(" Basic statistics plots : ", name_list) 
-        
+    if expression_choice != 'all' :
         if figs == 'Absolute duration' :
-
-            choice_list=["Standard deviation", "Mean", "Median", "Max","Min","All"]
-            choice=st.radio("Which feature do you want see ?  ->", choice_list)
-            
-            fig1 = plot_absolute_duration(expression_choice, choice)
-            st.write(fig1)
+            fig1_0 = plot_absolute_duration(expression_choice, choice, name_databases)
+            st.write(fig1_0)
         else :
-            st.write(fig2)
-    else : 
-
-        kind =st.selectbox(" Basic statistics plots : ", name_list)
-
-        if kind == 'Absolute duration' :
-            choice_list=["Standard deviation", "Mean", "Median", "Max","Min","All"]
-            choice=st.radio("Which feature do you want see ?  ->", choice_list)
-            fig1_1, fig1_2 = plot_absolute_duration(expression_choice, choice)
-            st.write(fig1_1, fig1_2)
+            fig2_0 = plot_relative_duration(expression_choice, choice, name_databases)
+            st.write(fig2_0)
+            
+    elif expression_choice == 'all' : 
+        figures1 = []
+        if figs == 'Absolute duration' :
+            fig1_1 = plot_absolute_duration(expression_choice, choice, name_databases)
+            figures1.extend(fig1_1)
 
         else : 
-            fig2_1, fig2_2 = plot_relative_duration(expression_choice)
-            st.write(fig2_1, fig2_2)
+            fig2_1 = plot_relative_duration(expression_choice, choice, name_databases)
+            figures1.extend(fig2_1)
+
+        for fig in figures1:
+            st.write(fig)
+
 
     st.subheader('By role')
-    expression_choice=st.radio("Expression choice->", ['smiles', 'laughs', 'both'])
+
+    role_tier_name = next((key for key in tier_lists.keys() if fuzz.ratio(key.lower(), "role") >= 80), None)
+    if role_tier_name is not None:
+        role_values = tier_lists[role_tier_name]
+        name_list_by_role_kind1 = [f"absolute duration {role.lower()}" for role in sorted(role_values)]
+        name_list_by_role_kind2 = [f"relative duration {role.lower()}" for role in sorted(role_values)]
+    else:
+        name_list_by_role_kind1 = []
+        name_list_by_role_kind2 = []
+    name_list_by_role = name_list_by_role_kind1 + name_list_by_role_kind2
+    expression_choices_copy = expression_choices.copy()
+    expression_choices_copy.remove(role_tier_name)
+    expression_choice_copy=st.radio("Expression choice : ", expression_choices_copy)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+    count = 0
+    figs1=st.selectbox(" Basic statistics plots by role : ", name_list_by_role) 
+    choice_list1=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
+    choice1= st.radio("Which feature do you want see ?  ", choice_list1, key = count)
 
-    
-    if expression_choice != 'both' :
-
-        count = 0
-
-        figs=st.selectbox(" Basic statistics plots by role : ", name_list_by_role) 
-
-        if "absolute" in figs :
-
-            choice_list=["Standard deviation", "Mean", "Median", "Max","Min","All"]
-            choice3= st.radio("Which feature do you want see ?  ->", choice_list, key = count)
+    if expression_choice_copy != 'all' :
+        if "absolute" in figs1 :
             count += 1
-            
-            L= [plot_absolute_duration_from_spk(expression_choice, choice3), plot_absolute_duration_from_lsn(expression_choice, choice3)]
-
-            for i in range(len(name_list_by_role_kind1)):
-                if figs == name_list_by_role_kind1[i]:
-                    st.write(L[i])
-        
-        else :
-
-            L=[plot_relative_duration_from_spk(expression_choice), plot_relative_duration_from_lsn(expression_choice)]
-            print("La figures :", figs)
-            for i in range(len(name_list_by_role_kind2)):
-                if figs == name_list_by_role_kind2[i]:
-                    st.write(L[i])
+            if "sk" in figs1 or "sr" in figs1 or "sp" in figs1 :
+                fig1_temp = plot_absolute_duration_from_spk(expression_choice_copy, choice1, name_databases)
+            elif "ls" in figs1 or "lr" in figs1 or "li" in figs1 or "ln" in figs1 :
+                fig1_temp = plot_absolute_duration_from_lsn(expression_choice_copy, choice1, name_databases)
+            st.write(fig1_temp)    
+        elif "relative" in figs1 :
+            count += 1
+            if "sk" in figs1 or "sr" in figs1 or "sp" in figs1:
+                fig1_temp = plot_relative_duration_from_spk(expression_choice_copy, choice1, name_databases)
+            elif "ls" in figs1 or "lr" in figs1 or "li" in figs1 or "ln" in figs1 :
+                fig1_temp = plot_relative_duration_from_lsn(expression_choice_copy, choice1, name_databases)
+            st.write(fig1_temp)
    
-    else : 
+    elif expression_choice_copy == 'all' : 
+        figures = []
 
-        count = 0
-        figs=st.selectbox(" Basic statistics plots by role - Absolute duration : ", name_list_by_role) 
-        fig1_1,fig1_2 = "",""
-
-        if figs == "absolute duration spk" :
-
-            choice_list=["Standard deviation", "Mean", "Median", "Max","Min","All"]
-            choice1=st.radio("Which feature do you want see ?  ->", choice_list, key=count)
+        if "absolute" in figs1 :
             count += 1
-            fig1_1, fig1_2 = plot_absolute_duration_from_spk(expression_choice, choice1)
-        
-        elif figs == "absolute duration lsn" :
+            if "sk" in figs1 or "sr" in figs1 or "sp" in figs1 :
+                fig1_temp = plot_absolute_duration_from_spk(expression_choice_copy, choice1, name_databases)
+            elif "ls" in figs1 or "lr" in figs1 or "li" in figs1 or "ln" in figs1 :
+                fig1_temp = plot_absolute_duration_from_lsn(expression_choice_copy, choice1, name_databases)
+            figures.extend(fig1_temp)
 
-            choice_list=["Standard deviation", "Mean", "Median", "Max","Min","All"]
-            choice2=st.radio("Which feature do you want see ?  ->", choice_list, key = count)
+        elif "relative" in figs1 :
             count += 1
-            fig1_1, fig1_2 = plot_absolute_duration_from_lsn(expression_choice, choice2)
-
-        elif figs == "relative duration spk" :
-
-            fig1_1, fig1_2 = plot_relative_duration_from_spk(expression_choice)
+            if "sk" in figs1 or "sr" in figs1 or "sp" in figs1: 
+                fig1_temp = plot_relative_duration_from_spk(expression_choice_copy, choice1, name_databases)
+            elif "ls" in figs1 or "lr" in figs1 or "li" in figs1 or "ln" in figs1 :
+                fig1_temp = plot_relative_duration_from_lsn(expression_choice_copy, choice1, name_databases)
+            figures.extend(fig1_temp)
+            
+        for fig_R in figures : 
+            st.write(fig_R)
         
-        elif figs == "relative duration lsn" :
-
-            fig1_1, fig1_2 = plot_relative_duration_from_lsn(expression_choice)
-        
-        st.write(fig1_1, fig1_2)
 
 page1()

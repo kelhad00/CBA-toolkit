@@ -195,20 +195,72 @@ def get_Rdict(root):
     lst = to_dict["Role"]
     return lst
 
+def get_tier_dict(root, tier):
+    """
+    Retrieve the list of a specific tier from a file.
+
+    Args:
+        root (str): Path of the file.
+        tier (str): Tier name.
+
+    Returns:
+        list: List of the specified tier from the file.
+    """
+    to_dict = read_eaf_to_dict(root, mark=True, tiers=None)
+    lst = None
+    if tier not in to_dict:
+        tier = tier + '_0'
+    lst = to_dict[tier]
+    return lst
+
 def get_IR_list(root,expression, intensity):
     """
-    Give the list of smiles, laughs or role from a file for a given intensity or a given role
+    Give the list of tier from a file for a given intensity or a given role
     Args :
         root (str) -> path of the file
-        expression (str) -> "Smiles" or "Laughs" or "Role"
-        intensity (str) -> Subtle, low, medium, high (for smiles)
-                           Low, medium, high (for laughs)
-                           spk, lsn (for role)
+        expression (str) -> tier name
+        intensity (str) -> intensity or role of the tier
     """
     tier= get_tier_from_file(root, expression, intensity)
     lst= tier[expression]
 
     return lst
+
+def get_tier_dict_folder(filespaths, database, tier):
+    """
+    Retrieve the dataframe of a specified tier from a folder.
+    Args:
+        filespaths (list): List of file paths in the folder.
+        database (str): Database name (e.g., "ccdb", "ifadv", "ndc").
+        tier (str): Tier name to retrieve the data from.
+    Returns:
+        A list of tuples and the column names.
+    """
+    startime, endtime, label, subject, duration = ([] for _ in range(5))
+    s = 1
+    for file in filespaths:
+        lst_ = get_tier_dict(file, tier)
+        eaf = pympi.Elan.Eaf(file)
+        c = check_duration(eaf)
+        for i in range(len(lst_)):
+            subject.append(s)
+            startime.append(lst_[i][0])
+            endtime.append(lst_[i][1])
+            label.append(lst_[i][2])
+            duration.append(c)
+
+        s += 1  
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject,'startime':startime, 
+    'endtime':endtime,'label':label,'duration':duration})
+    df['diff_time']=df['endtime']-df['startime']
+
+    df.columns = ['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df = df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'])
+
+    lst = df_to_list(df)
+    col = ['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
+
+    return lst, col
 
 def get_smiles_dict_folder(filespaths,database):
     """
@@ -624,6 +676,67 @@ def get_laughs_from_lsn2(root):
 
     return lst,col
 
+def get_tier_from_lsn2(root, tier):
+    """
+    Retrieve a specified tier from an LSN file when the subject is a listener.
+    
+    Args:
+        root (str): File path.
+        tier (str): Name of the tier to retrieve.
+        
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names.
+    """
+    lsn_lst = get_IR_list(root, "Role", "lsn")
+    lst = get_tier_dict(root, tier)
+    startime, endtime, label, duration = ([] for _ in range(4))
+   
+    b = list(get_overlapping_segments(lsn_lst, lst).values())
+    b = list(itertools.chain(*b))
+    
+    eaf = pympi.Elan.Eaf(root)
+    duration = check_duration(eaf)
+    
+    for item in b:     
+        startime.append(item[0])
+        endtime.append(item[1])
+        label.append(item[2])
+    
+    lst = [(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
+    columns = ['startime', 'endtime', 'label', 'duration']
+
+    return lst, columns
+
+def get_tier_from_spk2(root, tier):
+    """
+    Retrieve a specified tier from an SPK file when the subject is a speaker.
+    
+    Args:
+        root (str): File path.
+        tier (str): Name of the tier to retrieve.
+        
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names.
+    """
+    spk_lst = get_IR_list(root, "Role", "spk")
+    lst = get_tier_dict(root, tier)
+    startime, endtime, label, duration = ([] for _ in range(4))
+   
+    b = list(get_overlapping_segments(spk_lst, lst).values())
+    b = list(itertools.chain(*b))
+    
+    eaf = pympi.Elan.Eaf(root)
+    duration = check_duration(eaf)
+    
+    for item in b:     
+        startime.append(item[0])
+        endtime.append(item[1])
+        label.append(item[2])
+    
+    lst = [(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
+    columns = ['startime', 'endtime', 'label', 'duration']
+
+    return lst, columns
 
 #By folder
 def get_smiles_from_spk_folder(listpaths,string):
@@ -749,6 +862,75 @@ def get_laughs_from_lsn_folder(listpaths, string):
     lst=df_to_list(df)
     columns=['subject','diff_time','label','duration','database']
     return lst,columns
+
+def get_tier_from_spk_folder(listpaths, string, tier):
+    """
+    Retrieve specified tiers from SPK files in a folder.
+    
+    Args:
+        listpaths (list): List of folder file paths.
+        string (str): String to be used as the 'database' value.
+        tier (str): Name of the tier to retrieve.
+        
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names.
+    """
+    L = []
+    subject = []
+    i = 1
+    for path in listpaths:
+        df0 = list_to_df(get_tier_from_spk2(path, tier)[0], get_tier_from_spk2(path, tier)[1])
+        subject.append(list_of_words(i, len(df0['startime'])))
+        L.append(df0)
+        i += 1
+    S = []
+    for _ in subject:
+        S=S+_
+    df=pd.concat([L[_] for _ in range (len(L))])
+    df['subject'] = S
+    df['database'] = list_of_words(string, len(df['subject']))
+    df['diff_time'] = df['endtime'] - df['startime']
+    
+    df.drop(df.columns[[0, 1]], axis=1, inplace=True)
+    df = df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
+    lst = df_to_list(df)
+    columns = ['subject', 'diff_time', 'label', 'duration', 'database']
+    return lst, columns
+
+def get_tier_from_lsn_folder(listpaths, string, tier):
+    """
+    Retrieve specified tiers from LSN files in a folder.
+    
+    Args:
+        listpaths (list): List of folder file paths.
+        string (str): String to be used as the 'database' value.
+        tier (str): Name of the tier to retrieve.
+        
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names.
+    """
+    L = []
+    subject = []
+    i = 1
+    for path in listpaths:
+        df0 = list_to_df(get_tier_from_lsn2(path, tier)[0], get_tier_from_lsn2(path, tier)[1])
+        subject.append(list_of_words(i, len(df0['startime'])))
+        L.append(df0)
+        i += 1
+    S=[]
+    for _ in subject:
+        S=S+_
+    df=pd.concat([L[_] for _ in range (len(L))])
+    df['subject'] = S
+    df['database'] = list_of_words(string, len(df['subject']))
+    df['diff_time'] = df['endtime'] - df['startime']
+    
+    df.drop(df.columns[[0, 1]], axis=1, inplace=True)
+    df = df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
+    lst = df_to_list(df)
+    columns = ['subject', 'diff_time', 'label', 'duration', 'database']
+    
+    return lst, columns
 
 #Roles versus 
 def get_smiles_from_spk_vs_lsn_folder(listpaths,string):
@@ -1000,7 +1182,8 @@ def get_laughs_from_spk_vs_lsn_folder(listpaths,string):
     conv=list(np.unique((db.conv)))
     d=[]
     for _ in range(0,len(duration),2):
-        d.append((duration[_], duration[_+1]))
+        if (_+1) < len(duration) : 
+            d.append((duration[_], duration[_+1]))
 
     d=list(reversed(d))
     for i,j in zip (conv,d):
@@ -1083,7 +1266,8 @@ def get_laughs_from_lsn_vs_spk_folder(listpaths,string):
     conv=list(np.unique((db.conv)))
     d=[]
     for _ in range(0,len(duration),2):
-        d.append((duration[_], duration[_+1]))
+        if (_+1) < len(duration) : 
+            d.append((duration[_], duration[_+1]))
 
     d=list(reversed(d))
     for i,j in zip (conv,d):
@@ -1101,14 +1285,14 @@ def get_rd_stats(df):
         df1, df2 and df3 (list): They are lists of tuple
 
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['database','label','mean_p','median_p','std_p'])
+        list of tuple and a description of what is inside the tuple : (list of tuple, ['database','label','mean_p','median_p','std_p','min_p','max_p']))
     """
 
     dg1=df.loc[:,['subject','database','label','duration','diff_time']]
     dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
     dg1['percentage']=(dg1['diff_time']/dg1['duration'])*100
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1=dg1.drop(['duration','sum_time'],axis=1)
+    # dg1.columns=['subject','database','label','duration','sum_time','percentage']
+    dg1 = dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
 
     dg=dg1.loc[:,['database','label','percentage']]
     df_mean=dg1.loc[:,['database','label','percentage']]
@@ -1120,16 +1304,25 @@ def get_rd_stats(df):
     df_std=dg1.loc[:,['database','label','percentage']]
     df_std=df_std.groupby(['database','label']).std().reset_index()
     
+    df_min = dg1.loc[:, ['database', 'label', 'percentage']]
+    df_min = df_min.groupby(['database', 'label']).min().reset_index()
+
+    df_max = dg1.loc[:, ['database', 'label', 'percentage']]
+    df_max = df_max.groupby(['database', 'label']).max().reset_index()
+
     df_mean.columns=['database','label','mean_p']
-    df =df_mean.join(df_median['percentage'])
+    df_median.columns = ['database', 'label', 'median_p']
+    df_std.columns = ['database', 'label', 'std_p']
+    df_min.columns = ['database', 'label', 'min_p']
+    df_max.columns = ['database', 'label', 'max_p']
 
-    df.columns=['database','label','mean_p','median_p']
-
-    dg = df.join(df_std['percentage'])
-    dg.columns=['database','label','mean_p','median_p','std_p']
+    dg = df_mean.merge(df_median, on=['database', 'label'])
+    dg = dg.merge(df_std, on=['database', 'label'])
+    dg = dg.merge(df_min, on=['database', 'label'])
+    dg = dg.merge(df_max, on=['database', 'label'])
     
     lst=df_to_list(dg)
-    col= ['database','label','mean_p','median_p','std_p']
+    col = ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']
     return lst,col
 
 def get_rd_stats_byrole(df):
@@ -1138,13 +1331,13 @@ def get_rd_stats_byrole(df):
         df1, df2 and df3 (list): They are lists of tuple
 
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['database','label','mean_p','median_p','std_p'])
+        list of tuple and a description of what is inside the tuple : (list of tuple, ['database','label','mean_p','median_p','std_p','min_p','max_p'])
     """
     dg1=df.loc[:,['subject','database','label','duration','diff_time']]
     dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
     dg1['percentage']=(dg1['diff_time']/dg1['duration'])*100
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1=dg1.drop(['duration','sum_time'],axis=1)
+    # dg1.columns=['subject','database','label','duration','sum_time','percentage']
+    dg1 = dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
 
     dg=dg1.loc[:,['database','label','percentage']]
     df_mean=dg1.loc[:,['database','label','percentage']]
@@ -1156,16 +1349,25 @@ def get_rd_stats_byrole(df):
     df_std=dg1.loc[:,['database','label','percentage']]
     df_std=df_std.groupby(['database','label']).std().reset_index()
     
+    df_min = dg1.loc[:, ['database', 'label', 'percentage']]
+    df_min = df_min.groupby(['database', 'label']).min().reset_index()
+
+    df_max = dg1.loc[:, ['database', 'label', 'percentage']]
+    df_max = df_max.groupby(['database', 'label']).max().reset_index()
+
     df_mean.columns=['database','label','mean_p']
-    df =df_mean.join(df_median['percentage'])
+    df_median.columns = ['database', 'label', 'median_p']
+    df_std.columns = ['database', 'label', 'std_p']
+    df_min.columns = ['database', 'label', 'min_p']
+    df_max.columns = ['database', 'label', 'max_p']
 
-    df.columns=['database','label','mean_p','median_p']
-
-    dg = df.join(df_std['percentage'])
-    dg.columns=['database','label','mean_p','median_p','std_p']
+    dg = df_mean.merge(df_median, on=['database', 'label'])
+    dg = dg.merge(df_std, on=['database', 'label'])
+    dg = dg.merge(df_min, on=['database', 'label'])
+    dg = dg.merge(df_max, on=['database', 'label'])
     
     lst=df_to_list(dg)
-    col= ['database','label','mean_p','median_p','std_p']
+    col = ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']
     return lst,col
 
 #Intra
