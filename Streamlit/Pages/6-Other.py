@@ -49,7 +49,7 @@ def page5():
                     case_choice=case_list[_]
             if(plot_expression_per_min(databases_choice, expression_choice, case_choice) == None):
 
-                st.write("Pas de données")
+                st.write("No data available")
             
             else :
 
@@ -62,7 +62,7 @@ def page5():
             intensity_choice= st.radio("Intensity : ", tier_lists[expression_choice])
             try :
                 if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice) == None)) :
-                    str.write("Pas de données")
+                    str.write("No data available ")
                 else :
                     st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice)))
             except :
@@ -70,13 +70,13 @@ def page5():
                 try :
 
                     if (plot_expression_per_min_I(databases_choice, expression_choice, intensity_choice == None)) :
-                        str.write("Pas de données")
+                        str.write("No data available")
                     else :
                         st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, intensity_choice))
                 
                 except :
 
-                    st.write("Pas de données")
+                    st.write("No data available")
 
     page5_names_to_funcs = {
         "Expression per minute": page5_1,
