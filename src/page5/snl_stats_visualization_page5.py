@@ -3,7 +3,6 @@ script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 import time
-result_thread = ""
 import matplotlib.pyplot as plt
 import seaborn as sn
 import plotly.express as px
@@ -39,6 +38,10 @@ def plot_expression_per_min(folder,expression, case=None):
         fig = px.bar(x=[_ for _ in range (1,len(a[0])+1)], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
         labels={'x':'Interactions', 'y':'Count'})
 
+    if (np.count_nonzero(fig.data[0]['y']) == 0):
+
+        return None
+    
     return fig
 
 def plot_expression_per_min_I(folder, expression, intensity):
@@ -52,13 +55,22 @@ def plot_expression_per_min_I(folder, expression, intensity):
     Returns:
         Figure: Bar plot
     """
-    lst=expression_per_min_I(folder, expression, intensity)
-    
-    color_lst=["blue",'red','green','purple']
-    
-    for i in range (len(tier_lists[expression])):
-        if intensity==tier_lists[expression][i]:
-            fig = px.bar(x=[_ for _ in range (1,len(lst)+1)], y=lst, color_discrete_sequence =[color_lst[i]]*len(lst) ,
-            title=f'Count of {intensity} {expression[:6]} per minute in {get_database_name(folder)}', labels={'x':'Person', 'y':'Count'})
-    return fig
+    fig = None
 
+    print(expression)
+    try :
+        lst=expression_per_min_I(folder, expression, intensity)
+        color_lst=["blue",'red','green','purple']
+        
+        for i in range (len(tier_lists[expression])):
+            if intensity==tier_lists[expression][i]:
+                fig = px.bar(x=[_ for _ in range (1,len(lst)+1)], y=lst, color_discrete_sequence =[color_lst[i]]*len(lst) ,
+                title=f'Count of {intensity} {expression[:6]} per minute in {get_database_name(folder)}', labels={'x':'Person', 'y':'Count'})
+
+    
+    except :
+
+        fig = None
+
+    
+    return fig
