@@ -8,9 +8,6 @@ sys.path.append("..")
 
 Affichage_pattern.affichage()
 
-# from interaction_stats.ml_stats import *
-# from interaction_stats.ml_stats_vizualisation import *
-# from interaction_stats.settings import *
 from src.page3.snl_stats_visualization_page3 import *
 
 
@@ -30,7 +27,7 @@ def page2():
         lst_ad=['scatter_plot_smiles', 'line_plot_smiles', 'scatter_plot_laughs', 'line_plot_laughs']
         lst_rd=lst_ad
         lst_by_role=["ad_plot_smiles_lsn", "ad_plot_laughs_lsn","ad_plot_smiles_spk", "ad_plot_laughs_spk","rd_plot_smiles_lsn", "rd_plot_laughs_lsn","rd_plot_smiles_spk", "rd_plot_laughs_spk"]
-        name_databases=['ccdb', 'ifadv', 'ndc']
+        name_databases = [key.split('_')[0].upper() for key in databases.keys()]
 
         figs_ad = st.selectbox("Absolute Duration Figures: ", lst_ad) 
         options = st.multiselect('What are your favorite colors', name_databases, key = 1)

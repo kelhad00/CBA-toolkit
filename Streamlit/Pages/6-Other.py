@@ -12,7 +12,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.ml_stats import *
 # from interaction_stats.ml_stats_vizualisation import *
 # from interaction_stats.settings import *
-from src.page5.snl_stats_visualization_page5 import *
+from src.page6.snl_stats_visualization_page6 import *
 
 
 

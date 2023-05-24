@@ -738,6 +738,39 @@ def get_tier_from_spk2(root, tier):
 
     return lst, columns
 
+def get_tier_from_entity(root, tier1, tier2, entity):
+    """
+    Retrieve a specified tier from another tier.
+    
+    Args:
+        root (str): File path.
+        tier1 (str): Name of the tier from which one retrieves the other.
+        tier2 (str): Name of the tier to retrieve.
+        entity (str): Name of the entity of the tier1.
+        
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names.
+    """
+    lsn_lst = get_IR_list(root, tier1, entity)
+    lst = get_tier_dict(root, tier2)
+    startime, endtime, label, duration = ([] for _ in range(4))
+   
+    b = list(get_overlapping_segments(lsn_lst, lst).values())
+    b = list(itertools.chain(*b))
+    
+    eaf = pympi.Elan.Eaf(root)
+    duration = check_duration(eaf)
+    
+    for item in b:     
+        startime.append(item[0])
+        endtime.append(item[1])
+        label.append(item[2])
+    
+    lst = [(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
+    columns = ['startime', 'endtime', 'label', 'duration']
+
+    return lst, columns
+
 #By folder
 def get_smiles_from_spk_folder(listpaths,string):
     """
@@ -930,6 +963,42 @@ def get_tier_from_lsn_folder(listpaths, string, tier):
     lst = df_to_list(df)
     columns = ['subject', 'diff_time', 'label', 'duration', 'database']
     
+    return lst, columns
+
+def get_tier_from_tier(listpaths, string, tier1, tier2, entity):
+    """
+    Retrieve specified tiers from TIER files in a folder.
+
+    Args:
+        listpaths (list): List of folder file paths.
+        string (str): String to be used as the 'database' value.
+        tier1 (str): Name of the first tier.
+        tier2 (str): Name of the second tier.
+        entity (str): Name of the entity of the tier1.
+
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names.
+    """
+    L = []
+    subject = []
+    i = 1
+    for path in listpaths:
+        df0 = list_to_df(get_tier_from_entity(path, tier1, tier2, entity)[0], get_tier_from_entity(path, tier1, tier2, entity)[1])
+        subject.append(list_of_words(i, len(df0['startime'])))
+        L.append(df0)
+        i += 1
+    S = []
+    for _ in subject:
+        S = S + _
+    df = pd.concat([L[_] for _ in range(len(L))])
+    df['subject'] = S
+    df['database'] = list_of_words(string, len(df['subject']))
+    df['diff_time'] = df['endtime'] - df['startime']
+
+    df.drop(df.columns[[0, 1]], axis=1, inplace=True)
+    df = df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
+    lst = df_to_list(df)
+    columns = ['subject', 'diff_time', 'label', 'duration', 'database']
     return lst, columns
 
 #Roles versus 
