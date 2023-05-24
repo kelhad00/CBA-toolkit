@@ -51,7 +51,7 @@ def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} on {Tiers} - Absolute Duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Time (ms)",
         legend_title="Datasets",
         xaxis=dict(
@@ -101,7 +101,7 @@ def create_plot_relative_duration_thread(Tiers, choice, queue, database_names) :
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} on {Tiers} - Relative Duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Percentage",
         legend_title="Datasets",
         xaxis=dict(
@@ -151,7 +151,7 @@ def create_absolute_duration_from_spk_thread(Tiers, choice, queue, name_database
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} for speakers on {Tiers} - Absolute duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Time (ms)",
         legend_title="Datasets",
         xaxis=dict(
@@ -200,7 +200,7 @@ def create_relative_duration_from_spk_thread(Tiers, choice, queue, name_database
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} for speakers on {Tiers} - Relative duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Percentage",
         legend_title="Datasets",
         xaxis=dict(
@@ -252,7 +252,7 @@ def create_absolute_duration_from_lsn_thread(Tiers, choice, queue, name_database
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} for listeners on {Tiers} - Absolute duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Time (ms)",
         legend_title="Datasets",
         xaxis=dict(
@@ -302,7 +302,7 @@ def create_relative_duration_from_lsn_thread(Tiers, choice, queue, name_database
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} for listeners on {Tiers} - Relative duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Percentage",
         legend_title="Datasets",
         xaxis=dict(
@@ -353,7 +353,7 @@ def create_absolute_duration_from_tier_thread(Tiers, choice, queue, name_databas
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} for {entity} {tier1} on {Tiers} - Absolute duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Time (ms)",
         legend_title="Datasets",
         xaxis=dict(
@@ -401,7 +401,7 @@ def create_relative_duration_from_tier_thread(Tiers, choice, queue, name_databas
 
         fig1.update_layout(boxmode='group', xaxis_tickangle=0)
         fig1.update_layout(title_text=f'{choice} for {entity} {tier1} on {Tiers} - Relative duration', title_x=0.5, 
-        xaxis_title="Intensity",
+        xaxis_title="Entity",
         yaxis_title="Percentage",
         legend_title="Datasets",
         xaxis=dict(
