@@ -102,23 +102,27 @@ def page3():
                     else:
                         pass
             if st.checkbox("For two intensities :  "):
-                intensities_smiles = st.multiselect("Intensities :", ["SUBTLE", "LOW", "MEDIUM", "HIGH"])
-                st.write(intensities_smiles[1], "smiles mimic ", intensities_smiles[0], "smiles : " )
-                fig = plot_mimicry(give_mimicry_folder1(get_smiles_dict_conv_folder, databases_choice, 'Intensity', 
-                [str.lower(intensities_smiles[0]), str.lower(intensities_smiles[1])] ))
-                st.plotly_chart(fig)
-                st.text("Do you want to filter by role ?")
-                role_choice=st.radio(label="Choice :     ", options=["Yes", "No"])
-                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-                if role_choice == "Yes":
-                    roles=st.multiselect("Roles :      ", ["spk","lsn"])
-                    for j in roles :
-                        fig=plot_mimicry(give_mimicry_folder1(eval('get_smiles_from_'+j+'_folder'), databases_choice, 'Intensity', [str.lower(intensities_smiles[0]), str.lower(intensities_smiles[1])]))
-                        st.write("For ",j," :")
-                        st.plotly_chart(fig)
-                else:
-                    pass
+                try :
+                    intensities_smiles = st.multiselect("Intensities :", ["SUBTLE", "LOW", "MEDIUM", "HIGH"])
+                    st.write(intensities_smiles[1], "smiles mimic ", intensities_smiles[0], "smiles : " )
+                    fig = plot_mimicry(give_mimicry_folder1(get_smiles_dict_conv_folder, databases_choice, 'Intensity', 
+                    [str.lower(intensities_smiles[0]), str.lower(intensities_smiles[1])] ))
+                    st.plotly_chart(fig)
+                    st.text("Do you want to filter by role ?")
+                    role_choice=st.radio(label="Choice :     ", options=["Yes", "No"])
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+
+                    if role_choice == "Yes":
+                        roles=st.multiselect("Roles :      ", ["spk","lsn"])
+                        for j in roles :
+                            fig=plot_mimicry(give_mimicry_folder1(eval('get_smiles_from_'+j+'_folder'), databases_choice, 'Intensity', [str.lower(intensities_smiles[0]), str.lower(intensities_smiles[1])]))
+                            st.write("For ",j," :")
+                            st.plotly_chart(fig)
+                    else:
+                        pass
+                except :
+                    return None
 
         st.subheader('For Laughs / Laughs ')
         if st.checkbox("All intensities for laughs"):
@@ -156,23 +160,27 @@ def page3():
                     else:
                         pass
             if st.checkbox("For two intensities :"):
-                intensities_laughs = st.multiselect("Intensities :", ["LOW", "MEDIUM", "HIGH"])
-                st.write(intensities_laughs[1], "laughs mimic ", intensities_laughs[0], "laughs : " )
-                fig = plot_mimicry(give_mimicry_folder1(get_laughs_dict_conv_folder, databases_choice, 'Intensity', 
-                [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])] ))
-                st.plotly_chart(fig)
-                st.text("Do you want to filter by role ?")
-                role_choice=st.radio(label="Choice :        ", options=["Yes", "No"])
-                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-                if role_choice == "Yes":
-                    roles=st.multiselect("Roles :       ", ["spk","lsn"])
-                    for j in roles :
-                        fig=plot_mimicry(give_mimicry_folder1(eval('get_laughs_from_'+j+'_folder'), databases_choice, 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
-                        st.write("For ",j," :")
-                        st.plotly_chart(fig)
-                else:
-                    pass
+                try :
+                    intensities_laughs = st.multiselect("Intensities :", ["LOW", "MEDIUM", "HIGH"])
+                    st.write(intensities_laughs[1], "laughs mimic ", intensities_laughs[0], "laughs : " )
+                    fig = plot_mimicry(give_mimicry_folder1(get_laughs_dict_conv_folder, databases_choice, 'Intensity', 
+                    [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])] ))
+                    st.plotly_chart(fig)
+                    st.text("Do you want to filter by role ?")
+                    role_choice=st.radio(label="Choice :        ", options=["Yes", "No"])
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+
+                    if role_choice == "Yes":
+                        roles=st.multiselect("Roles :       ", ["spk","lsn"])
+                        for j in roles :
+                            fig=plot_mimicry(give_mimicry_folder1(eval('get_laughs_from_'+j+'_folder'), databases_choice, 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
+                            st.write("For ",j," :")
+                            st.plotly_chart(fig)
+                    else:
+                        pass
+                except :
+                    return None
 
         st.subheader('For Smiles / Laughs ')
         if st.checkbox("All intensities "):
@@ -223,30 +231,35 @@ def page3():
                     else:
                         pass
             if st.checkbox("For two intensities : "):
-                intensities_laughs = st.multiselect("Intensities :", ["LOW", "MEDIUM", "HIGH"])
-                st.write(intensities_laughs[1], " laughs mimic ", intensities_laughs[0], "smiles : " )
-                fig = plot_mimicry(give_mimicry_folder2(databases_choice,get_smiles_dict_conv_folder, get_laughs_dict_conv_folder, 'Intensity', 
-                                    [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])] ))
-                st.plotly_chart(fig)
-                st.text("Do you want to filter by role ?")
-                role_choice=st.radio(label="Choice -> ", options=["Yes", "No"])
-                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-                if role_choice == "Yes":
-                    roles=st.multiselect("Roles -> ", ["spk","lsn","spk / lsn"])
-                    for i in roles :
-                        if i == "spk / lsn":
-                            fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_smiles_from_'+i[0:3]+'_folder'), 
-                            eval('get_laughs_from_'+i[-3:]+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
-                            st.write("For ",i," :")
-                            st.plotly_chart(fig)
-                        else:
-                            fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_smiles_from_'+i+'_folder'), 
-                            eval('get_laughs_from_'+i+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
-                            st.write("For ",i," :")
-                            st.plotly_chart(fig)
-                else:
-                    pass
+                try :
+                    intensities_laughs = st.multiselect("Intensities :", ["LOW", "MEDIUM", "HIGH"])
+                    st.write(intensities_laughs[1], " laughs mimic ", intensities_laughs[0], "smiles : " )
+                    fig = plot_mimicry(give_mimicry_folder2(databases_choice,get_smiles_dict_conv_folder, get_laughs_dict_conv_folder, 'Intensity', 
+                                        [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])] ))
+                    st.plotly_chart(fig)
+                    st.text("Do you want to filter by role ?")
+                    role_choice=st.radio(label="Choice -> ", options=["Yes", "No"])
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+
+                    if role_choice == "Yes":
+                        roles=st.multiselect("Roles -> ", ["spk","lsn","spk / lsn"])
+                        for i in roles :
+                            if i == "spk / lsn":
+                                fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_smiles_from_'+i[0:3]+'_folder'), 
+                                eval('get_laughs_from_'+i[-3:]+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
+                                st.write("For ",i," :")
+                                st.plotly_chart(fig)
+                            else:
+                                fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_smiles_from_'+i+'_folder'), 
+                                eval('get_laughs_from_'+i+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
+                                st.write("For ",i," :")
+                                st.plotly_chart(fig)
+                    else:
+                        pass
+
+                except :
+                    return None
 
         st.subheader('For Laughs / Smiles')
         if st.checkbox("All intensities  "):
@@ -297,30 +310,36 @@ def page3():
                     else:
                         pass
             if st.checkbox("For two intensities :   "):
-                intensities_laughs = st.multiselect("Intensities :", ["LOW", "MEDIUM", "HIGH"])
-                st.write(intensities_laughs[1], " smiles mimic ", intensities_laughs[0], "laughs : " )
-                fig = plot_mimicry(give_mimicry_folder2(databases_choice, get_laughs_dict_conv_folder, get_smiles_dict_conv_folder, 'Intensity', 
-                                    [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])] ))
-                st.plotly_chart(fig)
-                st.text("Do you want to filter by role ?")
-                role_choice=st.radio(label="  Choice :        ", options=["Yes", "No"])
-                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-                if role_choice == "Yes":
-                    roles=st.multiselect("  Roles :          ", ["spk","lsn","spk / lsn"])
-                    for i in roles :
-                        if i == "spk / lsn":
-                            fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_laughs_from_'+i[0:3]+'_folder'), 
-                            eval('get_smiles_from_'+i[-3:]+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
-                            st.write("For ",i," :")
-                            st.plotly_chart(fig)
-                        else:
-                            fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_laughs_from_'+i+'_folder'), 
-                            eval('get_smiles_from_'+i+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
-                            st.write("For ",i," :")
-                            st.plotly_chart(fig)
-                else:
-                    pass
+                try :
+
+                    intensities_laughs = st.multiselect("Intensities :", ["LOW", "MEDIUM", "HIGH"])
+                    st.write(intensities_laughs[1], " smiles mimic ", intensities_laughs[0], "laughs : " )
+                    fig = plot_mimicry(give_mimicry_folder2(databases_choice, get_laughs_dict_conv_folder, get_smiles_dict_conv_folder, 'Intensity', 
+                                        [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])] ))
+                    st.plotly_chart(fig)
+                    st.text("Do you want to filter by role ?")
+                    role_choice=st.radio(label="  Choice :        ", options=["Yes", "No"])
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+
+                    if role_choice == "Yes":
+                        roles=st.multiselect("  Roles :          ", ["spk","lsn","spk / lsn"])
+                        for i in roles :
+                            if i == "spk / lsn":
+                                fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_laughs_from_'+i[0:3]+'_folder'), 
+                                eval('get_smiles_from_'+i[-3:]+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
+                                st.write("For ",i," :")
+                                st.plotly_chart(fig)
+                            else:
+                                fig=plot_mimicry(give_mimicry_folder2(databases_choice, eval('get_laughs_from_'+i+'_folder'), 
+                                eval('get_smiles_from_'+i+'_folder'), 'Intensity', [str.lower(intensities_laughs[0]), str.lower(intensities_laughs[1])]))
+                                st.write("For ",i," :")
+                                st.plotly_chart(fig)
+                    else:
+                        pass
+                except:
+
+                    return None
 
     def page3_3():               
         st.title('Correlation')

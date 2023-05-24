@@ -1006,7 +1006,8 @@ def get_smiles_from_spk_vs_lsn_folder(listpaths,string):
     conv=list(np.unique((db.conv)))
     d=[]
     for _ in range(0,len(duration),2):
-        d.append((duration[_], duration[_+1]))
+        if(_+1) < len(duration) :
+            d.append((duration[_], duration[_+1]))
 
     d=list(reversed(d))
     for i,j in zip (conv,d):
@@ -1096,7 +1097,8 @@ def get_smiles_from_lsn_vs_spk_folder(listpaths,string):
     conv=list(np.unique((db.conv)))
     d=[]
     for _ in range(0,len(duration),2):
-        d.append((duration[_], duration[_+1]))
+        if(_+1) < len(duration) :
+            d.append((duration[_], duration[_+1]))
 
     d=list(reversed(d))
     for i,j in zip (conv,d):
