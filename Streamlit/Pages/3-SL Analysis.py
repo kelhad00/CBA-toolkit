@@ -32,7 +32,7 @@ def page2():
         lst_by_role=["ad_plot_smiles_lsn", "ad_plot_laughs_lsn","ad_plot_smiles_spk", "ad_plot_laughs_spk","rd_plot_smiles_lsn", "rd_plot_laughs_lsn","rd_plot_smiles_spk", "rd_plot_laughs_spk"]
         name_databases=['ccdb', 'ifadv', 'ndc']
 
-        figs_ad = st.selectbox("Absolute duration Figures: ", lst_ad) 
+        figs_ad = st.selectbox("Absolute Duration Figures: ", lst_ad) 
         options = st.multiselect('What are your favorite colors', name_databases, key = 1)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
         list1= plot_intra_absolute_duration(options)
