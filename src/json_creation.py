@@ -78,7 +78,6 @@ def create_json_from_directory():
     # Create a dictionary for the tiers and annotations
     dct['TIER_LISTS'] = {}
     for d in range(len(datasets_full)):
-        print("Yo : ",dct['TIER_LISTS'])
         temp = os.listdir(datasets_full[d])
         for f in temp:
             if f.endswith('.eaf'):
