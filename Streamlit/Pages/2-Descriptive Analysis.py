@@ -37,10 +37,16 @@ def page1():
     if expression_choice != 'all' :
         if figs == 'Absolute duration' :
             fig1_0 = plot_absolute_duration(expression_choice, choice, name_databases)
-            st.write(fig1_0)
+            if fig1_0 != None :    
+                st.write(fig1_0)
+            else :
+                st.write("No Data available")
         else :
             fig2_0 = plot_relative_duration(expression_choice, choice, name_databases)
-            st.write(fig2_0)
+            if fig2_0 != None :
+                st.write(fig2_0)
+            else :
+                st.write("No Data ava")
             
     elif expression_choice == 'all' : 
         figures1 = []
@@ -53,8 +59,10 @@ def page1():
             figures1.extend(fig2_1)
 
         for fig in figures1:
-            st.write(fig)
-
+            if fig != None :
+                st.write(fig)
+            else :
+                st.write("No Data available")
 
     st.subheader('Basic statistics plots :')  # By role : 
 
@@ -80,12 +88,19 @@ def page1():
                 count += 1
                 for entity in expression_values :
                     fig1_temp = plot_absolute_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
-                    st.write(fig1_temp)    
+                    if fig1_temp != None :
+                        st.write(fig1_temp)    
+                    else :
+                        st.write("No Data available")
+
             elif "Relative" in figs1 :
                 count += 1
                 for entity in expression_values :
                     fig1_temp = plot_relative_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
-                    st.write(fig1_temp)
+                    if fig1_temp != None :
+                        st.write(fig1_temp)
+                    else : 
+                        st.write("No Data available")
    
         elif expression_choice_copy == 'all' : 
             figures = []
@@ -103,7 +118,10 @@ def page1():
                     figures.extend(fig1_temp)
             
             for fig_R in figures : 
-                st.write(fig_R)
+                if fig_R != None :
+                    st.write(fig_R)
+                else :
+                    st.write("No Data available")
     else :
         st.write("No data available")
 

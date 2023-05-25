@@ -30,12 +30,21 @@ def plot_expression_per_min(folder,expression, case=None):
     """
     a=expression_per_min(folder,expression,case)
     match = re.search(r'^([a-zA-Z]+)', expression)
+    print("Je print le folder : ", folder)
+    print("Je print ce que je récupère : ", a[0])
+    split_elements = []
+
+    for i in range(len(folder)) :
+        element = folder[i]
+        split_elements.append(element.split('\\'))
+
     expression = match.group(1)
     if case is None:
-        fig = px.bar(x=[_ for _ in range (1,len(a[0])+1)], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
+        print("Admire l'envergure du rongeur :", len(a[0]))
+        fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
         labels={'x':'Person', 'y':'Count'})
     else:
-        fig = px.bar(x=[_ for _ in range (1,len(a[0])+1)], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
+        fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
         labels={'x':'Interactions', 'y':'Count'})
 
     if (np.count_nonzero(fig.data[0]['y']) == 0):
@@ -61,10 +70,16 @@ def plot_expression_per_min_I(folder, expression, intensity):
     try :
         lst=expression_per_min_I(folder, expression, intensity)
         color_lst=["blue",'red','green','purple']
-        
+
+        split_elements = []
+
+        for i in range(len(folder)) :
+            element = folder[i]
+            split_elements.append(element.split('\\'))
+
         for i in range (len(tier_lists[expression])):
             if intensity==tier_lists[expression][i]:
-                fig = px.bar(x=[_ for _ in range (1,len(lst)+1)], y=lst, color_discrete_sequence =[color_lst[i]]*len(lst) ,
+                fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence =[color_lst[i]]*len(lst) ,
                 title=f'Count of {intensity} {expression[:6]} per minute in {get_database_name(folder)}', labels={'x':'Person', 'y':'Count'})
 
     

@@ -70,10 +70,7 @@ def plot_absolute_duration(expression, choice, name_databases):
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{expression}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} on {expression} - Absolute Duration', title_x=0.5)
+            fig = None
         return fig
     
     else :
@@ -139,10 +136,7 @@ def plot_relative_duration(expression, choice, name_databases):
                 ticktext=labels,
             ))
         else :
-            empty_message = f"The tier '{expression}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} on {expression} - Relative Duration', title_x=0.5)
+            fig = None
         return fig
     else :
         Tiers = list(tier_lists.keys())
@@ -209,10 +203,7 @@ def plot_absolute_duration_from_spk(expression, choice, name_databases):
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{expression}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} for speakers on {expression} - Absolute Duration', title_x=0.5)
+            fig = None
         return fig
     
     else : 
@@ -281,10 +272,7 @@ def plot_relative_duration_from_spk(expression, choice, name_databases):
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{expression}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} for speakers on {expression} - Relative Duration', title_x=0.5)
+            fig = None
         return fig
 
     else :
@@ -353,10 +341,7 @@ def plot_absolute_duration_from_lsn(expression, choice, name_databases):
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{expression}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} for listeners on {expression} - Absolute Duration', title_x=0.5)
+            fig = None
         return fig
     
     else :
@@ -425,10 +410,7 @@ def plot_relative_duration_from_lsn(expression, choice, name_databases):
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{expression}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} for listeners on {expression} - Relative Duration', title_x=0.5)
+            fig = None
         return fig
 
     else :
@@ -500,10 +482,7 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{tier2}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} for {entity} {tier1} on {tier2} - Absolute Duration', title_x=0.5)
+            fig = None
         return fig
     
     else :
@@ -573,10 +552,7 @@ def plot_relative_duration_from_tier(tier1, entity, tier2, choice, name_database
                 ticktext=labels
             ))
         else :
-            empty_message = f"The tier '{tier2}' does not have any annotations at the moment."
-            fig = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig.update_layout(title_text=f'{choice} for {entity} {tier1} on {tier2} - Relative Duration', title_x=0.5)
+            fig = None
         return fig
 
     else :

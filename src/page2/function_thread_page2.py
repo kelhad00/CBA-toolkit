@@ -62,10 +62,8 @@ def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
             ticktext=labels1
         ))
     else :
-            empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-            fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig1.update_layout(title_text=f'{choice} on {Tiers} - Absolute Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)
 
 
@@ -112,10 +110,8 @@ def create_plot_relative_duration_thread(Tiers, choice, queue, database_names) :
             ticktext=labels1,
         ))
     else :
-            empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-            fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-            fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-            fig1.update_layout(title_text=f'{choice} on {Tiers} - Relative Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)
     
 #Filter by role   
@@ -162,10 +158,8 @@ def create_absolute_duration_from_spk_thread(Tiers, choice, queue, name_database
             ticktext=labels
         ))
     else :
-        empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-        fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-        fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-        fig1.update_layout(title_text=f'{choice} for speakers on {Tiers} - Absolute Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)
 
 
@@ -211,10 +205,8 @@ def create_relative_duration_from_spk_thread(Tiers, choice, queue, name_database
             ticktext=labels
         ))
     else :
-        empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-        fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-        fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-        fig1.update_layout(title_text=f'{choice} for speakers on {Tiers} - Relative Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)
 
 
@@ -263,10 +255,8 @@ def create_absolute_duration_from_lsn_thread(Tiers, choice, queue, name_database
             ticktext=labels
         ))
     else :
-        empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-        fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-        fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-        fig1.update_layout(title_text=f'{choice} for listeners on {Tiers} - Absolute Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)
 
     
@@ -313,10 +303,8 @@ def create_relative_duration_from_lsn_thread(Tiers, choice, queue, name_database
             ticktext=labels
         ))   
     else :
-        empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-        fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-        fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-        fig1.update_layout(title_text=f'{choice} for listeners on {Tiers} - Relative Duration', title_x=0.5)
+       fig1 = None
+
     queue.put(fig1)
 
 #Filter by tier 
@@ -364,10 +352,8 @@ def create_absolute_duration_from_tier_thread(Tiers, choice, queue, name_databas
             ticktext=labels
         ))
     else :
-        empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-        fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-        fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-        fig1.update_layout(title_text=f'{choice} for {entity} {tier1} on {Tiers} - Absolute Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)
 
 def create_relative_duration_from_tier_thread(Tiers, choice, queue, name_databases, tier1, entity) :
@@ -412,8 +398,6 @@ def create_relative_duration_from_tier_thread(Tiers, choice, queue, name_databas
             ticktext=labels
         ))   
     else :
-        empty_message = f"The tier '{Tiers}' does not have any annotations at the moment."
-        fig1 = make_subplots(rows=1, cols=1, subplot_titles=[empty_message])
-        fig1.add_trace(pg.Bar(x=[empty_message], y=[0], name="No Annotations"), row=1, col=1)
-        fig1.update_layout(title_text=f'{choice} for {entity} {tier1} on {Tiers} - Relative Duration', title_x=0.5)
+        fig1 = None
+
     queue.put(fig1)

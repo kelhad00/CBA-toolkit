@@ -2957,20 +2957,31 @@ def expression_per_min(folder, expression, case=None):
                     word = match.group(1)
                 lst = to_dict[word]
             n=len(lst)  #number of expression in the file
-
+           
             eaf = pympi.Elan.Eaf(folder[j])
             duration_annotated=check_duration(eaf)
 
+            Default =False
+            Pass = False
             #if the duration annotated is near one value of m_multiples, we divide n by the corresponding value (1 or 2 or 3 .... )
             for i in m_multiples:
                 if( i-threshold_value < duration_annotated < i+threshold_value) :
+                    print("Je suis passé par là !")
                     nb=n/(i/m)
                     L.append(nb) 
-                else :
-                    pass
-            
+                    Default = True 
+
+                else : 
+                        pass
+                
+            if Default == False :
+
+                L.append(0)
+
             for i in range(0, len(lst),1):
                 M.append(lst[i])
+            
+
             tiers_.append(M)
     else:
         for j in range(0, len(folder),2):
@@ -2980,6 +2991,7 @@ def expression_per_min(folder, expression, case=None):
             lst = to_dict.get(expression)
             lst2 = to_dict2.get(expression)
 
+            
             if lst is None:
                 match = re.search(r'^([a-zA-Z]+)', expression)
                 if match:
@@ -2993,15 +3005,20 @@ def expression_per_min(folder, expression, case=None):
             duration_annotated=check_duration(eaf1)
             eaf2 = pympi.Elan.Eaf(folder[j+1])
             duration_annotated=check_duration(eaf2)
-
+            Default = False
             #If the duration annotated is near one value of m_multiples, we divide n by the corresponding value (1 or 2 or 3 .... )
             for i in m_multiples:
                 if( i-threshold_value < duration_annotated < i+threshold_value) :
                     nb=n/(i/m)
                     nb2=n2/(i/m)
                     L.append(nb+nb2) 
+                    Default = True
                 else :
                     pass
+            
+            if Default == False:
+
+                L.append(0)
 
             for j in range(0, len(lst),1):
                     M.append(lst[j])
@@ -3009,7 +3026,8 @@ def expression_per_min(folder, expression, case=None):
                     M.append(lst2[k])
 
             tiers_.append(M)
-     
+    
+    print("Je print le L: ", L )
     return L, tiers_
 
 def expression_per_min_I(folder, expression, intensity):
