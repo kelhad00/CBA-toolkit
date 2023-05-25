@@ -2966,7 +2966,6 @@ def expression_per_min(folder, expression, case=None):
             #if the duration annotated is near one value of m_multiples, we divide n by the corresponding value (1 or 2 or 3 .... )
             for i in m_multiples:
                 if( i-threshold_value < duration_annotated < i+threshold_value) :
-                    print("Je suis passé par là !")
                     nb=n/(i/m)
                     L.append(nb) 
                     Default = True 
@@ -3026,8 +3025,7 @@ def expression_per_min(folder, expression, case=None):
                     M.append(lst2[k])
 
             tiers_.append(M)
-    
-    print("Je print le L: ", L )
+
     return L, tiers_
 
 def expression_per_min_I(folder, expression, intensity):

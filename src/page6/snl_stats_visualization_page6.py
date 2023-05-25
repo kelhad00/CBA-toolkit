@@ -30,8 +30,7 @@ def plot_expression_per_min(folder,expression, case=None):
     """
     a=expression_per_min(folder,expression,case)
     match = re.search(r'^([a-zA-Z]+)', expression)
-    print("Je print le folder : ", folder)
-    print("Je print ce que je récupère : ", a[0])
+
     split_elements = []
 
     for i in range(len(folder)) :
@@ -40,7 +39,6 @@ def plot_expression_per_min(folder,expression, case=None):
 
     expression = match.group(1)
     if case is None:
-        print("Admire l'envergure du rongeur :", len(a[0]))
         fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
         labels={'x':'Person', 'y':'Count'})
     else:

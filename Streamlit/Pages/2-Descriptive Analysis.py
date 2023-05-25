@@ -46,7 +46,7 @@ def page1():
             if fig2_0 != None :
                 st.write(fig2_0)
             else :
-                st.write("No Data ava")
+                st.write("No Data available")
             
     elif expression_choice == 'all' : 
         figures1 = []
