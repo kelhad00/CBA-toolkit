@@ -6,11 +6,11 @@ from pyunpack import Archive
 import zipfile
 import shutil
 
+Affichage_pattern.affichage()
 script_path = os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
 sys.path.append("..")
 
-Affichage_pattern.affichage()
 #______________________________________________________________________________________________
 # Here it's just to make watching more fun. 
 # You just have to put a music in the Streamlit folder (I mean the same directory as this python file).
@@ -43,16 +43,16 @@ def extract_zip(file):
     st.success("Valid directory!")
 
 def main_page():
-    #st.markdown("# Main page")
-
     st.sidebar.markdown("Main page")
-    st.title('Smiles and Laughs Study ')
-    st.markdown('''This is an interactive web page where we are going to show some statistics based on a given database.
-    \nThis database contains for the moment three datasets : CCDB, IFADV and NDC. Each dataset has files containing smiles and laughs. 
-    \nWe explored these smiles and laughs and we tried to know which kind of effects they could have on a person or during an interaction.
-    \n\nNow look at each page of the web page !''')
-    folder = st.file_uploader("Select the folder you want to import : ", type='zip')
+    st.title(' Non Verbal Expressions Study ')
+    st.markdown('''This is an interactive web page where we are going to show some statistics based on a given database.''')
+    
+    folder = st.file_uploader('''Select the folder you want to import : ''', type='zip')
     if folder is not None:
         extract_zip(folder)
+
+    st.markdown('''Each dataset of your database has files containing a list of tiers expressed during interactions between two people to be studied. 
+    \nWe explored these tiers and we tried to know which kind of effects they could have on a person or during an interaction.
+    \n\nNow look at each page of the web page !''')
 
 main_page()
