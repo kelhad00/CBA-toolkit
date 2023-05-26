@@ -1,3 +1,4 @@
+import subprocess
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
@@ -14,7 +15,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.settings import *
 from src.page6.snl_stats_visualization_page6 import *
 
-
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
 def page5():
     st.markdown("Here, we explore other areas to describe and see what we have in our database. \nLet's see each page !")
@@ -23,7 +24,7 @@ def page5():
         st.sidebar.markdown("Expression per minute")
         # # #Barplots ______________________________________________________
         st.title('Expression per minute')
-        st.markdown("We count the number of smiles or laughs we have in one minute in each dataset.")
+        st.markdown("We count the number of tiers we have in one minute in each dataset.")
         name_databases = [key.split('_')[0].upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Datasets list :", name_databases)
@@ -32,16 +33,12 @@ def page5():
                 databases_choice=databases_[i]
 
         if st.checkbox("All intensities"):
-            expression_choice=st.radio("Expression :", list(tier_lists.keys()))
+            expression_choice=st.radio("Expression:", list(tier_lists.keys()))
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-            # if expression_choice=='Smiles':
-            #     expression_choice='Smiles_0'
-            # else:
-            #     expression_choice='Laughs_0'
             expression_choice = expression_choice + '_0'
             choices_case=["Intra","Inter"]
-            case_choice = st.radio("Case :", choices_case)
+            case_choice = st.radio("Case:", choices_case)
             case_list=[None, 2]
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             for _ in range (len(case_list)):
@@ -56,27 +53,17 @@ def page5():
                 st.plotly_chart(plot_expression_per_min(databases_choice, expression_choice, case_choice))
 
         if st.checkbox("By intensity"):
-            expression_choice=st.radio("Expression : ", list(tier_lists.keys()))
+            expression_choice=st.radio("Expression: ", list(tier_lists.keys()))
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-            intensity_choice= st.radio("Intensity : ", tier_lists[expression_choice])
-            try :
+            intensity_choice= st.radio("Intensity: ", tier_lists[expression_choice])
+            if intensity_choice is not None:
                 if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice) == None)) :
-                    str.write("No data available ")
+                    str.write("No data available")
                 else :
                     st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(intensity_choice)))
-            except :
-
-                try :
-
-                    if (plot_expression_per_min_I(databases_choice, expression_choice, intensity_choice == None)) :
-                        str.write("No data available")
-                    else :
-                        st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, intensity_choice))
-                
-                except :
-
-                    st.write("No data available")
+            else :
+                st.write("No data available")
 
     page5_names_to_funcs = {
         "Expression per minute": page5_1,
@@ -85,4 +72,5 @@ def page5():
     selected_page = st.sidebar.selectbox("Select a page", page5_names_to_funcs.keys())
     page5_names_to_funcs[selected_page]()
 
+subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
 page5()

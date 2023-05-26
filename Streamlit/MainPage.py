@@ -22,23 +22,52 @@ sys.path.append("..")
 # st.audio(audio_bytes, format='audio/mp3')
 # Fonction pour extraire le contenu d'une archive ZIP
 def extract_zip(file):
-     
-    file_name = file.name.rstrip('zip')
-    path = "../data/"+file_name
-    with zipfile.ZipFile(file, "r") as zip_ref:
+    
+    file_name = file.name.rstrip('.zip')
+    path = "../data/"
+
+    if not os.path.exists(path):
+    # Créer le dossier
+        os.makedirs(path)
+
+    with zipfile.ZipFile(file, "r") as zip_ref :
         
         files = zip_ref.namelist()
+        only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]	
+        subfolders = [f for f in files if f.endswith('/')]
+        print(len(subfolders))
+        split_sulfolders = []
+
+        for folder in subfolders:
+            split_sulfolders.append(folder.split('/')[-2])
+        
+        for folder in split_sulfolders:
+            os.makedirs(path+folder, exist_ok=True)
         eaf_files = []  
 
-        for file in files :
+        for file in only_files :
             if file.endswith(".eaf") :
                 eaf_files.append(file)
-
-        if len(eaf_files) == 0 or len(eaf_files) != len(files):
+        
+        if len(eaf_files) == 0 or len(eaf_files) != len(only_files):
             st.error("Invalid directory")
             return
-    
-        zip_ref.extractall('../data')
+
+        zip_ref.extractall(path)
+        
+        for folder in split_sulfolders:
+            doss = os.path.join(path, file_name)
+            doss2 = os.path.join(doss, folder)
+            for fichier in os.listdir(doss2):
+                chemin_source = os.path.join(doss2, fichier)
+                chemin_destination = os.path.join(os.path.join(path, folder), fichier)
+            # Vérifier si le fichier est un fichier (et non un sous-dossier)
+                if os.path.isfile(chemin_source):
+                    shutil.move(chemin_source, chemin_destination)
+                    
+        if split_sulfolders :
+
+            shutil.rmtree(os.path.join(path, file_name))
 
     st.success("Valid directory!")
 

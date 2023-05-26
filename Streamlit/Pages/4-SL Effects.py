@@ -1,3 +1,4 @@
+import subprocess
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
@@ -13,7 +14,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.settings import *
 from src.page4.snl_stats_visualization_page4 import *
 
-
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
 def page3():
     st.sidebar.markdown("S&L Effects")
@@ -432,4 +433,5 @@ def page3():
     selected_page = st.sidebar.selectbox("Select a page", page3_names_to_funcs.keys())
     page3_names_to_funcs[selected_page]()
 
+subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
 page3()

@@ -16,8 +16,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import threading
 
-
-
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
 
     dg1 = get_db_from_func_no_pair(DIR, eval("get_tier_dict_folder"), name_databases, Tiers)
