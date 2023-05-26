@@ -1,3 +1,4 @@
+import subprocess
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
@@ -11,8 +12,8 @@ Affichage_pattern.affichage()
 from src.ml_stats import *
 from src.ml_stats_vizualisation import *
 from src.settings import *
-from src.snl_stats_visualization import *
-
+from src.snl_stats_extraction_data import get_parameters
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
 def page4():
     st.sidebar.markdown("ML Statistics")
@@ -96,4 +97,5 @@ def page4():
     selected_page = st.sidebar.selectbox("Select a page", page4_names_to_funcs.keys())
     page4_names_to_funcs[selected_page]()
 
-    page4()
+subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
+page4()

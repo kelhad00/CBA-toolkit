@@ -19,17 +19,15 @@ from .function_thread_page3 import *
 from multiprocessing import Queue
 
 #Scatter plots - Intra _______________________________________________
-def plot_intra_absolute_duration(database):
-
+def plot_intra_absolute_duration(database, expression_choice):
     if database != None :
 
         D = []
         Threads = []
         queue = Queue()
 
-        for database_single in database : 
-
-            Threads.append(threading.Thread(target=create_inter_absolute_plot(database_single, queue,)))
+        for database_single in database:
+            Threads.append(threading.Thread(target=create_intra_absolute_plot(database, queue, database_single, expression_choice)))
             
         for thread in Threads:
 
@@ -43,7 +41,7 @@ def plot_intra_absolute_duration(database):
         
         return D
 
-def plot_intra_relative_duration(database):
+def plot_intra_relative_duration(database, expression_choice):
     
 
     if database != None :
@@ -52,9 +50,8 @@ def plot_intra_relative_duration(database):
         Threads = []
         queue = Queue()
 
-        for database_single in database : 
-
-            Threads.append(threading.Thread(target=create_intra_relative_plot, args=(database_single, queue,)))
+        for database_single in database:
+            Threads.append(threading.Thread(target=create_intra_relative_plot, args=(database, queue, database_single, expression_choice)))
 
         for thread in Threads:
 
@@ -108,6 +105,16 @@ def plot_absolute_duration_from_spk_folder(listpaths,string):
     L=[fig1, fig2]
     return L
 
+def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, entity):
+    dg1=get_intra_tier_ad_from_tier_folder(listpaths,string, tier1, tier2, entity)
+    dg1=list_to_df(dg1[0], dg1[1])
+
+    fig1=px.scatter(dg1, x='subject', y='sum_time', color='label',
+    title=f"{tier2} absolute duration for {string} database - For {entity} {tier1}")
+
+    L=[fig1]
+    return L
+
 def plot_relative_duration_from_lsn_folder(listpaths,string):
     dg1=get_intra_smiles_rd_from_lsn_folder(listpaths,string)
     dg2=get_intra_laughs_rd_from_lsn_folder(listpaths,string)
@@ -146,6 +153,17 @@ def plot_relative_duration_from_spk_folder(listpaths,string):
 
     return L
 
+def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, entity):
+    dg1=get_intra_tier_rd_from_tier_folder(listpaths,string, tier1, tier2, entity)
+    dg1=list_to_df(dg1[0], dg1[1])
+
+    fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
+    title=f"{tier2} relative duration for {string} database - For {entity} {tier1}")
+    #,text=dg1['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), orientation='v')
+    #fig1.show()
+
+    L=[fig1]
+    return L
 
 #Scatter plots - Inter _______________________________________________
 def plot_inter_absolute_duration(database):

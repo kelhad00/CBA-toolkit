@@ -19,6 +19,7 @@ import threading
 from .function_thread_page2 import *
 from multiprocessing import Queue
 
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
 def plot_absolute_duration(expression, choice, name_databases):
     """Arg: expression (str) -> tiers
