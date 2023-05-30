@@ -2,8 +2,7 @@
     "FOLDER_PATHS": {
         "DIR": "..\\data",
         "ROOT1": "..\\data\\ccdb",
-        "ROOT2": "..\\data\\ifadv",
-        "ROOT3": "..\\data\\ndc"
+        "ROOT2": "..\\data\\ifadv"
     },
     "DATABASES_PATHS": {
         "ccdb_paths": [
@@ -21,12 +20,6 @@
             "..\\data\\ifadv\\DVB1B.eaf",
             "..\\data\\ifadv\\DVB2D.eaf",
             "..\\data\\ifadv\\DVB5H.eaf"
-        ],
-        "ndc_paths": [
-            "..\\data\\ndc\\8_1_A_M.eaf",
-            "..\\data\\ndc\\8_1_B_M.eaf",
-            "..\\data\\ndc\\8_2_A_M.eaf",
-            "..\\data\\ndc\\8_2_B_M.eaf"
         ]
     },
     "DATABASES_PAIR_PATHS": {
@@ -45,19 +38,12 @@
             "..\\data\\ifadv\\DVB2D.eaf",
             "..\\data\\ifadv\\DVA5G.eaf",
             "..\\data\\ifadv\\DVB5H.eaf"
-        ],
-        "ndc_pairs": [
-            "..\\data\\ndc\\8_1_A_M.eaf",
-            "..\\data\\ndc\\8_1_B_M.eaf",
-            "..\\data\\ndc\\8_2_A_M.eaf",
-            "..\\data\\ndc\\8_2_B_M.eaf"
         ]
     },
     "TIER_LISTS": {
         "Laughs": [
             "medium",
-            "low",
-            "high"
+            "low"
         ],
         "Smiles": [
             "subtle",

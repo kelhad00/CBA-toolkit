@@ -166,7 +166,7 @@ def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     return L
 
 #Scatter plots - Inter _______________________________________________
-def plot_inter_absolute_duration(database):
+def plot_inter_absolute_duration(database, expression_choice):
 
 
     if database != None :
@@ -177,7 +177,7 @@ def plot_inter_absolute_duration(database):
 
         for database_single in database : 
    
-            Thread.append(threading.Thread(target=create_inter_absolute_plot, args=(database_single,queue,)))
+            Thread.append(threading.Thread(target=create_inter_absolute_plot, args=(database, queue, database_single, expression_choice)))
 
         for thread in Thread :
 
@@ -190,7 +190,7 @@ def plot_inter_absolute_duration(database):
 
         return D
 
-def plot_inter_relative_duration(database):
+def plot_inter_relative_duration(database, expression_choice):
 
     if database != None :
 
@@ -200,7 +200,7 @@ def plot_inter_relative_duration(database):
 
         for database_single in database : 
              
-            Thread.append(threading.Thread(target=create_inter_relative_plot, args=(database_single,queue,)))
+            Thread.append(threading.Thread(target=create_inter_relative_plot, args=(database, queue, database_single, expression_choice)))
             
         for thread in Thread :
 
@@ -283,3 +283,5 @@ def plot_inter_rd_lsn_vs_spk(database):
     # fig1.show()
     # fig2.show()
     return [fig1, fig2]
+
+#Filter by Tiers
