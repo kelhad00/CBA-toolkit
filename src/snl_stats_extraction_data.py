@@ -23,7 +23,6 @@ create_json_from_directory()
 
 current_dir = os.getcwd()
 json_file_path = os.path.join(current_dir, 'data.json')
-print(json_file_path)
 
 #____________________________________________________________________
 
@@ -165,10 +164,8 @@ def correct_dict_role_tier(dict_,listpaths,string, tier):
     # print(dict_[0])
     #Si un sujet n'existe pas, on l'ajoute et on mets tous ses labels à 0
     subjects=[i for i in range(1,len(listpaths)+1)]
-    #print(subjects)
-    print('Dict_', dict_)
+
     for _ in dict_:dict_sub.append(_[0])
-    print('Dict_sub',dict_sub)
     for subject in subjects:
         if subject not in dict_sub:
             for i in tier_lists[tier]:
@@ -2803,7 +2800,6 @@ def get_inter_tier_ad_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,ent
         Tuple (list, description of the list) -> (list, ['database','label','conv','role','sum_time','time']) """
     df=get_tier_from_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2)
     df=list_to_df(df[0], df[1])
-    print(df)
     dg1=df.loc[:,['database','label','conv','role','diff_time']]
     dg1=dg1.groupby(['database','label','conv','role']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
