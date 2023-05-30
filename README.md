@@ -34,9 +34,10 @@ python main.py
 For the proper functioning of this toolbox, it is necessary to create a "data" folder containing your different datasets with annotated files in EAF format. This folder must be at the same level as the "src" or "Streamlit" folder, for example, at the root level.
 
 For each new dataset different from ndc, ifadv or ccdb, you are asked to create in the "db.py" script:
-* a function defining how to put the files in pairs according to the way of naming them.
+* a function to return a list of files in pairs according to the way of naming them defined such as: form_pairs_foldername.
+* a function to return the file paths of the pairs according to the way of naming them defined such as: form_list_pairs_nomdossier.
 
-Rely on the already existing functions on this subject such as "form_pairs_ccdb" for example
+Rely on the already existing functions on this subject such as "form_pairs_ccdb" and "form_list_pairs_ccdb" for example
 
 ## Examples
 

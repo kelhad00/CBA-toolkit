@@ -21,7 +21,7 @@ def page2():
     #Scatters plots___________________________________________________
     def page2_1():
         #st.sidebar.markdown("Intra S&L analysis")
-        st.title('Intra Expressions Analysis')
+        st.header('Intra Expressions Analysis')
         st.markdown("It's an analysis based on each individual.")
         st.subheader('By dataset')
 
@@ -108,37 +108,61 @@ def page2():
 
         figs_ab=st.selectbox("Absolute duration figures : ", lst_ab)
         options3 = st.multiselect('Datasets list : ', name_databases, key = 1)
-        lst_1=plot_inter_absolute_duration(options3, expression_choice1)
-        for i in range(len(lst_1)):
-            for d in range(len(lst_1[i])):
-                if figs_ab == lst_ab[d]:
-                    st.write(lst_1[i][d])
-
+        if tier_lists[expression_choice1]:
+            lst_1=plot_inter_absolute_duration(options3, expression_choice1)
+            for i in range(len(lst_1)):
+                for d in range(len(lst_1[i])):
+                    print(figs_ab)
+                    print(lst_ab[d])
+                    if figs_ab == lst_ab[d]:
+                        if lst_1[i][d] != None : 
+                            st.write(lst_1[i][d])
+                        else :
+                            st.write("No Data available")
+        else :
+            st.write("No data available")
+        
         figs_rd = st.selectbox("Relative duration Figures: ", lst_rd) 
         options4 = st.multiselect('Datasets list : ', name_databases, key = 2)
-        lst_2=plot_inter_relative_duration(options4, expression_choice1)
-        for k in range(len(lst_2)):
-            for l in range(len(lst_2[k])):
-                if figs_rd == lst_rd[l]:
-                    st.write(lst_2[k][l])
+        if tier_lists[expression_choice1]:
+            lst_2=plot_inter_relative_duration(options4, expression_choice1)
+            for k in range(len(lst_2)):
+                for l in range(len(lst_2[k])):
+                    if figs_rd == lst_rd[l]:
+                        if lst_2[k][l] != None :
+                            st.write(lst_2[k][l])
+                        else :
+                            st.write("No Data available")
+        else :
+            st.write("No data available")
 
         st.subheader('By dataset and expression')
         expression_choices_copy1 = expression_choices1.copy()
         expression_choice_copy1=st.radio("By expression:", expression_choices_copy1)
         expression_values1 = list(tier_lists[expression_choice_copy1])
         if expression_values1 :
+            expression_choice2 = expression_choices_copy1.copy()
+            expression_choice2.remove(expression_choice_copy1)
+            expression_choice2 = st.radio("With:", expression_choice2)
             database_choice=st.radio("Database choice : ", name_databases)
-            expression_choice_2 = expression_choices_copy1.copy()
-            expression_choice_2.remove(expression_choice_copy1)
-            expression_choice_2 = st.radio("With:", expression_choice_2)
-            lst_by_tier = [f"ad_plot_{expression_choice_copy1.lower()}", f"rd_plot_{expression_choice_copy1.lower()}"]
-            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            lst_roles=plot_inter_ad_spk_vs_lsn(database_choice)+plot_inter_rd_spk_vs_lsn(database_choice)+plot_inter_ad_lsn_vs_spk(database_choice)+plot_inter_rd_lsn_vs_spk(database_choice)
-            # lst_tiers = plot_inter_ad_tier_spk_vs_lsn(database_choice, expression_choice) + plot_inter_rd_tier_spk_vs_lsn(database_choice, expression_choice) + plot_inter_ad_tier_lsn_vs_spk(database_choice, expression_choice) + plot_inter_rd_tier_lsn_vs_spk(database_choice, expression_choice)
+            lst_by_tier = []
+            for entity1 in expression_values1 :
+                expression_values2 = expression_values1.copy()
+                expression_values2.remove(entity1)
+                if expression_values2 :
+                    for entity2 in expression_values2 :
+                        lst_by_tier.append(f"ad {expression_choice2.lower()} {entity1}_vs_{entity2}")
+                        lst_by_tier.append(f"rd {expression_choice2.lower()} {entity1}_vs_{entity2}")
             figs_roles=st.selectbox("Versus roles :", lst_by_tier)
-            for i in range(len(lst_by_tier)):
-                if figs_roles == lst_by_tier[i]:
-                    st.write(lst_roles[i])
+            try : 
+                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                lst_tiers=plot_inter_ad_entity1_vs_entity2_tier(database_choice, expression_choice_copy1, expression_choice2, entity1, entity2)+plot_inter_rd_entity1_vs_entity2_tier(database_choice, expression_choice_copy1, expression_choice2, entity1, entity2)
+                for i in range(len(lst_by_tier)):
+                    if figs_roles == lst_by_tier[i]:
+                        st.write(lst_tiers[i])
+            except :
+                st.write(f"No data available for: {expression_choice2.lower()} during {entity1} versus {entity2} {expression_choice_copy1}")
+    
         else :
             st.write("No data available")
 

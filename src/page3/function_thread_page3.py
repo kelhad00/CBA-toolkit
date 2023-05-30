@@ -53,13 +53,11 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
         
     print(dg)
     fig1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label'
-    #,text='time'
     , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv":"Interaction",
     "duration":"Time difference","label":"Entity"})
-    fig1_1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label'
-    #,text='time'
-    , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv":"Interaction",
-    "duration":"Time difference","label":"Entity"},trendline='rolling',trendline_options=dict(window=2))
+    fig1_1=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label', symbol='label'
+    , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv":"Pairs files",
+    "duration":"Time difference","label":"Entity"})
 
     L = [fig1, fig1_1]
     queue.put(L)
@@ -71,10 +69,9 @@ def create_inter_relative_plot(database, queue, database_single, expression_choi
     fig1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='percentage', color='label'
     , orientation='v', title=f'{expression_choice} Relative Duration per interaction', labels={"conv":"Interaction",
     "percentage":"Percentage difference","label":"Entity"})
-    fig1_1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='percentage', color='label'
-    #,text='time'
-    , orientation='v', title=f'{expression_choice} Relative Duration per interaction',labels={"conv":"Interaction",
-    "percentage":"Percentage difference","label":"Entity"},trendline='rolling',trendline_options=dict(window=2))
+    fig1_1=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='percentage', color='label', symbol='label'
+    , orientation='v', title=f'{expression_choice} Relative Duration per interaction',labels={"conv":"Pairs files",
+    "percentage":"Percentage difference","label":"Entity"})
 
     L = [fig1, fig1_1]
     queue.put(L)       

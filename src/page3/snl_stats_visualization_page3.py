@@ -218,6 +218,8 @@ def plot_inter_relative_duration(database, expression_choice):
 def plot_inter_ad_spk_vs_lsn(database):
     
     df = get_db_from_func_pair(DIR, get_inter_smiles_ad_spk_vs_lsn_folder)
+    # df = get_db_from_func_pair(DIR, get_inter_tier_ad_entity1_vs_entity2_folder, database, expression_choice, tier_lists)
+
     fig1=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='sum_time', color='label', symbol='role'
     #,text='time'
     , orientation='v', title='Smiles Absolute Duration - Speaker vs Listner',labels={"conv":"Interaction",
@@ -285,3 +287,23 @@ def plot_inter_rd_lsn_vs_spk(database):
     return [fig1, fig2]
 
 #Filter by Tiers
+def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
+
+    df = get_db_from_func_pair_tier(DIR, get_inter_tier_ad_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
+    fig1=px.scatter(df[df.database.eq(f'{database.lower()}')], x='conv', y='sum_time', color='label', symbol='role'
+    #,text='time'
+    , orientation='v', title=f'{tier2} Absolute Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
+    "sum_time":"Absolute Duration","label":f"Entity of {tier2}", "role":f"Entity of {tier1}"})
+    return [fig1]
+
+def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
+    
+    df = get_db_from_func_pair_tier(DIR, get_inter_tier_rd_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
+    fig1=px.scatter(df[df.database.eq(f'{database.lower()}')], x='conv', y='percentage', color='label', symbol='role'
+    #,text='time'
+    , orientation='v', title=f'{tier2} Relative Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
+    "percentage":"Percentage","label":f"Entity of {tier2}", "role":f"Entity of {tier1}"})
+
+    # fig1.show()
+    # fig2.show()
+    return [fig1]
