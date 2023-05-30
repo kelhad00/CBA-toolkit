@@ -145,6 +145,47 @@ def correct_dict_role_laughs(dict_,listpaths,string):
 
     return dict_
 
+def correct_dict_role_tier(dict_,listpaths,string, tier):
+    """This function set to 0 intensities that doesn't exist in our eaf files for tier.
+
+    Args:
+        dict_ (list): list of the tuple we have to fix
+        listpaths (list): list of eaf paths of a database
+        string (str): nae of the database concerned
+        tier (str): name of the tier concerned
+
+    Returns:
+        A list with previously non-existent intensities set to 0.    
+    """
+    dict_sub=[]
+    dict_present_subject=[]
+    label_present_subject=[]
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
+    # print(len(dict_))
+    # print(dict_[0])
+    #Si un sujet n'existe pas, on l'ajoute et on mets tous ses labels à 0
+    subjects=[i for i in range(1,len(listpaths)+1)]
+    #print(subjects)
+    print('Dict_', dict_)
+    for _ in dict_:dict_sub.append(_[0])
+    print('Dict_sub',dict_sub)
+    for subject in subjects:
+        if subject not in dict_sub:
+            for i in tier_lists[tier]:
+                dict_.append((subject,string,i,0,0,dict_[0][5]))
+        else:
+            #Si un sujet existe 
+            for _ in dict_: 
+                if _[0]==subject: 
+                    dict_present_subject.append(_) 
+                    for i in dict_present_subject : label_present_subject.append(i[2]) #je prends les labels du sujet qui existe que je stocke 
+            #Si un des labels normaux n'est pas dans cette liste de label, on le mets à 0
+                    for l in tier_lists[tier] :
+                        if l not in label_present_subject :
+                            dict_.append((subject, string,l,0,0,dict_[0][5]))# dict_=list(df_to_correct.to_records(index=False))
+    #print(len(dict_))
+
+    return dict_
 
 def get_SLdict(root):
     """
@@ -223,7 +264,7 @@ def get_tier_dict(root, tier):
     lst = to_dict[tier]
     return lst
 
-def get_IR_list(root,expression, intensity):
+def get_IR_list(root, expression, intensity):
     """
     Give the list of tier from a file for a given intensity or a given role
     Args :
@@ -1388,6 +1429,91 @@ def get_laughs_from_lsn_vs_spk_folder(listpaths,string):
     d=[]
     for _ in range(0,len(duration),2):
         if (_+1) < len(duration) : 
+            d.append((duration[_], duration[_+1]))
+
+    d=list(reversed(d))
+    for i,j in zip (conv,d):
+        db.loc[db.conv.eq(i),'duration']=max(j)
+    db=db.reindex(columns=['conv','role','label','subject','diff_time','duration','database'])
+    lst=df_to_list(db)
+    col=['conv','role','label','subject','diff_time','duration','database']
+
+    return lst,col
+
+def get_tier_from_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2):
+    """This function gives the list of tier when entity1 is in front of entity2.
+
+    Args:
+        listpaths (list): list of filespath
+        string (str): name of the database
+        tier1 (str): name of the tier of entity1
+        tier2 (str): name of the tier of entity2
+        entity1 (str): name of the entity1
+        entity2 (str): name of the entity2
+
+    Returns:
+        list of tuple and a description of what is inside the tuple : (list of tuple, ['conv','role','label','subject','diff_time','duration','database'])
+    """
+    df=list_to_df(get_tier_from_tier(listpaths,string,tier1,tier2,entity1)[0], get_tier_from_tier(listpaths,string,tier1,tier2,entity1)[1])
+    df['role']=list_of_words(entity1,len(df['label']))
+    dg=list_to_df(get_tier_from_tier(listpaths,string,tier1,tier2,entity2)[0], get_tier_from_tier(listpaths,string,tier1,tier2,entity2)[1])
+    dg['role']=list_of_words(entity2,len(dg['label']))
+
+    #Some corrections
+    df=df.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dict_=list(df.to_records(index=False))
+    dg=dg.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dict_2=list(dg.to_records(index=False))
+
+    df=correct_dict_role_tier(dict_,listpaths,string, tier2)
+    dg=correct_dict_role_tier(dict_2,listpaths,string, tier2)
+
+    df=pd.DataFrame.from_records(df, columns=['subject', 'database','label','duration','diff_time','role'])
+    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database','label','duration','diff_time','role'])
+
+    L1=[]
+    L2=[]
+    subj = list(np.unique((df.subject)))
+    for i in subj:
+        if i%2!=0 :     #if the number of the subject is unpair
+            L1.append(df[df.subject.eq(i)])
+        else:
+            L2.append(dg[dg.subject.eq(i)])
+
+    df=pd.concat(L1)
+    dg=pd.concat(L2)
+
+    #Put together these dataframes ordered by subject
+    db=pd.concat([df,dg])
+    db=pd.DataFrame(db.loc[:,['label','duration','diff_time','subject','database','role']]).reset_index()
+    db=db.drop(['index'],axis=1)
+    db=db.sort_values(['subject'], ascending=[True])
+
+
+    c=1
+    conv=[]
+    for i in range (1, len(db.duration),2):
+        values=[i,i+1]
+        dgg= db[db.subject.isin(values)]
+        conv+=list_of_words(c, len(dgg.subject))
+        c+=1
+    db['conv']=conv
+
+    #If subject change, take duration
+    duration=[]
+    for _ in list(np.unique((db.subject))) :
+        duration+=(list(np.unique(db.loc[db.subject.eq(_),'duration'])))
+    #duration=list(np.unique((db.duration)))
+    #print(duration)
+
+    if 0 not in duration : pass
+    else : duration.remove(0)
+    #print(duration, len(duration))
+
+    conv=list(np.unique((db.conv)))
+    d=[]
+    for _ in range(0,len(duration),2):
+        if (_+1) < len(duration) :
             d.append((duration[_], duration[_+1]))
 
     d=list(reversed(d))
@@ -2661,6 +2787,58 @@ def get_inter_laughs_rd_lsn_vs_spk_folder(listpaths,string):
 
     return lst,col
 
+#Tiers
+def get_inter_tier_ad_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2):
+    """This function calculates absolute duration for a tier when entity1 is in front of entity2.
+
+    Args:
+        listpaths (list): list of filespath
+        string (str): name of the database
+        tier1 (str): name of the tier1
+        tier2 (str): name of the tier2
+        entity1 (str): name of the entity1
+        entity2 (str): name of the entity2
+
+    Return :
+        Tuple (list, description of the list) -> (list, ['database','label','conv','role','sum_time','time']) """
+    df=get_tier_from_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2)
+    df=list_to_df(df[0], df[1])
+    print(df)
+    dg1=df.loc[:,['database','label','conv','role','diff_time']]
+    dg1=dg1.groupby(['database','label','conv','role']).sum().reset_index()
+    dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
+    dg1.columns=['database','label','conv','role','sum_time','time']
+    lst=df_to_list(dg1)
+    col=['database','label','conv','role','sum_time','time']
+    return lst,col
+
+def get_inter_tier_rd_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2):
+    """This function calculates relative duration for a tier when entity1 is in front of entity2.
+
+    Args:
+        listpaths (list): list of filespath
+        string (str): name of the database
+        tier1 (str): name of the tier1
+        tier2 (str): name of the tier2
+        entity1 (str): name of the entity1
+        entity2 (str): name of the entity2
+        tier_lists (dict): dictionary of tiers
+
+    Return :
+        Tuple (list, description of the list) -> (list, ['database','label','conv','role','sum_time','percentage']) """
+    df=get_tier_from_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2)
+    df=list_to_df(df[0], df[1])
+    dg1=df.loc[:,['database','label','duration','conv','role','diff_time']]
+    dg1=dg1.groupby(['database','label','duration','conv','role']).sum().reset_index()
+    dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
+    dg1.columns=['database','label','duration','conv','role','sum_time','percentage']
+    dg1.drop(dg1.columns[[2,5]], axis=1, inplace=True)
+    dg1=dg1.reindex(columns=['database','conv','label','percentage','role'])
+
+    lst=df_to_list(dg1)
+    col=['database','conv','label','percentage','role']
+
+    return lst,col
 
 #S&L track _____________________________________________________________________________________________________________________________ 
 def fill_sl_track(track, check, folder):
