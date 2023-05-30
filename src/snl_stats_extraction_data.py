@@ -426,6 +426,46 @@ def get_laughs_dict_conv_folder(filespaths,database):
     col=['startime','endtime','label', 'subject','diff_time', 'duration','database' ]
     return lst,col
 
+def get_tier_dict_conv_folder(filespaths,database,tier):
+    """
+    Give the dataframe of a tier from a folder.
+    Args :
+        filespaths (list) -> Cointain the filespath of the folder
+        database (str) -> your dataset selected
+        tier (str) -> tier name
+    Return a list of tuple and the list L =['startime','endtime','label', 'subject','diff_time', 'duration','database']
+    """
+    startime, endtime, label, subject,duration = ([] for _ in range(5))
+    s=1
+    n=0
+    for _ in range (len(filespaths)):
+        #print("file ",_,"duration n°",n)
+        lst_ = get_tier_dict(filespaths[_],tier)
+        eaf = pympi.Elan.Eaf(filespaths[n])
+        eaf2= pympi.Elan.Eaf(filespaths[n+1])
+        c=check_duration(eaf)
+        c2= check_duration(eaf2)
+        for i in range(len(lst_)):
+            subject.append(s)
+            startime.append(lst_[i][0])
+            endtime.append(lst_[i][1])
+            label.append(lst_[i][2])
+            duration.append(max(c,c2))
+
+        s+=1
+        if ((s-1)%2==0):
+            n+=2
+
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject, 'startime':startime, 
+    'endtime':endtime,'label':label,'duration':duration})
+    df['diff_time']=df['endtime']-df['startime']
+    df.columns=['database','subject','startime','endtime','label','duration','diff_time']
+    df=df.reindex(columns=['startime','endtime','label', 'subject','diff_time', 'duration','database' ])
+
+    lst=df_to_list(df)
+    col=['startime','endtime','label', 'subject','diff_time', 'duration','database' ]
+    return lst,col
+
 #By file _____________________________________________________________________________________________________________________________
 #Here, the get_overlapping_seg function (defined in interaction_analysis.py) makes directly intersection between the segments.
 def get_smiles_from_spk(root):
@@ -2233,6 +2273,219 @@ def get_inter_laughs_relative_duration_folder(listpaths,string):
     col=['conv','label','percentage','database']
 
     return lst,col
+
+def get_inter_tier_absolute_duration_folder(listpaths, string, tier, label):
+    """
+    This function calculates the absolute duration for a specific tier in a database considering one interaction.
+    Args:
+        listpaths (list): List of filespaths
+        string (str): Name of the database
+        tier (str): Tier name
+    Returns:
+        Tuple: (list of tuple, description of tuples) -> (list, ['conv', 'label', 'duration', 'database', 'time'])
+    """
+    df = get_tier_dict_conv_folder(listpaths, string, tier)
+    df = list_to_df(df[0], df[1])
+    dg1 = df.loc[:, ['subject', 'database', 'label', 'diff_time']]
+    dg1 = dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1['time'] = seconds_to_hmsms_list(dg1['diff_time'])
+    dg1.columns = ['subject', 'database', 'label', 'sum_time', 'time']
+
+    c = 1
+    conv = []
+
+    for i in range(1, len(listpaths), 2):
+        values = [i, i + 1]
+        dgg = dg1[dg1.subject.isin(values)]
+        conv += list_of_words(c, len(dgg.subject))
+        c += 1
+
+    dg1['conv'] = conv
+    dg1.columns = ['subject', 'database', 'label', 'sum_time', 'time', 'conv']
+
+    roles = []
+
+    for r in range(1, len(listpaths), 2):
+        dgf = dg1[dg1.subject.eq(r)]
+        roles += list_of_words("A", len(dgf.subject))
+        r += 1
+        dgf = dg1[dg1.subject.eq(r)]
+        roles += list_of_words("B", len(dgf.subject))
+
+    dg1['roles'] = roles
+    dg1.columns = ['subject', 'database', 'label', 'sum_time', 'time', 'conv', 'roles']
+
+    dg1 = dg1.loc[:, ['label', 'sum_time', 'conv', 'roles']]
+    dg1 = dg1.reindex(columns=['conv', 'label', 'sum_time', 'roles'])
+    dict_ = list(dg1.to_records(index=False))
+    
+    conv = list(np.unique(conv))
+    labels = label[tier]
+    for a in conv:
+        J_A = []
+        J_B = []
+        label_B = []
+        label_A = []
+        for _ in dict_:
+            if _[0] == a and _[3] == 'A':
+                J_A.append(_)
+            if _[0] == a and _[3] == 'B':
+                J_B.append(_)
+        for i in J_B:
+            label_B.append(i[1])
+        for j in J_A:
+            label_A.append(j[1])
+        for _ in labels:
+            if _ in label_B:
+                pass
+            else:
+                dict_.append((a, _, 0, 'B'))
+            if _ in label_A:
+                pass
+            else:
+                dict_.append((a, _, 0, 'A'))
+
+    conv = []
+    label = []
+    sum_time = []
+    roles = []
+    for _ in range(len(dict_)):
+        conv.append(dict_[_][0])
+        label.append(dict_[_][1])
+        sum_time.append(dict_[_][2])
+        roles.append(dict_[_][3])
+
+    dg1 = pd.DataFrame({'conv': conv, 'label': label, 'sum_time': sum_time, 'roles': roles})
+    dg1 = dg1.sort_values(['conv', 'label'], ascending=[True, True]).reset_index()
+    dg1.drop(dg1.columns[[0]], axis=1, inplace=True)
+
+    dfA = dg1[dg1.roles.eq('A')]
+    dfB = dg1[dg1.roles.eq('B')]
+
+    difA = pd.DataFrame(dfA).reset_index()
+    difB = pd.DataFrame(dfB).reset_index()
+
+    dg = difA.merge(difB, how='left', left_index=True, right_index=True)
+    diff_time = []
+    for i, j in zip(dg.sum_time_x, dg.sum_time_y):
+        diff_time.append(max(i, j) - min(i, j))
+    dg['diff_time'] = diff_time
+    dg.drop(dg.columns[[0, 3, 4, 5, 6, 7, 8, 9]], axis=1, inplace=True)
+    dg['database'] = list_of_words(string, len(dg.conv_x))
+    dg.columns = ['conv', 'label', 'duration', 'database']
+    dg['time'] = seconds_to_hmsms_list(dg['duration'])
+    dg.columns = ['conv', 'label', 'duration', 'database', 'time']
+
+    lst = df_to_list(dg)
+    col = ['conv', 'label', 'duration', 'database', 'time']
+
+    return lst, col
+
+def get_inter_tier_relative_duration_folder(listpaths, string, tier, label):
+    """
+    This function calculates relative duration for a specific tier in a database considering one interaction.
+    Args:
+        listpaths (list): List of filespaths
+        string (str): Name of the database
+        tier (str): Tier name
+    Returns:
+        Tuple: (list of tuple, description of tuples) -> (list, ['conv', 'label', 'percentage', 'database'])
+    """
+    
+    df = get_tier_dict_conv_folder(listpaths, string, tier)
+    df = list_to_df(df[0], df[1])
+    dg1 = df.loc[:, ['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1 = dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
+    dg1.columns=['subject','database','label','duration','sum_time','percentage']
+
+    c = 1
+    conv = []
+
+    for i in range(1, len(listpaths), 2):
+        values = [i, i + 1]
+        dgg = dg1[dg1.subject.isin(values)]
+        conv += list_of_words(c, len(dgg.subject))
+        c += 1
+
+    dg1['conv'] = conv
+    dg1.columns = ['subject', 'database', 'label', 'duartion', 'sum_time', 'time', 'conv']
+
+    roles = []
+
+    for r in range(1, len(listpaths), 2):
+        dgf = dg1[dg1.subject.eq(r)]
+        roles += list_of_words("A", len(dgf.subject))
+        r += 1
+        dgf = dg1[dg1.subject.eq(r)]
+        roles += list_of_words("B", len(dgf.subject))
+
+    dg1['roles'] = roles
+    dg1.columns = ['subject', 'database', 'label', 'duartion', 'sum_time', 'percentage', 'conv', 'roles']
+
+    dg1 = dg1.loc[:, ['label', 'percentage', 'conv', 'roles']]
+    dg1 = dg1.reindex(columns=['conv', 'label', 'percentage', 'roles'])
+    dict_ = list(dg1.to_records(index=False))
+
+    labels = label[tier]
+    for a in conv:
+        J_A = []
+        J_B = []
+        label_B = []
+        label_A = []
+        for _ in dict_:
+            if _[0] == a and _[3] == 'A':
+                J_A.append(_)
+            if _[0] == a and _[3] == 'B':
+                J_B.append(_)
+        for i in J_B:
+            label_B.append(i[1])
+        for j in J_A:
+            label_A.append(j[1])
+        for _ in labels:
+            if _ in label_B:
+                pass
+            else:
+                dict_.append((a, _, 0, 'B'))
+            if _ in label_A:
+                pass
+            else:
+                dict_.append((a, _, 0, 'A'))
+                
+    conv = []
+    label = []
+    pct = []
+    roles = []
+    for _ in range(len(dict_)):
+        conv.append(dict_[_][0])
+        label.append(dict_[_][1])
+        pct.append(dict_[_][2])
+        roles.append(dict_[_][3])
+
+    dg1 = pd.DataFrame({'conv': conv, 'label': label, 'percentage': pct, 'roles': roles})
+    dg1 = dg1.sort_values(['conv', 'label'], ascending=[True, True]).reset_index()
+    dg1.drop(dg1.columns[[0]], axis=1, inplace=True)
+
+    dfA = dg1[dg1.roles.eq('A')]
+    dfB = dg1[dg1.roles.eq('B')]
+
+    difA = pd.DataFrame(dfA).reset_index()
+    difB = pd.DataFrame(dfB).reset_index()
+
+    dg = difA.merge(difB, how='left', left_index=True, right_index=True)
+    diff_pct = []
+    for i, j in zip(dg.percentage_x, dg.percentage_y):
+        diff_pct.append(max(i, j) - min(i, j))
+    dg['diff_pct'] = diff_pct
+    dg.drop(dg.columns[[0, 3, 4, 5, 6, 7, 8, 9]], axis=1, inplace=True)
+    dg['database'] = list_of_words(string, len(dg.conv_x))
+    dg.columns = ['conv', 'label', 'percentage', 'database']
+
+    lst=df_to_list(dg)
+    col=['conv', 'label', 'percentage', 'database']
+
+    return lst, col
+
 
 #By roles
 #Smiles
