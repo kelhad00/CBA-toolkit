@@ -216,6 +216,41 @@ def get_SLdict(root):
     #print(f"Nb laughs in S&L : {nb}", lst)
     return lst
 
+def get_TCdict(root, track, check):
+    """
+    Return a list of Track & Check tier with the label corresponding to the track and check tiers dictionnaries
+
+    Args :
+        root (str) -> Path of the file
+    """
+    lst1 = get_tier_dict(root, track)
+    lst2 = get_tier_dict(root, check)
+    to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
+    if track not in to_dict:
+        track = track + '_0'
+    if check not in to_dict:
+        check = check + '_0'
+    lst=to_dict[track] + to_dict[check]
+
+    nb=0
+    for _ in range (0, len(lst),1):
+        for j in lst1:
+            if (lst[_][0] == j[0]) and (lst[_][1] == j[1]):
+                nb+=1
+                y=list(lst[_])
+                y[2]=track
+                lst[_]=tuple(y)
+    #print(f"Nb track in TC : {nb}", lst)
+    nb=0
+    for _ in range (0, len(lst),1):
+        for j in lst2:
+            if (lst[_][0] == j[0]) and (lst[_][1] == j[1]):
+                nb+=1
+                y=list(lst[_])
+                y[2]=check
+                lst[_]=tuple(y)
+    #print(f"Nb check in TC : {nb}", lst)
+    return lst
 def get_Sdict(root):
     """
     Give the list of smiles from a file.
@@ -2836,50 +2871,41 @@ def get_inter_tier_rd_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,ent
 
     return lst,col
 
-#S&L track _____________________________________________________________________________________________________________________________ 
-def fill_sl_track(track, check, folder):
+#Expressions track _____________________________________________________________________________________________________________________________ 
+def fill_expression_track(track, check, folder, database):
     """This function fill some lists where we put previous and next expressions concerning a tracked expression.
 
     Args:
-        track (string): L or S for laugh or smile
-        check (string): L or S for laugh or smile
+        track (string): expression tracked
+        check (string): expression checked
         folder (list): eaf paths
+        database (string): database concerned
 
     Returns:
         tuple: (database concerned, number of the expression, list of previous expressions, list of next expressions). Each element of the tuple is a list.
     """
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    if folder==databases_paths["ccdb_paths"]:
-        string='ccdb'
-    if folder==databases_paths["ifadv_paths"]:
-        string='ifadv'
-    if folder==databases_paths["ndc_paths"]:
-        string='ndc'
+    string = database.lower()
 
     track_p,track_f,sl_number,subjects=([] for _ in range(4))
 
     for root in range (0,len(folder),1):
-        #lst=read_eaf_to_dict (folder[root], mark=True, tiers=None)
-        sl_lst=get_SLdict(folder[root])
-
-        track_lst=eval('get_'+track+'dict')(folder[root])
-        #s_lst=lst["Smiles_0"]
+        # sl_lst=get_SLdict(folder[root])
+        sl_lst = get_TCdict(folder[root], track, check)
+        # track_lst=eval('get_'+track+'dict')(folder[root])
+        track_lst=eval('get_tier_dict')(folder[root],track)
         
-        #On prends le stt et le stp d'un élément de Laughs_0 (on répètera l'action pour tous les éléments de Laughs_0).
-        #Pour tous les éléments de track_lst
+        #For all elements in track_lst
         i=1
         for _ in range(0, len(track_lst),1):
             stt = track_lst[_][0]
             stp = track_lst[_][1]
             subjects.append(string)
-            #je repère d'abord mon stt et stp dans la liste S&L
             for _ in range(0, len(sl_lst),1):
                 if (sl_lst[_][0] == stt) and (sl_lst[_][1] == stp):
-                    #print(sl_lst[_])
                     if (sl_lst[_] == sl_lst[0]):    #we check if we are with the first element of the list
                             track_p.append('non')
                     else:
-                        if (sl_lst[_-1][2]==check):           #je repère si j'ai un sourire avant ou non
+                        if (sl_lst[_-1][2].split('_')[0]==check):           
                             track_p.append('oui')
                         else :
                             track_p.append('non')
@@ -2887,7 +2913,7 @@ def fill_sl_track(track, check, folder):
                     if (sl_lst[_] == sl_lst[len(sl_lst)-1]):    #we check if we are with the last element of the list
                         track_f.append('non')
                     else :
-                        if (sl_lst[_+1][2]==check):       #je repère si j'ai un sourire après ou non
+                        if (sl_lst[_+1][2].split('_')[0]==check):       
                             track_f.append('oui')
                         else :
                             track_f.append('non')
@@ -2897,7 +2923,7 @@ def fill_sl_track(track, check, folder):
 
     return subjects,sl_number,track_p, track_f
 
-def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track,case,special=bool):
+def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track, track, check, tier_lists, special=bool):
     """This function fill some lists where we put previous and next expressions concerning a tracked expression filtered by intensity
 
     Args:
@@ -2905,24 +2931,16 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
         string (str): name of the database
         function_to_lst_check (function): _description_
         function_to_lst_track (function): _description_
-        case (str): Can be S for smiles or L for laughs. For example, if we are tracking laughs, it's L
+        track (str): name of the tracked expression
+        check (str): name of the checked expression
         special (str, optional): . Defaults to bool.
 
     Returns:
         tuple -> (database,current_level,track_number,trackp,trackf). Each element of the tuple is a list
 
     """
-    """
-    Now, we want to now what we have function of the intensity of the laugh.
-    So we do the process below for each level of laugh.
-    For example : intensity high.
-    We take the corresponding dictionnary to this intensity.
-    For each element of this dict, for example for laugh n°1 :
-        * Check this laugh in the S&L dict (1) | Particularity : By role, we maybe wont find the laugh in the dict because of overlapping function.
-        * Take the smile before/after      (2)
-        * Check this smile in the smiles_dict   (3)
-        * Put this unique smile's intensity in a list (trackp (previous) / trackf (followed) ) (4)
-    Return two databases : for previous and next smiles
+    """This function fill some lists where we put previous and next expressions concerning a tracked expression filtered by intensity
+    Return two databases : for previous and next expressions 
     """
 
     #Variables
@@ -2930,27 +2948,20 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
     
     for root in folder :
         n=1
-        sl_lst=get_SLdict(root)
-        lst_check=apply_funct2(function_to_lst_check,keep_info,root,special)
-        lst_track=apply_funct2(function_to_lst_track,keep_info,root,special)
-        if case=="L":
-            low_lst=keep_info_with_lab(lst_track, 'low',2)
-            med_lst=keep_info_with_lab(lst_track, 'medium',2)
-            high_lst=keep_info_with_lab(lst_track, 'high',2)
-            level_list=low_lst+ med_lst+ high_lst
-            current_level=current_level+list_of_words("low",len(low_lst))+list_of_words("med",len(med_lst))+list_of_words("high",len(high_lst))
-        if case=='S':
-            subtle_lst=keep_info_with_lab(lst_track, 'subtle',2)
-            low_lst=keep_info_with_lab(lst_track, 'low',2)
-            med_lst=keep_info_with_lab(lst_track, 'medium',2)
-            high_lst=keep_info_with_lab(lst_track, 'high',2)
-            level_list=subtle_lst+low_lst+med_lst+high_lst
-            current_level=current_level+list_of_words("subtle",len(subtle_lst))+list_of_words("low",len(low_lst))+list_of_words("med",len(med_lst))+list_of_words("high",len(high_lst))
+        sl_lst=get_TCdict(root, track, check)
+        # lst_check=apply_funct2(function_to_lst_check,keep_info,root,special) 
+        lst_check = eval('function_to_lst_check')(root,check)
+        # lst_track=apply_funct2(function_to_lst_track,keep_info,root,special)
+        lst_track = eval('function_to_lst_track')(root,track)
         
-        #print("\n Root =",root,"\n S&L : ", sl_lst, "\n\n List to check : ", lst_check, "\n\n List to track :", level_list)
-        
+        level_list = []
+        current_level = []
+        for entity in tier_lists[track]:
+            lst = keep_info_with_lab(lst_track, entity, 2)
+            level_list += lst
+            current_level += list_of_words(entity.lower(), len(lst))
+
         all_stt_s=[k[0] for k in lst_check]
-        #all_stp_s=[k[1] for k in lst_check]
         if len(level_list)== 0:
             pass
         else :
@@ -2964,7 +2975,7 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
                         if (sl_lst[_] == sl_lst[0]):    #we check if we are with the first element of the list
                             trackp.append('null')
                         else:
-                            if (sl_lst[_-1][2]=='S'):  #(2)
+                            if (sl_lst[_-1][2].split('_')[0]==check):  #(2)
                                 index_=0
                                 stt_s=0
                                 for k in all_stt_s:
@@ -2990,7 +3001,7 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
                         if (sl_lst[_] == sl_lst[len(sl_lst)-1]):    #we check if we are with the last element of the list
                             trackf.append('null')
                         else :
-                            if (sl_lst[_+1][2]=='S'):       #(2)
+                            if (sl_lst[_+1][2].split('_')[0]==check):       #(2)
                                 index_=0
                                 stt_s=0
                                 for k in all_stt_s:
@@ -3021,13 +3032,14 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
 
     return database,current_level,track_number,trackp,trackf
 
-def SL_track(check, track,dir):
+def expression_track(check, track, dir, databases_name):
     """This function determines the previous and next expressions we have concerning a tracked expression.
 
     Args:
-        check (str): L or S for laugh or smile. It's the expression which preced or follow.
-        track (str): L or S for laugh or smile. It's the expression of which we want to know what is before and after.
+        check (str): It's the expression which preceed or follow.
+        track (str): It's the expression of which we want to know what is before and after.
         dir (str) : path of the folder containing all databases.
+        databases_name (list) : list of the databases names.
 
     Returns:
         database : A database containing the quantity of previous and next expressions.
@@ -3038,14 +3050,13 @@ def SL_track(check, track,dir):
     for path in os.listdir(dir):
         if os.path.isdir(os.path.join(dir, path)):
             n+=1
-            data=["ccdb","ifadv","ndc"]
-            for i in data:
-                if path==i:
+            for i in databases_name:
+                if path==i.lower():
                     L.append(get_all_filepaths((os.path.join(dir, path)), "eaf", None))   
 
     for i in range (len(L)) :
 
-        a=fill_sl_track(track, check,L[i])
+        a=fill_expression_track(track, check,L[i], databases_name[i])
         # Check list lengths
         if len(a[0]) == len(a[1]) == len(a[2]) == len(a[3]):
             df1 = pd.DataFrame({'Database': a[0], 'N°' + track: a[1], 'Trackp': a[2], 'Trackf': a[3]})
@@ -3059,7 +3070,7 @@ def SL_track(check, track,dir):
 
     df= pd.concat(dg)
 
-    #Previous smile's track    
+    #Previous expression's track    
     df_g = df.groupby(['Trackp', 'Database']).size().reset_index()
     df_g.columns = ['Trackp', 'Database', 'Countp']
     df_t=df_g.groupby(['Database'])['Countp'].sum().reset_index()
@@ -3074,7 +3085,7 @@ def SL_track(check, track,dir):
     df_g.columns = ['Trackp', 'Databasep', 'Countp','tot','Percentagep']
 
 
-    # #Following smile's track 
+    # #Following expression's track 
     df1_g = df.groupby(['Trackf', 'Database']).size().reset_index()
     df1_g.columns = ['Trackf', 'Database', 'Countf']
     df_t1=df1_g.groupby(['Database'])['Countf'].sum().reset_index()
@@ -3094,16 +3105,15 @@ def SL_track(check, track,dir):
 
     return dg
 
-def SL_track_byI(check, track, dir):
+def expression_track_byI(check, track, DIR, databases_name, tier_lists):
     """This function determines the previous and next expression taking into account the intensities.
     Args :
-        check (str): L or S for laugh or smile. It's the expression which preced or follow.
-        track (str): L or S for laugh or smile. It's the expression of which we want to know what is before and after.
+        check (str): It's the expression which preced or follow.
+        track (str): It's the expression of which we want to know what is before and after.
         dir (str) : path of the folder containing all databases.
     Returns:
         tuple: (database for previous expressions, database for next expressions)
     """
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
     #Variables
     dg=[]
     n =0
@@ -3111,13 +3121,13 @@ def SL_track_byI(check, track, dir):
     for path in os.listdir(DIR):
         if os.path.isdir(os.path.join(DIR, path)):
             n+=1
-            data=["ccdb","ifadv","ndc"]
-            for i in data:
-                if path==i:
+            for i in databases_name:
+                if path==i.lower():
                     L.append((get_all_filepaths((os.path.join(DIR, path)), "eaf", None), path))
 
     for i in range (len(L)) :
-        a=fill_trackfp_byIR(L[i][0], L[i][1], eval('get_'+check+'dict'), eval('get_'+track+'dict'), track, False )
+        # a=fill_trackfp_byIR(L[i][0], L[i][1], eval('get_'+check+'dict'), eval('get_'+track+'dict'), track, False )
+        a=fill_trackfp_byIR(L[i][0], L[i][1], get_tier_dict, get_tier_dict, track, check, tier_lists, False )
         # Check list lengths
         if len(a[0]) == len(a[1]) == len(a[2]) == len(a[3]) == len(a[4]):
             df1 = pd.DataFrame({'Database':a[0],'Current_level_'+track : a[1], 'N°'+track: a[2],'Intensityp': a[3],
@@ -3133,7 +3143,7 @@ def SL_track_byI(check, track, dir):
 
     df= pd.concat(dg)
     
-    #Previous smiles
+    #Previous expression
     df_g = df.groupby(['Intensityp', 'Database', 'Current_level_'+track]).size().reset_index()
     df_g.columns = ['Intensityp', 'Database', 'Current_level_'+track, 'Count']
     df_t=df_g.groupby(['Database','Current_level_'+track])['Count'].sum().reset_index()
@@ -3149,7 +3159,7 @@ def SL_track_byI(check, track, dir):
     #df_g['percentage'] = df.groupby(['Trackp', 'Database']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
     df_g.columns = ['Intensityp', 'Databasep', 'Current_level_'+track+'p', 'Countp','tot','Percentagep']
 
-    #Following smiles
+    #Following expression
     df1_g = df.groupby(['Intensityf', 'Database', 'Current_level_'+track]).size().reset_index()
     df1_g.columns = ['Intensityf', 'Database', 'Current_level_'+track,'Count']
     df_t1=df1_g.groupby(['Database','Current_level_'+track])['Count'].sum().reset_index()
@@ -3163,7 +3173,6 @@ def SL_track_byI(check, track, dir):
     df1_g.columns = ['Intensityf', 'Databasef', 'Current_level_'+track+'f','Countf','tot','Percentagef'] 
 
     #dg= pd.concat([df_g, df1_g],axis=1)
-
     return df_g, df1_g
 
 #Probabilities mimicry _________________________________________________________________________________________________________________________

@@ -17,44 +17,56 @@ from src.page4.snl_stats_visualization_page4 import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
 def page3():
-    st.sidebar.markdown("S&L Effects")
+    st.sidebar.markdown("Non Verbal Expressions Effects")
     st.title('Effects analysis')
     st.markdown('''In this part, we want to know if an expression has an effect on another one.''')
 
     def page3_1():
-        st.title('Intra S&L effects')
-        st.subheader('Smiles & Laughs Track')
+        st.header('Intra Non Verbal Expressions Effects')
+        st.subheader('Expressions Track')
         text_='''Here, we are checking what is before and after an expression in ploting percentage of the preceded and next expression.
         \n Track choice --> The expression we want to study
         \n Check choice --> Expression before and after the track choice.
-        
-        \nNB : These cases dont work for the moment. 
-        \nTrack choice = S & Check choice = L     and    Track choice = S & Check choice = S'''
+        '''
         st.markdown(text_)
-        track_choice=st.radio("Track choice ->", ['L', 'S'])
+        databases_name = [key.split('_')[0].upper() for key in databases.keys()]
+        expression_choices = list(tier_lists.keys())
+        expression_choices_2 = list(tier_lists.keys())
+        track_choice=st.radio("Track choice: ", expression_choices)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        check_choice=st.radio("Check choice ->", ['L', 'S'])
+        check_choice=st.radio("Check choice: ", expression_choices_2)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         # #st.subheader('Previous')
-        fig1= plot_track_previous_SL(SL_track(check_choice,track_choice, DIR), track_choice)
-        fig2= plot_track_following_SL(SL_track(check_choice,track_choice, DIR), track_choice)
-        st.plotly_chart(fig1)
-        # #st.subheader('Following')
-        st.plotly_chart(fig2) 
+        fig1= plot_track_previous_expression(expression_track(check_choice, track_choice, DIR, databases_name), track_choice)
+        fig2= plot_track_following_expression(expression_track(check_choice, track_choice, DIR, databases_name), track_choice)
+        if fig1 != None :
+            st.plotly_chart(fig1)
+        else:
+            st.write("No data to display")
+        if fig2 != None : 
+            st.plotly_chart(fig2)
+        else:
+            st.write("No data to display")
 
-        st.subheader('Smiles & Laughs Track by intensity')
+        st.subheader('Expressions Track by intensity')
         st.markdown("We do the same action as before but taking into account the intensities.")
-        track_choice=st.radio("Track choice :", ['L', 'S'])
+        expression_choices1 = list(tier_lists.keys())
+        track_choice=st.radio("Track choice:", expression_choices1)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        check_choice=st.radio("Check choice :", ['L', 'S'])
+        expression_choices2 = list(tier_lists.keys())
+        check_choice=st.radio("Check choice:", expression_choices2)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-        # #st.subheader('Previous')
-        fig1= plot_track_previous_SL_byI(SL_track_byI(check_choice,track_choice,DIR)[0], track_choice)
-        fig2= plot_track_following_SL_byI(SL_track_byI(check_choice,track_choice,DIR)[1], track_choice)
-        st.plotly_chart(fig1)
-        # #st.subheader('Following')
-        st.plotly_chart(fig2) 
+        fig1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[0], track_choice)
+        fig2= plot_track_following_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[1], track_choice)
+        if fig1 != None :
+            st.plotly_chart(fig1)
+        else:
+            st.write("No data to display")
+        if fig2 != None :
+            st.plotly_chart(fig2) 
+        else:
+            st.write("No data to display")
 
     def page3_2():
         st.header('Inter S&L effects')

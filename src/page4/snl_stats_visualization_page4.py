@@ -17,71 +17,61 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import threading
 
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 #Until #Mimicry, all the functions below are plotting exactly what its written just after "plot_" in their names.
 
-#S&L track - Intra __________________________________________________
-def plot_track_previous_SL(dg, track_choice):
-    """Args : The dataframe come from SL_track function"""
-
-    if track_choice == 'S':
-        track_choice = 'Smiles'
-    elif track_choice == 'L':
-        track_choice = 'Laughs'
-
-    fig=px.bar(dg, x='Trackp', y=['Countp'], color='Databasep', barmode='group',
-    text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-    labels={"Trackp": f"Previous {track_choice}"},
-                title=f"Tracking Previous {track_choice.capitalize()}")
-    #fig.show()
-    return fig
-def plot_track_following_SL(dg, track_choice):
-    """Args : The dataframe come from SL_track function"""
-
-    if track_choice == 'S':
-        track_choice = 'Smiles'
-    elif track_choice == 'L':
-        track_choice = 'Laughs'
-
-    fig=px.bar(dg, x='Trackf', y=['Countf'], color='Databasef', barmode='group',
-    text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-    labels={"Trackf": f"Next {track_choice}"},
-                title=f"Tracking Next {track_choice.capitalize()}")
-    #fig.show()
+#Expression track - Intra __________________________________________________
+def plot_track_previous_expression(dg, track_choice):
+    """Args : The dataframe come from expression_track function"""
+    if not dg.empty:
+        fig=px.bar(dg, x='Trackp', y=['Countp'], color='Databasep', barmode='group',
+        text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
+        labels={"Trackp": f"Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}"},
+                    title=f"Tracking Previous {track_choice.capitalize()}")
+        fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
+    else :
+        fig = None
     return fig
 
-#By intensity
-def plot_track_previous_SL_byI(dg, track_choice):
-    """Args : The dataframe comes from SL_track_byI function"""
-    
-    if track_choice == 'S':
-        track_choice = 'Smiles'
-    elif track_choice == 'L':
-        track_choice = 'Laughs'
-
-    fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
-    facet_col=dg.iloc[:,2].name,
-    text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-    labels={"Intensityp": f"Intensity Of Previous {track_choice}"},
-                title=f"Tracking Previous {track_choice}")
-    fig.for_each_xaxis(lambda axis: axis.update(title=f"Previous {track_choice}"))
-    #fig.show()
+def plot_track_following_expression(dg, track_choice):
+    """Args : The dataframe come from expression_track function"""
+    if not dg.empty:
+        fig=px.bar(dg, x='Trackf', y=['Countf'], color='Databasef', barmode='group',
+        text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
+        labels={"Trackf": f"Next {track_choice}", "Countf": f"Count Of Next {track_choice}"},
+                    title=f"Tracking Next {track_choice.capitalize()}")
+        fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
+    else :
+        fig = None
     return fig
 
-def plot_track_following_SL_byI(dg, track_choice):
-    """Args : The dataframe come from SL_track_byI function"""
-    
-    if track_choice == 'S':
-        track_choice = 'Smiles'
-    elif track_choice == 'L':
-        track_choice = 'Laughs'
-        
-    fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
-    facet_col=dg.iloc[:,2].name,
-    text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-    labels={"Intensityf": f"Intensity Of Next {track_choice}"},
-                title=f"Tracking Next {track_choice}")
-    fig.for_each_xaxis(lambda axis: axis.update(title=f"Next {track_choice}"))
-    #fig1.show()
+#By Entity
+def plot_track_previous_expression_byI(dg, track_choice):
+    """Args : The dataframe comes from expression_track_byI function"""
+    if not dg.empty:
+        fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
+        facet_col=dg.iloc[:,2].name,
+        text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
+        labels={"Intensityp": f"Entity Of Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}"},
+                    title=f"Tracking Previous {track_choice}")
+        fig.for_each_xaxis(lambda axis: axis.update(title=f"Previous {track_choice}"))
+        fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
+    else : 
+        fig = None
+    return fig
+
+def plot_track_following_expression_byI(dg, track_choice):
+    """Args : The dataframe come from expression_track_byI function"""
+    if not dg.empty:    
+        fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
+        facet_col=dg.iloc[:,2].name,
+        text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
+        labels={"Intensityf": f"Entity Of Next {track_choice}", "Countf": f"Count Of Next {track_choice}"},
+                    title=f"Tracking Next {track_choice}")
+        fig.for_each_xaxis(lambda axis: axis.update(title=f"Next {track_choice}"))
+        fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
+    else :
+        fig = None
     return fig
 
     #Mimicry______________________________________________________________
