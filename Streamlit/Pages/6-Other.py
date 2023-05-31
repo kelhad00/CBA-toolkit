@@ -24,7 +24,7 @@ def page5():
     def page5_1():
         st.sidebar.markdown("Expression per minute", )
         # # #Barplots ______________________________________________________
-        st.title('Expression per minute')
+        st.header('Expression per minute')
         st.markdown("We count the number of tiers we have in one minute in each dataset.")
         name_databases = [key.split('_')[0].upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
@@ -37,7 +37,7 @@ def page5():
             expression_choice=st.radio("Expression:", list(tier_lists.keys()))
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-            expression_choice = expression_choice + '_0'
+            expression_choice = expression_choice
             choices_case=["Intra","Inter"]
             case_choice = st.radio("Case:", choices_case)
             case_list=[None, 2]
@@ -69,12 +69,12 @@ def page5():
     def page5_2() :
 
         st.sidebar.markdown("Database Information", )
-        st.title('Database Information')
+        st.header('Database Information')
         name_databases = [key.split('_')[0].upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
-        databases_choice=st.selectbox("Datasets list :", name_databases)
-        name_tiers = [key.split('_')[0] for key in tier_lists.keys()] + ["GENERAL"]
-        tiers_choice=st.selectbox("Tiers list :", name_tiers, index=name_tiers.index("GENERAL"))
+        databases_choice=st.selectbox("Datasets list:", name_databases)
+        name_tiers = list(tier_lists.keys()) + ["GENERAL"]
+        tiers_choice=st.selectbox("Tiers list:", name_tiers, index=name_tiers.index("GENERAL"))
 
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:

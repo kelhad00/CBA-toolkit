@@ -46,13 +46,13 @@ def plot_track_following_expression(dg, track_choice):
     return fig
 
 #By Entity
-def plot_track_previous_expression_byI(dg, track_choice):
+def plot_track_previous_expression_byI(dg, track_choice, check_choice):
     """Args : The dataframe comes from expression_track_byI function"""
     if not dg.empty:
         fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityp": f"Entity Of Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}"},
+        labels={"Intensityp": f"Entity Of Previous {check_choice}", "Countp": f"Count Of Previous {track_choice}"},
                     title=f"Tracking Previous {track_choice}")
         fig.for_each_xaxis(lambda axis: axis.update(title=f"Previous {track_choice}"))
         fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
@@ -60,13 +60,13 @@ def plot_track_previous_expression_byI(dg, track_choice):
         fig = None
     return fig
 
-def plot_track_following_expression_byI(dg, track_choice):
+def plot_track_following_expression_byI(dg, track_choice, check_choice):
     """Args : The dataframe come from expression_track_byI function"""
     if not dg.empty:    
         fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityf": f"Entity Of Next {track_choice}", "Countf": f"Count Of Next {track_choice}"},
+        labels={"Intensityf": f"Entity Of Next {check_choice}", "Countf": f"Count Of Next {track_choice}"},
                     title=f"Tracking Next {track_choice}")
         fig.for_each_xaxis(lambda axis: axis.update(title=f"Next {track_choice}"))
         fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
