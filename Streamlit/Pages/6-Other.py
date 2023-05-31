@@ -1,7 +1,7 @@
 import subprocess
 import streamlit as st
 import os, sys, json
-import Affichage_pattern
+import Affichage_pattern 
 import threading
 
 script_path = os.path.realpath(os.path.dirname("src"))
@@ -14,6 +14,7 @@ Affichage_pattern.affichage()
 # from interaction_stats.ml_stats_vizualisation import *
 # from interaction_stats.settings import *
 from src.page6.snl_stats_visualization_page6 import *
+from src.page6.snl_stats_visualisation_database import *
 
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
@@ -21,7 +22,7 @@ def page5():
     st.markdown("Here, we explore other areas to describe and see what we have in our database. \nLet's see each page !")
     
     def page5_1():
-        st.sidebar.markdown("Expression per minute")
+        st.sidebar.markdown("Expression per minute", )
         # # #Barplots ______________________________________________________
         st.title('Expression per minute')
         st.markdown("We count the number of tiers we have in one minute in each dataset.")
@@ -65,8 +66,35 @@ def page5():
             else :
                 st.write("No data available")
 
+    def page5_2() :
+
+        st.sidebar.markdown("Database Information", )
+        st.title('Database Information')
+        name_databases = [key.split('_')[0].upper() for key in databases.keys()]
+        databases_ = [value for value in databases_pair_paths.values()]
+        databases_choice=st.selectbox("Datasets list :", name_databases)
+        name_tiers = [key.split('_')[0] for key in tier_lists.keys()] + ["GENERAL"]
+        tiers_choice=st.selectbox("Tiers list :", name_tiers, index=name_tiers.index("GENERAL"))
+
+        for i in range(len(name_databases)):
+            if databases_choice==name_databases[i]:
+                databases_choice=databases_[i]
+        if tiers_choice == 'GENERAL' :
+            data = display_general_informations_files(databases_choice)
+            columns_names = ["Filename", "Duration"] + list(tier_lists.keys())
+            df = pd.DataFrame(data, columns=columns_names)
+            st.table(df)
+        
+        else :
+            data = display_specific_informations(databases_choice, tiers_choice, tier_lists.get(tiers_choice))
+            columns_names = ["Filename", "Max duration", "Min duration"] +  tier_lists.get(tiers_choice)
+            df = pd.DataFrame(data, columns=columns_names)
+            st.write(df)
+
+    
     page5_names_to_funcs = {
         "Expression per minute": page5_1,
+        "Database Information": page5_2,
     }
 
     selected_page = st.sidebar.selectbox("Select a page", page5_names_to_funcs.keys())
