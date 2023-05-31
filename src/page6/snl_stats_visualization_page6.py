@@ -30,7 +30,6 @@ def plot_expression_per_min(folder,expression, case=None):
         Figure: Bar plot
     """
     a=expression_per_min(folder,expression,case)
-    match = re.search(r'^([a-zA-Z]+)', expression)
 
     split_elements = []
 
@@ -38,13 +37,12 @@ def plot_expression_per_min(folder,expression, case=None):
         element = folder[i]
         split_elements.append(element.split('\\'))
 
-    expression = match.group(1)
     if case is None:
-        fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
+        fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=a[0], title=f'Count of {expression} per minute in {get_database_name(folder)}', 
         labels={'x':'File', 'y':'Count'})
     else:
         fig = px.bar(x = [split_elements[j][-1] + ' + ' + split_elements[j+1][-1] if (j+1) < len(split_elements) else None for j in range(0, len(split_elements), 2)]
-        , y=a[0], title=f'Count of {expression[:6]} per minute in {get_database_name(folder)}', 
+        , y=a[0], title=f'Count of {expression} per minute in {get_database_name(folder)}', 
         labels={'x':'Pairs files', 'y':'Count'})
 
     if (np.count_nonzero(fig.data[0]['y']) == 0):
@@ -80,7 +78,7 @@ def plot_expression_per_min_I(folder, expression, intensity):
         for i in range (len(tier_lists[expression])):
             if intensity==tier_lists[expression][i]:
                 fig = px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence =[color_lst[i]]*len(lst) ,
-                title=f'Count of {intensity} {expression[:6]} per minute in {get_database_name(folder)}', labels={'x':'File', 'y':'Count'})
+                title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x':'File', 'y':'Count'})
 
     
     except :

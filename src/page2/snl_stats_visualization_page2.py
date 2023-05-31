@@ -444,7 +444,6 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
     if tier2 != 'all' :
         labels = tier_lists[tier2]
         dg=get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, tier2, entity)
-        print(dg)
         if not dg.empty :
             fig=pg.Figure()
             for database in (dg['database'].unique()):

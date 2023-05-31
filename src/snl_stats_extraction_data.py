@@ -226,10 +226,10 @@ def get_TCdict(root, track, check):
     lst1 = get_tier_dict(root, track)
     lst2 = get_tier_dict(root, check)
     to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
-    if track not in to_dict:
-        track = track + '_0'
-    if check not in to_dict:
-        check = check + '_0'
+    # if track not in to_dict:
+    #     track = track + '_0'
+    # if check not in to_dict:
+    #     check = check + '_0'
     lst=to_dict[track] + to_dict[check]
 
     nb=0
@@ -291,8 +291,8 @@ def get_tier_dict(root, tier):
     """
     to_dict = read_eaf_to_dict(root, mark=True, tiers=None)
     lst = None
-    if tier not in to_dict:
-        tier = tier + '_0'
+    # if tier not in to_dict:
+    #     tier = tier + '_0'
     lst = to_dict[tier]
     return lst
 
@@ -2905,7 +2905,7 @@ def fill_expression_track(track, check, folder, database):
                     if (sl_lst[_] == sl_lst[0]):    #we check if we are with the first element of the list
                             track_p.append('non')
                     else:
-                        if (sl_lst[_-1][2].split('_')[0]==check):           
+                        if (sl_lst[_-1][2]==check):           
                             track_p.append('oui')
                         else :
                             track_p.append('non')
@@ -2913,7 +2913,7 @@ def fill_expression_track(track, check, folder, database):
                     if (sl_lst[_] == sl_lst[len(sl_lst)-1]):    #we check if we are with the last element of the list
                         track_f.append('non')
                     else :
-                        if (sl_lst[_+1][2].split('_')[0]==check):       
+                        if (sl_lst[_+1][2]==check):       
                             track_f.append('oui')
                         else :
                             track_f.append('non')
@@ -2923,7 +2923,7 @@ def fill_expression_track(track, check, folder, database):
 
     return subjects,sl_number,track_p, track_f
 
-def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track, track, check, tier_lists, special=bool):
+def fill_trackfp_byIR(folder, string, function_to_lst_check, function_to_lst_track, track, check, tier_lists, special=bool):
     """This function fill some lists where we put previous and next expressions concerning a tracked expression filtered by intensity
 
     Args:
@@ -2975,7 +2975,7 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
                         if (sl_lst[_] == sl_lst[0]):    #we check if we are with the first element of the list
                             trackp.append('null')
                         else:
-                            if (sl_lst[_-1][2].split('_')[0]==check):  #(2)
+                            if (sl_lst[_-1][2]==check):  #(2)
                                 index_=0
                                 stt_s=0
                                 for k in all_stt_s:
@@ -3001,7 +3001,7 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
                         if (sl_lst[_] == sl_lst[len(sl_lst)-1]):    #we check if we are with the last element of the list
                             trackf.append('null')
                         else :
-                            if (sl_lst[_+1][2].split('_')[0]==check):       #(2)
+                            if (sl_lst[_+1][2]==check):       #(2)
                                 index_=0
                                 stt_s=0
                                 for k in all_stt_s:

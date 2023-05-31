@@ -54,12 +54,13 @@
         ]
     },
     "TIER_LISTS": {
-        "Laughs": [
+        "S&L_0": [],
+        "Laughs_0": [
             "medium",
             "low",
             "high"
         ],
-        "Smiles": [
+        "Smiles_0": [
             "subtle",
             "low",
             "medium",

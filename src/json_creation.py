@@ -3,6 +3,10 @@ from os.path import join, relpath, abspath, dirname
 import json
 from bs4 import BeautifulSoup
 from pympi import Eaf
+script_path = os.path.realpath(os.path.dirname("IBPY"))
+os.chdir(script_path)
+sys.path.append("..")
+from IBPY.extract_data import *
 
 # Set the script path and add it to the system path
 script_path = os.path.realpath(os.path.dirname("IBPY"))
@@ -81,30 +85,38 @@ def create_json_from_directory():
         temp = os.listdir(datasets_full[d])
         for f in temp:
             if f.endswith('.eaf'):
-                eaf = Eaf(join(datasets_full[d], f))
-                tiers = list(eaf.get_tier_names())
-                parent_tiers = set()
+                # eaf = Eaf(join(datasets_full[d], f))
+                # tiers = list(eaf.get_tier_names())
+                # parent_tiers = set()
+                
+                # # for tier_name in tiers:
+                # #     param = eaf.get_parameters_for_tier(tier_name)
+                #     # if "PARENT_REF" in param:
+                #     #     parent_tier = param["PARENT_REF"]
+                #     #     parent_tiers.add(parent_tier)
+                # for tier_name in tiers:
+                #     if tier_name not in parent_tiers:
+                #         if tier_name not in dct['TIER_LISTS'] :
+                #             dct['TIER_LISTS'][tier_name] = []
 
-                for tier_name in tiers:
-                    param = eaf.get_parameters_for_tier(tier_name)
-                    if "PARENT_REF" in param:
-                        parent_tier = param["PARENT_REF"]
-                        parent_tiers.add(parent_tier)
-                for tier_name in tiers:
-                    if tier_name not in parent_tiers:
-                        if tier_name not in dct['TIER_LISTS'] :
-                            dct['TIER_LISTS'][tier_name] = []
+                # for tier_name in tiers:
+                #     if tier_name not in parent_tiers:
+                #         annotations = eaf.get_annotation_data_for_tier(tier_name)
+                #         for annotation in annotations:
+                #             value = annotation[2].strip()
+                #             if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
+                #                 dct['TIER_LISTS'][tier_name].append(value)
+                filepath = join(datasets_full[d], f)
+                tier_dict = read_eaf_to_dict(filepath)  # Get tier names and values using read_eaf_to_dict
+                
+                for tier_name, annotations in tier_dict.items():
+                    if tier_name not in dct['TIER_LISTS']:
+                        dct['TIER_LISTS'][tier_name] = []
 
-                for tier_name in tiers:
-                    if tier_name not in parent_tiers:
-                        annotations = eaf.get_annotation_data_for_tier(tier_name)
-                        for annotation in annotations:
-                            value = annotation[2].strip()
-                            if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
-                                dct['TIER_LISTS'][tier_name].append(value)
-                    # Remove empty tiers because they are useless        print("Dico avant : ", dct['TIER_LISTS'][tier_name])
-                    # if not dct['TIER_LISTS'][tier_name]:  # Check if the tier list is empty
-                    #     del dct['TIER_LISTS'][tier_name]  # Exclude the tier from the dictionary
+                    for annotation in annotations:
+                        value = annotation[2].strip()
+                        if isinstance(value, str) and value and not value.isspace() and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
+                            dct['TIER_LISTS'][tier_name].append(value)
 
 
     # TO IMPROVE

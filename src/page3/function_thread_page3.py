@@ -51,7 +51,6 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
     
     dg = get_db_from_func_pair(DIR, get_inter_tier_absolute_duration_folder, database, expression_choice, tier_lists)
         
-    print(dg)
     fig1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label'
     , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv":"Interaction",
     "duration":"Time difference","label":"Entity"})

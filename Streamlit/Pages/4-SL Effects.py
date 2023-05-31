@@ -57,8 +57,8 @@ def page3():
         check_choice=st.radio("Check choice:", expression_choices2)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
-        fig1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[0], track_choice)
-        fig2= plot_track_following_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[1], track_choice)
+        fig1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[0], track_choice, check_choice)
+        fig2= plot_track_following_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[1], track_choice, check_choice)
         if fig1 != None :
             st.plotly_chart(fig1)
         else:
@@ -72,7 +72,7 @@ def page3():
         st.header('Inter S&L effects')
         st.subheader("Mimicry")
         st.markdown("We look at the capacity of someone to mimic someone else. ( A / B -> B mimic A)")
-        name_databases=['CCDB','IFADV','NDC']
+        name_databases= [key.split('_')[0].upper() for key in databases.keys()]
         databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
         databases_choice=st.selectbox("Databases list :", name_databases)
         for i in range(len(name_databases)):
@@ -355,9 +355,9 @@ def page3():
                     return None
 
     def page3_3():               
-        st.title('Correlation')
+        st.header('Correlation')
         st.markdown('Here, we look at the correlation between two sequences of expressions')
-        st.text(" *******  By datasets  ********")
+        st.text(" *******  By dataset  ********")
 
         name_databases=['CCDB','IFADV','NDC']
         databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
@@ -385,7 +385,7 @@ def page3():
             st.write(plot_correlation(get_correlation_folder(A_choice,databases_choice,width,shift,B_choice)))
 
 
-        st.text("********    By datasets and intensity   ********")
+        st.text("********    By dataset and expression   ********")
         databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
         databases_choice=st.selectbox("Databases list --> ", name_databases)
         for i in range(len(name_databases)):
@@ -434,7 +434,7 @@ def page3():
 
                 st.write(plot_correlation(get_correlation_byI(A_choice,intensity1,databases_choice,width,shift, B_choice, intensity2)))
 
-        #st.text("********   By datasets, role and intensity   ********")
+        
 
     page3_names_to_funcs = {
         "Intra S&L effects": page3_1,

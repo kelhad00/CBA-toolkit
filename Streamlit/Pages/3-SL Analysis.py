@@ -112,8 +112,6 @@ def page2():
             lst_1=plot_inter_absolute_duration(options3, expression_choice1)
             for i in range(len(lst_1)):
                 for d in range(len(lst_1[i])):
-                    print(figs_ab)
-                    print(lst_ab[d])
                     if figs_ab == lst_ab[d]:
                         if lst_1[i][d] != None : 
                             st.write(lst_1[i][d])
