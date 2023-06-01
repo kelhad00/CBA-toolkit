@@ -64,7 +64,7 @@ def plot_intra_relative_duration(database, expression_choice):
            
     return D
 
-#Filter by role
+#Filter by tier
 def plot_absolute_duration_from_lsn_folder(listpaths,string):
     
     dg1=get_intra_smiles_ad_from_lsn_folder(listpaths,string)
@@ -123,7 +123,7 @@ def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
 
     fig1=px.scatter(dg1, x='subject', y='sum_time', color='label',
     title=f"{tier2} absolute duration for {string} database - For {entity} {tier1}")
-    fig1.update_layout(xaxis_title="File name")
+    fig1.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
 
     L=[fig1]
     return L
@@ -186,8 +186,7 @@ def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
 
     fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
     title=f"{tier2} relative duration for {string} database - For {entity} {tier1}")
-    #,text=dg1['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), orientation='v')
-    #fig1.show()
+    fig1.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
 
     L=[fig1]
     return L
@@ -345,7 +344,7 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     #,text='time'
     , orientation='v', title=f'{tier2} Absolute Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
     "sum_time":"Absolute Duration","label":f"Entity of {tier2}", "role":f"Entity of {tier1}"})
-    fig1.update_layout(xaxis_title="Files pairs")
+    fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
     return [fig1]
 
 def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
@@ -378,7 +377,7 @@ def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     #,text='time'
     , orientation='v', title=f'{tier2} Relative Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
     "percentage":"Percentage","label":f"Entity of {tier2}", "role":f"Entity of {tier1}"})
-    fig1.update_layout(xaxis_title="Files pairs")
+    fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
 
     # fig1.show()
     # fig2.show()
