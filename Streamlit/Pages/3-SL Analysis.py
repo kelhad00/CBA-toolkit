@@ -29,7 +29,7 @@ def page2():
         expression_choice = st.radio("Expression choice:", expression_choices)
         lst_ad = [f"scatter_plot_{expression_choice}", f"line_plot_{expression_choice}"]
         lst_rd=lst_ad
-        name_databases = [key.split('_')[0].upper() for key in databases.keys()]
+        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
         figs_ad = st.selectbox("Absolute Duration Figures: ", lst_ad) 
         options = st.multiselect('Datasets list: ', name_databases, key = 1)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
@@ -103,7 +103,7 @@ def page2():
         expression_choice1 = st.radio("Expression choice:", expression_choices1)
         lst_ab = [f"ad_scatter_plot_{expression_choice1}", f"ad_line_plot_{expression_choice1}"]
         lst_rd = [f"rd_scatter_plot_{expression_choice1}", f"rd_line_plot_{expression_choice1}"]
-        name_databases=[key.split('_')[0].upper() for key in databases_paths.keys()]
+        name_databases=[key.rstrip('_paths').upper() for key in databases_paths.keys()]
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
 
         figs_ab=st.selectbox("Absolute duration figures : ", lst_ab)

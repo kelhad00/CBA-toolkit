@@ -30,7 +30,7 @@ def page1():
     expression_choices.append('all')
     expression_choice=st.radio("Expression choice:", expression_choices)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-    name_databases = [key.split('_')[0].upper() for key in databases.keys()]
+    name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
     figs=st.selectbox(" Basic statistics plots: ", name_list) 
     choice_list=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
     choice=st.radio("Which feature do you want see?  ", choice_list)

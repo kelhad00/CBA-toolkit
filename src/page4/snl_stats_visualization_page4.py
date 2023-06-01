@@ -85,18 +85,21 @@ def plot_mimicry(L):
     """
     M=[]
     df=list_to_df(L,['count','probability','database'])
-    df['interaction']=[i+1 for i in range(len(df['count']))]
+    if not df.empty:
+        df['interaction']=[i+1 for i in range(len(df['count']))]
     
-    lst=list(np.unique(list(df.database)))
-    for i in lst:
-        M.append(df[df.database.eq(i)])
-    fig = make_subplots(1, len(lst))
-    for i,j in zip ([i for i in range(1,len(lst)+1)],M):
-        fig.add_trace(pg.Scatter(x=j['interaction'], y=j.probability, marker_color = 'royalblue', name=f'Propbabilities {lst[i-1]}'),1,i)
-        fig.add_trace(pg.Scatter(x=j['interaction'], y=j['count'], name=f'Count {lst[i-1]}'), 1,i) 
-    fig.update_layout(title=f'Count and probabilities per interaction ')
-    fig.update_xaxes(title='Interaction')
-    #fig.show()
+        lst=list(np.unique(list(df.database)))
+        colors = ['royalblue', 'green', 'red', 'orange']  # Specify colors for each line
+        for i in lst:
+            M.append(df[df.database.eq(i)])
+        fig = make_subplots(1, len(lst))
+        for i,j in zip ([i for i in range(1,len(lst)+1)],M):
+            fig.add_trace(pg.Scatter(x=j['interaction'], y=j.probability, marker_color = colors[0], name=f'Propbabilities {lst[i-1]}'),1,i)
+            fig.add_trace(pg.Scatter(x=j['interaction'], y=j['count'], marker_color = colors[1], name=f'Count {lst[i-1]}'), 1,i) 
+        fig.update_layout(title=f'Count and probabilities per interaction ')
+        fig.update_xaxes(title='Pairs files')
+    else :
+        fig = None
     return fig
 
 #Correlation__________________________________________________________
