@@ -3395,41 +3395,23 @@ def get_correlation(lA,lB):
     Returns:
         numeric : the value is the correlation between the two lists
     """
-    # lA=tuple_to_int_sequence(rootA)
-    # lB=tuple_to_int_sequence(rootB)
-    # print(lA,lB)
-    if len(lA) ==0 or len(lB) ==0 :
-        corr=0
-    else:
-        # Filter non-numeric elements
-        lA = [x for x in lA if isinstance(x, (int, float))]
-        lB = [x for x in lB if isinstance(x, (int, float))]
-        if len(lA) ==0 or len(lB) ==0 :
-            corr=0
-        else:
-            diff=max(len(lA),len(lB))-min(len(lA),len(lB))
-            if max(len(lA),len(lB))==len(lA):
-                lA=lA[:len(lA)-diff]
-            else:
-                if max(len(lA),len(lB))==len(lB):
-                    lB=lB[:len(lB)-diff]
+    # Filter non-numeric elements
+    lA = [x for x in lA if isinstance(x, (int, float))]
+    lB = [x for x in lB if isinstance(x, (int, float))]
 
-            #Calculate mean
-            mA = sum(lA)/len(lA)
-            mB = sum(lB)/len(lB)
-            #Calculate covariance
-            cov = sum((a - mA) * (b - mB) for (a,b) in zip(lA,lB)) / (len(lA))
-            #Calculate the standard deviation of each list
-            stdA=np.std(lA)
-            stdB=np.std(lB)
-            #Calculate correlation
-            if stdA != 0 and stdB != 0 :
-                corr=round(cov/(stdA*stdB),3)
-            else:
-                corr=0
-        
-            #corr=round(np.corrcoef(lA,lB)[0][1],3)
-            #corr=round(pearsonr(lA,lB)[0],3)
+    if len(lA) == 0 or len(lB) == 0:
+        corr = 0
+    else:
+        # Adjust the size of the lists to match
+        min_len = min(len(lA), len(lB))
+        lA = lA[:min_len]
+        lB = lB[:min_len]
+        # Calculate correlation using numpy corrcoef
+        corr_matrix = np.corrcoef(lA, lB)
+        corr = corr_matrix[0, 1]
+
+        # Round the correlation value to 3 decimal places
+        corr = round(corr, 3)
     return corr
 
 def get_correlation_folder(tier, folder, width, shift, tier2=None, role=None, which_role=None):
