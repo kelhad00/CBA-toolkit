@@ -21,7 +21,7 @@ def page2():
     #Scatters plots___________________________________________________
     def page2_1():
         #st.sidebar.markdown("Intra S&L analysis")
-        st.header('Intra Expressions Analysis')
+        st.header('Intra Non Verbal Expressions Analysis')
         st.markdown("It's an analysis based on each individual.")
         st.subheader('By dataset')
 
@@ -96,7 +96,7 @@ def page2():
 
     def page2_2():
         #st.sidebar.markdown("Inter S&L analysis")
-        st.header('Inter Expressions analysis')
+        st.header('Inter Non Verbal Expressions Analysis')
         st.markdown("It's an analysis based on each interaction.")
         st.subheader('By dataset')
         expression_choices1 = list(tier_lists.keys())
@@ -165,8 +165,8 @@ def page2():
             st.write("No data available")
 
     page2_names_to_funcs = {
-    "Intra S&L analysis": page2_1,
-    "Inter S&L analysis": page2_2,}
+    "Intra Non Verbal Expressions Analysis": page2_1,
+    "Inter Non Verbal Expressions Analysis": page2_2,}
 
     selected_page = st.sidebar.selectbox("Select a page", page2_names_to_funcs.keys())
     page2_names_to_funcs[selected_page]()

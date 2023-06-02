@@ -112,12 +112,13 @@ def plot_correlation(L):
     Returns:
         Figure : Scatter plot
     """
-    
-    fig = make_subplots(1, 1)
-    fig.add_trace(pg.Scatter(y=L, marker_color = 'royalblue', name='Correlation'))
-    fig.update_layout(title=f'Correlation per interaction ')
-    fig.update_xaxes(title='Interaction')
-    fig.update_yaxes(title='Correlation')
-    #fig.show()
+    if L:  
+        fig = make_subplots(1, 1)
+        fig.add_trace(pg.Scatter(y=L, marker_color = 'royalblue', name='Correlation'))
+        fig.update_layout(title=f'Correlation per interaction ')
+        fig.update_xaxes(title='Interaction')
+        fig.update_yaxes(title='Correlation')
+    else :
+        fig = None
     return fig
     

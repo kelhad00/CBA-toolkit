@@ -3397,41 +3397,52 @@ def get_correlation(lA,lB):
     """
     # lA=tuple_to_int_sequence(rootA)
     # lB=tuple_to_int_sequence(rootB)
+    # print(lA,lB)
     if len(lA) ==0 or len(lB) ==0 :
         corr=0
     else:
-
-        diff=max(len(lA),len(lB))-min(len(lA),len(lB))
-        if max(len(lA),len(lB))==len(lA):
-            lA=lA[:len(lA)-diff]
+        # Filter non-numeric elements
+        lA = [x for x in lA if isinstance(x, (int, float))]
+        lB = [x for x in lB if isinstance(x, (int, float))]
+        if len(lA) ==0 or len(lB) ==0 :
+            corr=0
         else:
-            if max(len(lA),len(lB))==len(lB):
-                lB=lB[:len(lB)-diff]
+            diff=max(len(lA),len(lB))-min(len(lA),len(lB))
+            if max(len(lA),len(lB))==len(lA):
+                lA=lA[:len(lA)-diff]
+            else:
+                if max(len(lA),len(lB))==len(lB):
+                    lB=lB[:len(lB)-diff]
 
-        #Calculate mean
-        mA = sum(lA)/len(lA)
-        mB = sum(lB)/len(lB)
-        #Calculate covariance
-        cov = sum((a - mA) * (b - mB) for (a,b) in zip(lA,lB)) / (len(lA))
-        #Calculate the standard deviation of each list
-        stdA=np.std(lA)
-        stdB=np.std(lB)
-        #Calculate correlation
-        corr=round(cov/(stdA*stdB),3)
+            #Calculate mean
+            mA = sum(lA)/len(lA)
+            mB = sum(lB)/len(lB)
+            #Calculate covariance
+            cov = sum((a - mA) * (b - mB) for (a,b) in zip(lA,lB)) / (len(lA))
+            #Calculate the standard deviation of each list
+            stdA=np.std(lA)
+            stdB=np.std(lB)
+            #Calculate correlation
+            if stdA != 0 and stdB != 0 :
+                corr=round(cov/(stdA*stdB),3)
+            else:
+                corr=0
         
-        #corr=round(np.corrcoef(lA,lB)[0][1],3)
-        #corr=round(pearsonr(lA,lB)[0],3)
+            #corr=round(np.corrcoef(lA,lB)[0][1],3)
+            #corr=round(pearsonr(lA,lB)[0],3)
     return corr
 
-def get_correlation_folder(SL,folder, width, shift, SL2=None,role=False,which_role=None):
+def get_correlation_folder(tier, folder, width, shift, tier2=None, role=None, which_role=None):
     """This function calculates the correlation in an interaction. 
 
     Args:
-        SL (string): S for smiles or L for laughs
+        tier (string): tier we want to use
         folder (list): list of eaf paths in the database chosen
         width (numeric):  window width in ms
         shift (numeric):  window shift in ms
-        role (bool, optional): To say if we want to dispatch by role or not. Defaults to False.
+        tier2 (string, optional): second tier we want to use. Defaults to None.
+        role (string, optional): To say if we want to dispatch by entity or not. Defaults to False.
+        which_role (string, optional): To say if we want to dispatch by an entity. Defaults to None.
 
     Returns:
         list: List of values corresponding to the correlation of each interaction of the database
@@ -3440,38 +3451,35 @@ def get_correlation_folder(SL,folder, width, shift, SL2=None,role=False,which_ro
     for i in range(0,len(folder),2):
         L=[folder[i],folder[i+1]]
 
-        if role==True:
-            if SL=='S':
-                a=eval('get_smiles_from_'+which_role)(L[0])[0]
-                b=eval('get_smiles_from_'+which_role)(L[1])[0]
-            if SL=='L':
-                a=eval('get_laughs_from_'+which_role)(L[0])[0]
-                b=eval('get_laughs_from_'+which_role)(L[1])[0]
+        if role is not None:
+            a = eval('get_tier_from_entity')(L[0], tier, role, which_role)[0]
+            b = eval('get_tier_from_entity')(L[1], tier, role, which_role)[0]
         else:
-            if SL2 is None:
-                a=eval('get_'+SL+'dict')(L[0])
-                b=eval('get_'+SL+'dict')(L[1])
+            if tier2 is None:
+                a = eval('get_tier_dict')(L[0], tier)
+                b = eval('get_tier_dict')(L[1], tier)
+
             else:
-                a=eval('get_'+SL+'dict')(L[0])
-                b=eval('get_'+SL2+'dict')(L[1])
-        #print(a, "  |  ",b)
+                a = eval('get_tier_dict')(L[0], tier)
+                b = eval('get_tier_dict')(L[1], tier2)
+        # print(a, "  |  ",b)
         lst = [tuple_to_int_sequence(a, width=width, shift=shift), tuple_to_int_sequence(b, width=width, shift=shift)]
         c=get_correlation(lst[0],lst[1])
         corr_l.append(c)
 
     return corr_l
 
-def get_correlation_byI(SL1,intensity1,folder, width, shift,SL2=None,intensity2=None):
+def get_correlation_byI(tier1, entity1, folder, width, shift, tier2=None, entity2=None):
     """This function calculates the correlation in an interaction filtered by intensity. 
 
     Args:
-        SL1 (str): S for smiles or L for laughs.
-        intensity1 (str): low, subtle, medium or high
+        tier1 (str): tier we want to use
+        entity1 (str): It's the entity of tier1 we want to use
         folder (list): list of eaf paths in the database chosen
         width (numeric):  window width in ms
         shift (numeric):  window shift in ms
-        SL2 (str, optional): S for smiles or L for laughs. It's the second expression. Defaults to None.
-        intensity2 (str, optional): low, subtle, medium or high. Defaults to None.
+        tier2 (str, optional): It's the second expression. Defaults to None.
+        entity2 (str, optional): It's the second intensity. Defaults to None.
 
     Returns:
         list: List of values corresponding to the correlation of each interaction of the database
@@ -3479,17 +3487,17 @@ def get_correlation_byI(SL1,intensity1,folder, width, shift,SL2=None,intensity2=
     corr_l=[]
     for i in range(0,len(folder),2):
         L=[folder[i],folder[i+1]]
-        a=get_IR_list(L[0], SL1, intensity1)  
-        if SL2 is None :
-            if intensity2 is None:
-                b=get_IR_list(L[1], SL1, intensity1)
+        a=get_IR_list(L[0], tier1, entity1)  
+        if tier2 is None :
+            if entity2 is None:
+                b=get_IR_list(L[1], tier1, entity1)
             else:
-                b=get_IR_list(L[1], SL1, intensity2)
+                b=get_IR_list(L[1], tier1, entity2)
         else:
-            if intensity2 is None:
-                b=get_IR_list(L[1], SL2, intensity1)
+            if entity2 is None:
+                b=get_IR_list(L[1], tier2, entity1)
             else:
-                b=get_IR_list(L[1], SL2, intensity2)
+                b=get_IR_list(L[1], tier2, entity2)
         #print(a, "  |  ",b)
         lst = [tuple_to_int_sequence(a, width=width, shift=shift), tuple_to_int_sequence(b, width=width, shift=shift)]
         c=get_correlation(lst[0],lst[1])

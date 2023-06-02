@@ -30,40 +30,43 @@ def page1():
     expression_choices.append('all')
     expression_choice=st.radio("Expression choice:", expression_choices)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-    name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
-    figs=st.selectbox(" Basic statistics plots: ", name_list) 
-    choice_list=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
-    choice=st.radio("Which feature do you want see?  ", choice_list)
+    if tier_lists[expression_choice] :
+        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+        figs=st.selectbox(" Basic statistics plots: ", name_list) 
+        choice_list=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
+        choice=st.radio("Which feature do you want see?  ", choice_list)
 
-    if expression_choice != 'all' :
-        if figs == 'Absolute duration' :
-            fig1_0 = plot_absolute_duration(expression_choice, choice, name_databases)
-            if fig1_0 != None :    
-                st.write(fig1_0)
+        if expression_choice != 'all' :
+            if figs == 'Absolute duration' :
+                fig1_0 = plot_absolute_duration(expression_choice, choice, name_databases)
+                if fig1_0 != None :    
+                    st.write(fig1_0)
+                else :
+                    st.write("No Data available")
             else :
-                st.write("No Data available")
-        else :
-            fig2_0 = plot_relative_duration(expression_choice, choice, name_databases)
-            if fig2_0 != None :
-                st.write(fig2_0)
-            else :
-                st.write("No Data available")
+                fig2_0 = plot_relative_duration(expression_choice, choice, name_databases)
+                if fig2_0 != None :
+                    st.write(fig2_0)
+                else :
+                    st.write("No Data available")
             
-    elif expression_choice == 'all' : 
-        figures1 = []
-        if figs == 'Absolute duration' :
-            fig1_1 = plot_absolute_duration(expression_choice, choice, name_databases)
-            figures1.extend(fig1_1)
+        elif expression_choice == 'all' : 
+            figures1 = []
+            if figs == 'Absolute duration' :
+                fig1_1 = plot_absolute_duration(expression_choice, choice, name_databases)
+                figures1.extend(fig1_1)
 
-        else : 
-            fig2_1 = plot_relative_duration(expression_choice, choice, name_databases)
-            figures1.extend(fig2_1)
+            else : 
+                fig2_1 = plot_relative_duration(expression_choice, choice, name_databases)
+                figures1.extend(fig2_1)
 
-        for fig in figures1:
-            if fig != None :
-                st.write(fig)
-            else :
-                st.write("No Data available")
+            for fig in figures1:
+                if fig != None :
+                    st.write(fig)
+                else :
+                    st.write("No Data available")
+    else :
+        st.write("No Data available")
 
     st.subheader('Basic statistics plots:')  
 
