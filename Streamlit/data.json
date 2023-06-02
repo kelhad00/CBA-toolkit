@@ -17,8 +17,10 @@
         "ifadv_paths": [
             "..\\data\\ifadv\\DVA1A.eaf",
             "..\\data\\ifadv\\DVA2C.eaf",
+            "..\\data\\ifadv\\DVA5G.eaf",
             "..\\data\\ifadv\\DVB1B.eaf",
-            "..\\data\\ifadv\\DVB2D.eaf"
+            "..\\data\\ifadv\\DVB2D.eaf",
+            "..\\data\\ifadv\\DVB5H.eaf"
         ],
         "ndc_paths": [
             "..\\data\\ndc\\8_1_A_M.eaf",
@@ -40,7 +42,9 @@
             "..\\data\\ifadv\\DVA1A.eaf",
             "..\\data\\ifadv\\DVB1B.eaf",
             "..\\data\\ifadv\\DVA2C.eaf",
-            "..\\data\\ifadv\\DVB2D.eaf"
+            "..\\data\\ifadv\\DVB2D.eaf",
+            "..\\data\\ifadv\\DVA5G.eaf",
+            "..\\data\\ifadv\\DVB5H.eaf"
         ],
         "ndc_pairs": [
             "..\\data\\ndc\\8_1_A_M.eaf",
