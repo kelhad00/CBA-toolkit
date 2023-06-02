@@ -27,12 +27,12 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
 
     for i in range(len(name_databases)):
         if database_single==name_databases[i]:
-            take_this_shit=databases_[i]
+            data_path=databases_[i]
 
     split_elements = []
 
-    for i in range(len(take_this_shit)) :
-        element = take_this_shit[i]
+    for i in range(len(data_path)) :
+        element = data_path[i]
         split_elements.append(element.split('\\'))
 
     for i in range(len(dg['subject'])) :
@@ -64,12 +64,12 @@ def create_intra_relative_plot(database, queue, database_single, expression_choi
 
     for i in range(len(name_databases)):
         if database_single==name_databases[i]:
-            take_this_shit=databases_[i]
+            data_path=databases_[i]
 
     split_elements = []
 
-    for i in range(len(take_this_shit)) :
-        element = take_this_shit[i]
+    for i in range(len(data_path)) :
+        element = data_path[i]
         split_elements.append(element.split('\\'))
 
     for i in range(len(dg['subject'])) :
@@ -97,12 +97,12 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
 
     for i in range(len(name_databases)):
         if database_single==name_databases[i]:
-            take_this_shit=databases_[i]
+            data_path=databases_[i]
 
     split_elements = []
 
-    for i in range(len(take_this_shit)) :
-        element = take_this_shit[i]
+    for i in range(len(data_path)) :
+        element = data_path[i]
         split_elements.append(element.split('\\'))
 
     for i in range(len(dg['conv'])) :
@@ -135,12 +135,12 @@ def create_inter_relative_plot(database, queue, database_single, expression_choi
 
     for i in range(len(name_databases)):
         if database_single==name_databases[i]:
-            take_this_shit=databases_[i]
+            data_path=databases_[i]
 
     split_elements = []
 
-    for i in range(len(take_this_shit)) :
-        element = take_this_shit[i]
+    for i in range(len(data_path)) :
+        element = data_path[i]
         split_elements.append(element.split('\\'))
 
     for i in range(len(dg['conv'])) :

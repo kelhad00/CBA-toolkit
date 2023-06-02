@@ -83,6 +83,25 @@ def plot_mimicry(L):
     Return : 
         Scatter (with line) plot figure
     """
+    name_databases = [key.split('_')[0] for key in databases.keys()]
+    databases_ = [value for value in databases_pair_paths.values()]
+
+    print(L[0][2])
+    for i in range(len(name_databases)):
+        if L[0][2]==name_databases[i]:
+            data_path=databases_[i]
+
+    split_elements = []
+    Pair_files = []
+
+    for i in range(len(data_path)) :
+        element = data_path[i]
+        split_elements.append(element.split('\\'))
+
+    for i in range(0,len(split_elements), 2) : 
+
+        Pair_files.append(split_elements[i][-1] + ' / ' +  split_elements[i+1][-1])
+
     M=[]
     df=list_to_df(L,['count','probability','database'])
     if not df.empty:
@@ -94,6 +113,8 @@ def plot_mimicry(L):
             M.append(df[df.database.eq(i)])
         fig = make_subplots(1, len(lst))
         for i,j in zip ([i for i in range(1,len(lst)+1)],M):
+            for k in range(len(j['interaction'])) :
+                j['interaction'][k] = Pair_files[(int(j['interaction'][k]) - 1)]
             fig.add_trace(pg.Scatter(x=j['interaction'], y=j.probability, marker_color = colors[0], name=f'Propbabilities {lst[i-1]}'),1,i)
             fig.add_trace(pg.Scatter(x=j['interaction'], y=j['count'], marker_color = colors[1], name=f'Count {lst[i-1]}'), 1,i) 
         fig.update_layout(title=f'Count and probabilities per interaction ')
@@ -103,7 +124,7 @@ def plot_mimicry(L):
     return fig
 
 #Correlation__________________________________________________________
-def plot_correlation(L):
+def plot_correlation(L, folder):
     """This function plots the correlation between two series.
 
     Args:
@@ -112,9 +133,18 @@ def plot_correlation(L):
     Returns:
         Figure : Scatter plot
     """
+    split_elements = []
+    Pair_Files = []
+    for i in range(len(folder)) :
+        element = folder[i]
+        split_elements.append(element.split('\\'))
+    for i in range(0,len(split_elements), 2) : 
+
+        Pair_Files.append(split_elements[i][-1] + ' / ' +  split_elements[i+1][-1])
+
     if L:  
         fig = make_subplots(1, 1)
-        fig.add_trace(pg.Scatter(y=L, marker_color = 'royalblue', name='Correlation'))
+        fig.add_trace(pg.Scatter(x=[Pair_Files[i] for i in range(len(Pair_Files))], y=L, marker_color = 'royalblue', name='Correlation'))
         fig.update_layout(title=f'Correlation per interaction ')
         fig.update_xaxes(title='Interaction')
         fig.update_yaxes(title='Correlation')

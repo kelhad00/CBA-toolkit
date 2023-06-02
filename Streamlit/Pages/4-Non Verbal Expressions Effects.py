@@ -179,7 +179,7 @@ def page3():
             if tier_lists[A_choice]:
                 width = st.slider("Select the width", 1, 344) 
                 shift = st.slider("Select the shift", 1, 344) 
-                fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift))
+                fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift), databases_list)
                 if fig != None:
                     st.plotly_chart(fig)
                 else :
@@ -194,7 +194,7 @@ def page3():
             if tier_lists[A_choice] and tier_lists[B_choice]:     
                 width = st.slider(" Select the width ", 1, 344) 
                 shift = st.slider(" Select the shift ", 1, 344) 
-                fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice))
+                fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice), databases_list)
                 if fig != None:
                     st.plotly_chart(fig)
                 else :
@@ -230,7 +230,7 @@ def page3():
                 if case_level==1:
                     entity1 = st.radio("Entity 1:", entity_levelA)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift))
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift), databases_list1)
                     if fig != None:
                         st.plotly_chart(fig)  
                     else :
@@ -240,7 +240,7 @@ def page3():
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                     entity2 = st.radio("Entity 2:", entity_levelA)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, entity2=entity2))
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, entity2=entity2), databases_list1)
                     if fig != None:
                         st.plotly_chart(fig)
                     else :
@@ -262,7 +262,7 @@ def page3():
                 if case_level==1:
                     entity1 = st.radio("Entity 1 ->", entity_levelA)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice))
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice), databases_list1)
                     if fig != None:
                         st.plotly_chart(fig)
                     else :
@@ -272,7 +272,7 @@ def page3():
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                     entity2 = st.radio("Entity 2 -> ", entity_levelB)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2))
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2), databases_list1)
                     if fig != None:
                         st.plotly_chart(fig)
                     else :

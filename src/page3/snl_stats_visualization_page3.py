@@ -323,12 +323,12 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
 
     for i in range(len(name_databases)):
         if database==name_databases[i]:
-            take_this_shit=databases_[i]
+            data_path=databases_[i]
 
     split_elements = []
 
-    for i in range(len(take_this_shit)) :
-        element = take_this_shit[i]
+    for i in range(len(data_path)) :
+        element = data_path[i]
         split_elements.append(element.split('\\'))
 
     for i in range(len(df['conv'])) :
@@ -356,12 +356,12 @@ def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
 
     for i in range(len(name_databases)):
         if database==name_databases[i]:
-            take_this_shit=databases_[i]
+            data_path=databases_[i]
 
     split_elements = []
 
-    for i in range(len(take_this_shit)) :
-        element = take_this_shit[i]
+    for i in range(len(data_path)) :
+        element = data_path[i]
         split_elements.append(element.split('\\'))
 
     for i in range(len(df['conv'])) :
