@@ -29,7 +29,7 @@ def page3():
         \n Check choice --> Expression before and after the track choice.
         '''
         st.markdown(text_)
-        databases_name = [key.split('_')[0].upper() for key in databases.keys()]
+        databases_name = [key.rstrip('_paths').upper() for key in databases.keys()]
         expression_choices = list(tier_lists.keys())
         expression_choices_2 = list(tier_lists.keys())
         track_choice=st.radio("Track choice: ", expression_choices)
@@ -69,12 +69,12 @@ def page3():
             st.write("No data to display")
 
     def page3_2():
-        st.header('Inter S&L effects')
+        st.header('Inter Non Verbal Expressions Effects')
         st.subheader("Mimicry")
         st.markdown("We look at the capacity of someone to mimic someone else. ( A / B -> B mimic A)")
         name_database = [key.rstrip('_paths').upper() for key in databases.keys()]
         databases_=[key for key in databases_pairs.keys()]
-        databases_choice=st.selectbox("Databases list:", name_database)
+        databases_choice=st.selectbox("Datasets list:", name_database)
         for i in range(len(databases_)):
             if databases_choice==databases_[i].rstrip('_pairs').upper():
                 databases_list=databases_pair_paths[databases_[i]]
@@ -160,88 +160,130 @@ def page3():
     def page3_3():               
         st.header('Correlation')
         st.markdown('Here, we look at the correlation between two sequences of expressions')
-        st.text(" *******  By dataset  ********")
+        st.text("*******    By dataset    ********")
 
-        name_databases=['CCDB','IFADV','NDC']
-        databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
-        databases_choice=st.selectbox("Databases list :", name_databases)
-        for i in range(len(name_databases)):
-            if databases_choice==name_databases[i]:
-                databases_choice=databases_[i]
+        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+        databases_=[key for key in databases_pairs.keys()]
+        databases_choice=st.selectbox("Datasets list:", name_databases, key = '0')
+        for i in range(len(databases_)):
+            if databases_choice==databases_[i].rstrip('_pairs').upper():
+                databases_list=databases_pair_paths[databases_[i]]
 
-        case_SL= st.radio("Cases S&L:", [1, 2])
+        case_= st.radio("Cases:", [1, 2])
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-
-        if case_SL==1:
-            A_choice=st.radio("Expression A ->", ['S', 'L'])
+        expression_choicesA = list(tier_lists.keys())
+        expression_choicesB = list(tier_lists.keys())
+        if case_==1: 
+            A_choice=st.radio("Expression A ->", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            width = st.slider("Select the width", 1, 344) 
-            shift = st.slider("Select the shift", 1, 344) 
-            st.write(plot_correlation(get_correlation_folder(A_choice,databases_choice,width,shift)))
+            if tier_lists[A_choice]:
+                width = st.slider("Select the width", 1, 344) 
+                shift = st.slider("Select the shift", 1, 344) 
+                fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift))
+                if fig != None:
+                    st.plotly_chart(fig)
+                else :
+                    st.write("No data to display")
+            else :
+                st.write("No data to display")
         else:
-            A_choice=st.radio("Expression A->", ['S', 'L'])
+            A_choice=st.radio("Expression A ->", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            B_choice=st.radio("Expression B ->", ['S', 'L'])
+            B_choice=st.radio("Expression B ->", expression_choicesB)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            width = st.slider(" Select the width ", 1, 344) 
-            shift = st.slider(" Select the shift ", 1, 344) 
-            st.write(plot_correlation(get_correlation_folder(A_choice,databases_choice,width,shift,B_choice)))
+            if tier_lists[A_choice] and tier_lists[B_choice]:     
+                width = st.slider(" Select the width ", 1, 344) 
+                shift = st.slider(" Select the shift ", 1, 344) 
+                fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice))
+                if fig != None:
+                    st.plotly_chart(fig)
+                else :
+                    st.write("No data to display")
+            else :
+                st.write("No data to display")
 
 
-        st.text("********    By dataset and expression   ********")
-        databases_=[databases_pair_paths["ccdb_pairs"], databases_pair_paths["ifadv_pairs"], databases_pair_paths["ndc_pairs"]]
-        databases_choice=st.selectbox("Databases list --> ", name_databases)
-        for i in range(len(name_databases)):
-            if databases_choice==name_databases[i]:
-                databases_choice=databases_[i]
+        st.text("********    By dataset and expression    ********")
+        name_databases1 = [key.rstrip('_paths').upper() for key in databases.keys()]
+        databases_1=[key for key in databases_pairs.keys()]
+        databases_choice1=st.selectbox("Datasets list:", name_databases1, key = '1')
+        for i in range(len(databases_1)):
+            if databases_choice1==databases_1[i].rstrip('_pairs').upper():
+                databases_list1=databases_pair_paths[databases_1[i]]
 
-        st.text("Between two expressions or two intensities")
+        st.text("Between two expressions or two entities")
         st.text("EXPLICATION")
         st.text("Choose if you want to look at the correlation between two different expressions (2) or not (1).")
-        case_SL= st.radio("Cases S&L : ", [1, 2])
+        case_= st.radio("Cases expressions: ", [1, 2])
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        width = st.slider("Select the width ", 1, 340) 
-        shift = st.slider("Select the shift ", 1, 340) 
-        if case_SL==1 :
-            A_choice=st.radio("Expression -> ", ['Smiles', 'Laughs'])
+        expression_choicesA = list(tier_lists.keys())
+        expression_choicesB = list(tier_lists.keys()) 
+        if case_==1 :
+            A_choice=st.radio("Expression -> ", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            
-            case_level= st.radio("Cases intensities: ", [1, 2])
-            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            
-            if case_level==1:
-                intensity1 = st.multiselect("Intensity 1:", ["subtle", "low", "medium", "high"])
-
-                st.write(plot_correlation(get_correlation_byI(A_choice,intensity1,databases_choice,width,shift)))
-            else:
-                intensity1 = st.multiselect("Intensity 1 :", ["subtle", "low", "medium", "high"])
-                intensity2 = st.multiselect("Intensity 2 :", ["subtle", "low", "medium", "high"])
-         
-                st.write(plot_correlation(get_correlation_byI(A_choice,intensity1,databases_choice,width,shift, SL2=None,intensity2=intensity2)))
+            width = st.slider("Select the width ", 1, 340) 
+            shift = st.slider("Select the shift ", 1, 340)
+            if tier_lists[A_choice]:
+                case_level= st.radio("Cases entities: ", [1, 2])
+                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                entity_levelA = tier_lists[A_choice]
+                if case_level==1:
+                    entity1 = st.radio("Entity 1:", entity_levelA)
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift))
+                    if fig != None:
+                        st.plotly_chart(fig)  
+                    else :
+                        st.write("No data to display")
+                else:
+                    entity1 = st.radio("Entity 1:", entity_levelA)
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    entity2 = st.radio("Entity 2:", entity_levelA)
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, entity2=entity2))
+                    if fig != None:
+                        st.plotly_chart(fig)
+                    else :
+                        st.write("No data to display")
+            else :
+                st.write("No data to display")
         else:
-            A_choice=st.radio("Expression A -> ", ['Smiles', 'Laughs'])
+            A_choice=st.radio("Expression A -> ", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            B_choice=st.radio("Expression B -> ", ['Smiles', 'Laughs'])
+            B_choice=st.radio("Expression B -> ", expression_choicesB)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            
-            case_level= st.radio("Cases intensities : ", [1, 2])
-            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            
-            if case_level==1:
-                intensity1 = st.multiselect("Intensity 1 ->", ["subtle", "low", "medium", "high"])
-
-                st.write(plot_correlation(get_correlation_byI(A_choice,intensity1,databases_choice,width,shift, B_choice)))
-            else:
-                intensity1 = st.multiselect("Intensity 1 -> ", ["subtle", "low", "medium", "high"])
-                intensity2 = st.multiselect("Intensity 2 -> ", ["subtle", "low", "medium", "high"])
-
-                st.write(plot_correlation(get_correlation_byI(A_choice,intensity1,databases_choice,width,shift, B_choice, intensity2)))
-
+            width = st.slider("Select the width ", 1, 340) 
+            shift = st.slider("Select the shift ", 1, 340)
+            if tier_lists[A_choice] and tier_lists[B_choice]:
+                case_level= st.radio("Cases entities: ", [1, 2])
+                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                entity_levelA = tier_lists[A_choice]
+                entity_levelB = tier_lists[B_choice]
+                if case_level==1:
+                    entity1 = st.radio("Entity 1 ->", entity_levelA)
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice))
+                    if fig != None:
+                        st.plotly_chart(fig)
+                    else :
+                        st.write("No data to display")
+                else:
+                    entity1 = st.radio("Entity 1 -> ", entity_levelA)
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    entity2 = st.radio("Entity 2 -> ", entity_levelB)
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2))
+                    if fig != None:
+                        st.plotly_chart(fig)
+                    else :
+                        st.write("No data to display")
+            else :
+                st.write("No data to display")
         
 
     page3_names_to_funcs = {
-        "Intra S&L effects": page3_1,
-        "Inter S&L effects": page3_2,
+        "Intra Non Verbal Expressions Effects": page3_1,
+        "Inter Non Verbal Expressions Effects": page3_2,
         "Correlation": page3_3,
     }
 
