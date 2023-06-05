@@ -28,7 +28,7 @@ def extract_zip(file):
     Returns:
         None
     """
-    file_name = file.name.rstrip('.zip')
+    file_name = file.name.replace('.zip','')
     path = "../data/"
     if not os.path.exists(path):
         # Creation of the directory

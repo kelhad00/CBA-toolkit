@@ -21,7 +21,7 @@ def page5():
         # # #Barplots ______________________________________________________
         st.header('Expression Per Minute')
         st.markdown("We count the number of expressions/tiers we have in one minute in each dataset.")
-        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+        name_databases = [key.replace('_paths','').upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Datasets list :", name_databases)
         for i in range(len(name_databases)):
@@ -57,7 +57,7 @@ def page5():
     def page5_2() :
         st.sidebar.markdown("Database Information", )
         st.header('Database Information')
-        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+        name_databases = [key.replace('_paths','').upper() for key in databases.keys()]
         databases_ = [value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Datasets list:", name_databases)
         name_tiers = list(tier_lists.keys()) + ["GENERAL"]

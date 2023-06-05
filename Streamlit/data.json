@@ -1,70 +1,30 @@
 {
     "FOLDER_PATHS": {
         "DIR": "..\\data",
-        "ROOT1": "..\\data\\ccdb",
-        "ROOT2": "..\\data\\ifadv",
-        "ROOT3": "..\\data\\ndc"
+        "ROOT1": "..\\data\\nggs"
     },
     "DATABASES_PATHS": {
-        "ccdb_paths": [
-            "..\\data\\ccdb\\P12_P2_1402_dizzy.eaf",
-            "..\\data\\ccdb\\P12_P2_1402_monk.eaf",
-            "..\\data\\ccdb\\P16_P6_0903_dizzy.eaf",
-            "..\\data\\ccdb\\P16_P6_0903_monk.eaf",
-            "..\\data\\ccdb\\P18_P1_2102_dizzy.eaf",
-            "..\\data\\ccdb\\P18_P1_2102_monk.eaf"
-        ],
-        "ifadv_paths": [
-            "..\\data\\ifadv\\DVA1A.eaf",
-            "..\\data\\ifadv\\DVA2C.eaf",
-            "..\\data\\ifadv\\DVA5G.eaf",
-            "..\\data\\ifadv\\DVB1B.eaf",
-            "..\\data\\ifadv\\DVB2D.eaf",
-            "..\\data\\ifadv\\DVB5H.eaf"
-        ],
-        "ndc_paths": [
-            "..\\data\\ndc\\8_1_A_M.eaf",
-            "..\\data\\ndc\\8_1_B_M.eaf",
-            "..\\data\\ndc\\8_2_A_M.eaf",
-            "..\\data\\ndc\\8_2_B_M.eaf"
+        "nggs_paths": [
+            "..\\data\\nggs\\P12_P2_1402_dizzy.eaf",
+            "..\\data\\nggs\\P12_P2_1402_monk.eaf"
         ]
     },
     "DATABASES_PAIR_PATHS": {
-        "ccdb_pairs": [
-            "..\\data\\ccdb\\P12_P2_1402_dizzy.eaf",
-            "..\\data\\ccdb\\P12_P2_1402_monk.eaf",
-            "..\\data\\ccdb\\P16_P6_0903_dizzy.eaf",
-            "..\\data\\ccdb\\P16_P6_0903_monk.eaf",
-            "..\\data\\ccdb\\P18_P1_2102_dizzy.eaf",
-            "..\\data\\ccdb\\P18_P1_2102_monk.eaf"
-        ],
-        "ifadv_pairs": [
-            "..\\data\\ifadv\\DVA1A.eaf",
-            "..\\data\\ifadv\\DVB1B.eaf",
-            "..\\data\\ifadv\\DVA2C.eaf",
-            "..\\data\\ifadv\\DVB2D.eaf",
-            "..\\data\\ifadv\\DVA5G.eaf",
-            "..\\data\\ifadv\\DVB5H.eaf"
-        ],
-        "ndc_pairs": [
-            "..\\data\\ndc\\8_1_A_M.eaf",
-            "..\\data\\ndc\\8_1_B_M.eaf",
-            "..\\data\\ndc\\8_2_A_M.eaf",
-            "..\\data\\ndc\\8_2_B_M.eaf"
+        "nggs_pairs": [
+            "..\\data\\nggs\\P12_P2_1402_dizzy.eaf",
+            "..\\data\\nggs\\P12_P2_1402_monk.eaf"
         ]
     },
     "TIER_LISTS": {
-        "S&L_0": [],
-        "Laughs_0": [
-            "medium",
-            "low",
-            "high"
+        "P&D_0": [],
+        "Pleure_0": [
+            "gechar",
+            "Quoicoubakaaaa",
+            "oof"
         ],
-        "Smiles_0": [
-            "subtle",
-            "low",
-            "medium",
-            "high"
+        "Destroy_0": [
+            "Sus",
+            "Vener"
         ],
         "Transcriptions": [],
         "Nods": [],

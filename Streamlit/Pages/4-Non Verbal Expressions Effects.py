@@ -25,7 +25,7 @@ def page3():
         \n Check choice --> Expression before and after the track choice.
         '''
         st.markdown(text_)
-        databases_name = [key.rstrip('_paths').upper() for key in databases.keys()]
+        databases_name = [key.replace('_paths','').upper() for key in databases.keys()]
         expression_choices = list(tier_lists.keys())
         expression_choices_2 = list(tier_lists.keys())
         track_choice=st.radio("Track choice: ", expression_choices)
@@ -68,11 +68,11 @@ def page3():
 
         st.subheader("Mimicry")
         st.markdown("We look at the capacity of someone to mimic someone else. ( A / B -> B mimic A)")
-        name_database = [key.rstrip('_paths').upper() for key in databases.keys()]
+        name_database = [key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[key for key in databases_pairs.keys()]
         databases_choice=st.selectbox("Datasets list:", name_database)
         for i in range(len(databases_)):
-            if databases_choice==databases_[i].rstrip('_pairs').upper():
+            if databases_choice==databases_[i].replace('_pairs','').upper():
                 databases_list=databases_pair_paths[databases_[i]]
         expression_choicesA = list(tier_lists.keys())
         expression_choicesB = list(tier_lists.keys())
@@ -159,11 +159,11 @@ def page3():
         st.markdown('Here, we look at the correlation between two sequences of expressions')
 
         st.subheader("********    By dataset    ********")
-        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+        name_databases = [key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[key for key in databases_pairs.keys()]
         databases_choice=st.selectbox("Datasets list:", name_databases, key = '0')
         for i in range(len(databases_)):
-            if databases_choice==databases_[i].rstrip('_pairs').upper():
+            if databases_choice==databases_[i].replace('_pairs','').upper():
                 databases_list=databases_pair_paths[databases_[i]]
         case_= st.radio("Cases:", [1, 2])
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -199,11 +199,11 @@ def page3():
                 st.write("No data to display")
 
         st.subheader("********    By dataset and expression    ********")
-        name_databases1 = [key.rstrip('_paths').upper() for key in databases.keys()]
+        name_databases1 = [key.replace('_paths','').upper() for key in databases.keys()]
         databases_1=[key for key in databases_pairs.keys()]
         databases_choice1=st.selectbox("Datasets list:", name_databases1, key = '1')
         for i in range(len(databases_1)):
-            if databases_choice1==databases_1[i].rstrip('_pairs').upper():
+            if databases_choice1==databases_1[i].replace('_pairs','').upper():
                 databases_list1=databases_pair_paths[databases_1[i]]
 
         st.text("Between two expressions or two entities")

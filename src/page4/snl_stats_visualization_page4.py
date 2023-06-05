@@ -105,7 +105,7 @@ def plot_mimicry(L):
     Return : 
         Scatter (with line) plot figure
     """
-    name_databases = [key.rstrip('_paths') for key in databases.keys()]
+    name_databases = [key.replace('_paths','') for key in databases.keys()]
     databases_ = [value for value in databases_pair_paths.values()]
     print(L[0][2])
     for i in range(len(name_databases)):
