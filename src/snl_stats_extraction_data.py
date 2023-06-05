@@ -1,9 +1,11 @@
 import itertools
 import re
 import os, sys
+
 script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
+
 import json
 import pympi
 import numpy as np
