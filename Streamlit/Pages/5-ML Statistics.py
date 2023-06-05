@@ -33,7 +33,7 @@ def page4():
 
     st.markdown('''First of all, choose the database you need.''')
     
-    name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+    name_databases = [key.replace('_paths','').upper() for key in databases.keys()]
     database_choice=st.radio("Dataset choice:", name_databases)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
     update = "Still in progress..."

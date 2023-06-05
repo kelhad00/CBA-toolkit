@@ -29,7 +29,12 @@ def page1():
     expression_choice=st.radio("Expression choice:", expression_choices)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
     if tier_lists[expression_choice] :
-        name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
+        print("1 :")
+        for key in databases.keys() :
+            print(key)
+        name_databases = [key.replace('_paths','').upper() for key in databases.keys()]
+        print("2 :")
+        print(name_databases)
         figs=st.selectbox(" Basic statistics plots: ", name_list) 
         choice_list=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
         choice=st.radio("Which feature do you want see?  ", choice_list)

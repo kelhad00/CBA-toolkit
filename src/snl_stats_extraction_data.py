@@ -1717,49 +1717,43 @@ def get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity):
 
 #Inter _________________________________________________________________________________________________________________________
 #By folder
-def get_inter_smiles_absolute_duration_folder(listpaths,string):
+def get_inter_smiles_absolute_duration_folder(listpaths, string):
     """This function calculates absolute duration for smiles in a database considering one interaction.
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:    
-        Tuple: (list of tuple , description of tuples) ->(list, ['conv','label','duration','database','time'])
+        Tuple: (list of tuple, description of tuples) ->(list, ['conv', 'label', 'duration', 'database', 'time'])
     """
-    df=get_smiles_dict_conv_folder(listpaths,string)
+    df=get_smiles_dict_conv_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
-    dg1=df.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    dg1=df.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
     c=1
     conv=[]
-    
-    for i in range (1, len(listpaths),2):
-        values=[i,i+1]
-        dgg= dg1[dg1.subject.isin(values)]
+    for i in range (1, len(listpaths), 2):
+        values=[i, i+1]
+        dgg=dg1[dg1.subject.isin(values)]
         conv+=list_of_words(c, len(dgg.subject))
         c+=1
- 
     dg1['conv']=conv
-    dg1.columns=['subject','database','label','sum_time','time','conv']
-    
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time', 'conv']
     roles=[]
-    
-    for r in range(1,len(listpaths),2):
-        dgf= dg1[dg1.subject.eq(r)]
+    for r in range(1, len(listpaths), 2):
+        dgf=dg1[dg1.subject.eq(r)]
         roles+=list_of_words("A", len(dgf.subject))
         r+=1
-        dgf= dg1[dg1.subject.eq(r)]
+        dgf=dg1[dg1.subject.eq(r)]
         roles+=list_of_words("B", len(dgf.subject))
-
     dg1['roles']=roles
-    dg1.columns=['subject','database','label','sum_time','time','conv','roles']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time', 'conv', 'roles']
 
     #correct lines (replace the row in A which is not in B and same in te other sens with 0)
-    #print(dg1.loc[0])
-    dg1=dg1.loc[:,['label','sum_time','conv','roles']]
-    dg1= dg1.reindex(columns=['conv', 'label','sum_time','roles'])
+    dg1=dg1.loc[:,['label', 'sum_time', 'conv', 'roles']]
+    dg1=dg1.reindex(columns=['conv', 'label', 'sum_time', 'roles'])
     dict_=list(dg1.to_records(index=False))
 
     conv = list(np.unique(conv))
