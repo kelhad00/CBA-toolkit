@@ -126,13 +126,16 @@ def fill_trackfp_byIR(folder,string,function_to_lst_check, function_to_lst_track
     return database,current_level,track_number,trackp,trackf
 
 def SL_track_byRI_test(check, track, dir, role, case):
-    """
+    """ This function is used to track the expression of laughs or smiles by entities in role (speaker or listener) in the database.
     Args:
         check (str): laughs or smiles. It's the expression which preced or follow.
         track (str): laughs or smiles. It's the expression of which we want to know what is before and after.
         dir (str) : path of the folder containing all databases.
         role (str) : spk or lsn for speaker or listener
         case (str): Can be S for smiles or L for laughs. For example, if we are tracking laughs, it's L
+    Returns:
+        df_g (pandas dataframe): dataframe containing all the information about the tracking.
+        df1_g (pandas dataframe): dataframe containing all the information about the tracking.
     """
     #Variables
     dg=[]

@@ -2,12 +2,11 @@ import subprocess
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
+
+Affichage_pattern.affichage()
 script_path = os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
 sys.path.append("..")
-
-
-Affichage_pattern.affichage()
 
 from src.ml_stats import *
 from src.ml_stats_vizualisation import *
@@ -35,7 +34,7 @@ def page4():
     st.markdown('''First of all, choose the database you need.''')
     
     name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
-    database_choice=st.radio("Datasets list :", name_databases)
+    database_choice=st.radio("Dataset choice:", name_databases)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
     update = "Still in progress..."
     
@@ -44,7 +43,6 @@ def page4():
             parameters=json.load(f)
         PATH_IN = parameters[database_choice+"_IN_OUT"]['PATH_IN_'+database_choice]
         PATH_OUT = parameters[database_choice+"_IN_OUT"]['PATH_OUT_'+database_choice]
-
         st.text("Fill all the parameters.")
         in_out = st.number_input('Insert the in_out parameter.')
         if int(in_out) != 0 and int(in_out) != 1 :
@@ -75,7 +73,6 @@ def page4():
                 st.subheader(f"Count of elements we have in constant elements in data_in[{int(n)}]")
             elif in_out==1:
                 st.subheader(f"Count of elements we have in constant elements in data_out[{int(n)}]")
-
             fig = ML_stats_viz(PATH_IN, PATH_OUT, FRAME_LEN, FRAME_TSTEP, in_out, int(n), threshold)[2]
             st.plotly_chart(fig)
 
@@ -84,7 +81,6 @@ def page4():
                 st.subheader(f"Count of elements we have in mixed elements in data_in[{int(n)}]")
             elif in_out==1:
                 st.subheader(f"Count of elements we have in mixed elements in data_out[{int(n)}]")
-
             fig = ML_stats_viz(PATH_IN, PATH_OUT, FRAME_LEN, FRAME_TSTEP, in_out, int(n), threshold)[3]
             st.plotly_chart(fig)
 

@@ -1,11 +1,10 @@
-import os, sys, json
+import os, sys
+
 script_path = os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
-import time
+
 result_thread = ""
-import matplotlib.pyplot as plt
-import seaborn as sn
 import plotly.express as px
 import plotly.graph_objects as pg
 from plotly.subplots import make_subplots
@@ -13,17 +12,20 @@ from src.snl_stats_extraction_data import *
 from IBPY.extract_data import *
 from IBPY.visualization import *
 import numpy as np
-import pandas as pd
-from plotly.subplots import make_subplots
-import threading
-
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
+
 #Until #Mimicry, all the functions below are plotting exactly what its written just after "plot_" in their names.
 
 #Expression track - Intra __________________________________________________
 def plot_track_previous_expression(dg, track_choice):
-    """Args : The dataframe come from expression_track function"""
-    if not dg.empty:
+    """ Plot the previous expression track
+    Args:
+        dg (dataframe): dataframe come from expression_track function
+        track_choice (str): track choice
+    Returns:
+        fig: plot
+    """
+    if not dg.empty :
         fig=px.bar(dg, x='Trackp', y=['Countp'], color='Databasep', barmode='group',
         text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
         labels={"Trackp": f"Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}"},
@@ -34,8 +36,14 @@ def plot_track_previous_expression(dg, track_choice):
     return fig
 
 def plot_track_following_expression(dg, track_choice):
-    """Args : The dataframe come from expression_track function"""
-    if not dg.empty:
+    """ Plot the following expression track
+    Args:
+        dg (dataframe): dataframe come from expression_track function
+        track_choice (str): track choice
+    Returns:
+        fig: plot
+    """
+    if not dg.empty :
         fig=px.bar(dg, x='Trackf', y=['Countf'], color='Databasef', barmode='group',
         text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
         labels={"Trackf": f"Next {track_choice}", "Countf": f"Count Of Next {track_choice}"},
@@ -47,8 +55,15 @@ def plot_track_following_expression(dg, track_choice):
 
 #By Entity
 def plot_track_previous_expression_byI(dg, track_choice, check_choice):
-    """Args : The dataframe comes from expression_track_byI function"""
-    if not dg.empty:
+    """ Plot the previous expression track by entity
+    Args : 
+        dg (dataframe): dataframe come from expression_track_byI function
+        track_choice (str): track choice
+        check_choice (str): check choice
+    Returns:
+        fig: plot
+    """
+    if not dg.empty :
         fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
@@ -61,8 +76,15 @@ def plot_track_previous_expression_byI(dg, track_choice, check_choice):
     return fig
 
 def plot_track_following_expression_byI(dg, track_choice, check_choice):
-    """Args : The dataframe come from expression_track_byI function"""
-    if not dg.empty:    
+    """ Plot the following expression track by entity
+    Args :
+        dg (dataframe): dataframe come from expression_track_byI function
+        track_choice (str): track choice
+        check_choice (str): check choice
+    Returns:
+        fig: plot
+    """
+    if not dg.empty :    
         fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x)) + dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
@@ -74,7 +96,7 @@ def plot_track_following_expression_byI(dg, track_choice, check_choice):
         fig = None
     return fig
 
-    #Mimicry______________________________________________________________
+#Mimicry______________________________________________________________
 def plot_mimicry(L):
     """Plot probabilities and count mimicry per interaction.
     L come from give_mimicry, or give_mimicry_folder1 or give_mimicry_folder2
@@ -85,28 +107,21 @@ def plot_mimicry(L):
     """
     name_databases = [key.rstrip('_paths') for key in databases.keys()]
     databases_ = [value for value in databases_pair_paths.values()]
-
     print(L[0][2])
     for i in range(len(name_databases)):
         if L[0][2]==name_databases[i]:
             data_path=databases_[i]
-
     split_elements = []
     Pair_files = []
-
     for i in range(len(data_path)) :
         element = data_path[i]
         split_elements.append(element.split('\\'))
-
     for i in range(0,len(split_elements), 2) : 
-
         Pair_files.append(split_elements[i][-1] + ' / ' +  split_elements[i+1][-1])
-
     M=[]
     df=list_to_df(L,['count','probability','database'])
     if not df.empty:
         df['interaction']=[i+1 for i in range(len(df['count']))]
-    
         lst=list(np.unique(list(df.database)))
         colors = ['royalblue', 'green', 'red', 'orange']  # Specify colors for each line
         for i in lst:
@@ -126,10 +141,9 @@ def plot_mimicry(L):
 #Correlation__________________________________________________________
 def plot_correlation(L, folder):
     """This function plots the correlation between two series.
-
     Args:
         L (list): The list containing the correlation for each pair of two series.
-
+        folder (list): The list containing the path of the files.
     Returns:
         Figure : Scatter plot
     """
@@ -139,9 +153,7 @@ def plot_correlation(L, folder):
         element = folder[i]
         split_elements.append(element.split('\\'))
     for i in range(0,len(split_elements), 2) : 
-
         Pair_Files.append(split_elements[i][-1] + ' / ' +  split_elements[i+1][-1])
-
     if L:  
         fig = make_subplots(1, 1)
         fig.add_trace(pg.Scatter(x=[Pair_Files[i] for i in range(len(Pair_Files))], y=L, marker_color = 'royalblue', name='Correlation'))

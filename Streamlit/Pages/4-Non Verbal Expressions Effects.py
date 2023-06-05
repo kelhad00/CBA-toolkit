@@ -2,18 +2,13 @@ import subprocess
 import streamlit as st
 import os, sys, json
 import Affichage_pattern
+
+Affichage_pattern.affichage()
 script_path = os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
 sys.path.append("..")
 
-
-Affichage_pattern.affichage()
-
-# from interaction_stats.ml_stats import *
-# from interaction_stats.ml_stats_vizualisation import *
-# from interaction_stats.settings import *
 from src.page4.snl_stats_visualization_page4 import *
-
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
 def page3():
@@ -23,9 +18,10 @@ def page3():
 
     def page3_1():
         st.header('Intra Non Verbal Expressions Effects')
+
         st.subheader('Expressions Track')
         text_='''Here, we are checking what is before and after an expression in ploting percentage of the preceded and next expression.
-        \n Track choice --> The expression we want to study
+        \n Track choice --> The expression we want to study.
         \n Check choice --> Expression before and after the track choice.
         '''
         st.markdown(text_)
@@ -48,15 +44,14 @@ def page3():
         else:
             st.write("No data to display")
 
-        st.subheader('Expressions Track by intensity')
-        st.markdown("We do the same action as before but taking into account the intensities.")
+        st.subheader('Expressions Track By Entity')
+        st.markdown("We do the same action as before but taking into account the entities of the expressions.")
         expression_choices1 = list(tier_lists.keys())
         track_choice=st.radio("Track choice:", expression_choices1)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         expression_choices2 = list(tier_lists.keys())
         check_choice=st.radio("Check choice:", expression_choices2)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-
         fig1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[0], track_choice, check_choice)
         fig2= plot_track_following_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, tier_lists)[1], track_choice, check_choice)
         if fig1 != None :
@@ -70,6 +65,7 @@ def page3():
 
     def page3_2():
         st.header('Inter Non Verbal Expressions Effects')
+
         st.subheader("Mimicry")
         st.markdown("We look at the capacity of someone to mimic someone else. ( A / B -> B mimic A)")
         name_database = [key.rstrip('_paths').upper() for key in databases.keys()]
@@ -91,10 +87,9 @@ def page3():
                 if fig != None :
                     st.plotly_chart(fig)
                     st.text("Do you want to filter by another expression?")
-                    filter_choice=st.radio(label="  Choice:", options=["Yes", "No"])
+                    filter_choice1=st.radio(label="  Choice:", options=["Yes", "No"], key=1)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-
-                    if filter_choice == "Yes":
+                    if filter_choice1 == "Yes":
                         expression_filter = list(tier_lists.keys())
                         expression_filter.remove(expression_choiceA)
                         if expression_choiceA != expression_choiceB:
@@ -102,50 +97,54 @@ def page3():
                         filter=st.multiselect("  Filter:", expression_filter)
                         for i in filter :
                             for entity in tier_lists[i]:
-                                # fig=plot_mimicry(give_mimicry_folder2(databases_choice, databases_, eval('get_smiles_from_'+i+'_folder'), eval('get_laughs_from_'+i+'_folder')))
-                                fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity))
-                                if fig != None:
-                                    st.write(f"For {i} {entity}:")
-                                    st.plotly_chart(fig)
-                                else :
-                                    st.write("No data to display")
+                                try :
+                                    fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity))
+                                    if fig != None:
+                                        st.write(f"For {i} {entity}:")
+                                        st.plotly_chart(fig)
+                                    else :
+                                        st.write("No data to display")
+                                except:
+                                    st.write(f"No data to display for {entity} {i}")
                     else:
                         pass
                 else : 
                     st.write("No data to display")
             else:
                 st.write("No data to display")
-        if st.checkbox("By entity"): 
-            st.write("For one particular entity : ")
+        elif st.checkbox("By entity"): 
+            st.write("For one particular entity: ")
             try :
-                intensities_A = st.radio(f"Entities for {expression_choiceA} of person A:", list(tier_lists[expression_choiceA]))
+                entities_A = st.radio(f"Entities for {expression_choiceA} of person A:", list(tier_lists[expression_choiceA]))
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                intensities_B = st.radio(f"Entities for {expression_choiceB} of person B:", list(tier_lists[expression_choiceB]))   
+                entities_B = st.radio(f"Entities for {expression_choiceB} of person B:", list(tier_lists[expression_choiceB]))   
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
-                if intensities_A and intensities_B:
-                    st.write(intensities_B, f" {expression_choiceB} mimic ", intensities_A, f" {expression_choiceA}: " )
+                if entities_A and entities_B:
+                    st.write(entities_B, f" {expression_choiceB} mimic ", entities_A, f" {expression_choiceA}: " )
                     fig = plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
-                                        [str.lower(intensities_A), str.lower(intensities_B)] ))
+                                        [str.lower(entities_A), str.lower(entities_B)]))
                     if fig != None:
                         st.plotly_chart(fig)
                         st.text("Do you want to filter by another expression?")
-                        filter_choice=st.radio(label="Choice ->", options=["Yes", "No"])
+                        filter_choice2=st.radio(label="  Choice:", options=["Yes", "No"] , key=2)
                         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-
-                        if filter_choice == "Yes":
-                            expression_filter = list(tier_lists.keys())
-                            expression_filter.remove(expression_choiceA)
+                        if filter_choice2 == "Yes":
+                            expression_filter2 = list(tier_lists.keys())
+                            expression_filter2.remove(expression_choiceA)
                             if expression_choiceA != expression_choiceB:
-                                expression_filter.remove(expression_choiceB)
-                            filter=st.multiselect(" Filter:", expression_filter)
+                                expression_filter2.remove(expression_choiceB)
+                            filter=st.multiselect("  Filter:", expression_filter2)
                             for i in filter :
                                 for entity in tier_lists[i]:
-                                    fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(intensities_A), str.lower(intensities_B)]))
-                                    if fig != None:
-                                        st.write(f"For {i} {entity}:")
-                                        st.plotly_chart(fig)
-                                    else :
-                                        st.write("No data to display")
+                                    try :
+                                        fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(entities_A), str.lower(entities_B)]))
+                                        if fig != None:
+                                            st.write(f"For {i} {entity}:")
+                                            st.plotly_chart(fig)
+                                        else :
+                                            st.write("No data to display")
+                                    except:
+                                        st.write(f"No data to display for {entity} {i}")
                         else:
                             pass
                     else :
@@ -155,20 +154,17 @@ def page3():
             except :
                 return None
 
-        
-
     def page3_3():               
         st.header('Correlation')
         st.markdown('Here, we look at the correlation between two sequences of expressions')
-        st.text("*******    By dataset    ********")
 
+        st.subheader("********    By dataset    ********")
         name_databases = [key.rstrip('_paths').upper() for key in databases.keys()]
         databases_=[key for key in databases_pairs.keys()]
         databases_choice=st.selectbox("Datasets list:", name_databases, key = '0')
         for i in range(len(databases_)):
             if databases_choice==databases_[i].rstrip('_pairs').upper():
                 databases_list=databases_pair_paths[databases_[i]]
-
         case_= st.radio("Cases:", [1, 2])
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         expression_choicesA = list(tier_lists.keys())
@@ -177,8 +173,8 @@ def page3():
             A_choice=st.radio("Expression A ->", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             if tier_lists[A_choice]:
-                width = st.slider("Select the width", 1, 344) 
-                shift = st.slider("Select the shift", 1, 344) 
+                width = st.slider("Select the width:", 1, 344) 
+                shift = st.slider("Select the shift:", 1, 344) 
                 fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift), databases_list)
                 if fig != None:
                     st.plotly_chart(fig)
@@ -192,8 +188,8 @@ def page3():
             B_choice=st.radio("Expression B ->", expression_choicesB)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             if tier_lists[A_choice] and tier_lists[B_choice]:     
-                width = st.slider(" Select the width ", 1, 344) 
-                shift = st.slider(" Select the shift ", 1, 344) 
+                width = st.slider(" Select the width:", 1, 344) 
+                shift = st.slider(" Select the shift:", 1, 344) 
                 fig = plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice), databases_list)
                 if fig != None:
                     st.plotly_chart(fig)
@@ -202,8 +198,7 @@ def page3():
             else :
                 st.write("No data to display")
 
-
-        st.text("********    By dataset and expression    ********")
+        st.subheader("********    By dataset and expression    ********")
         name_databases1 = [key.rstrip('_paths').upper() for key in databases.keys()]
         databases_1=[key for key in databases_pairs.keys()]
         databases_choice1=st.selectbox("Datasets list:", name_databases1, key = '1')
@@ -221,8 +216,8 @@ def page3():
         if case_==1 :
             A_choice=st.radio("Expression -> ", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            width = st.slider("Select the width ", 1, 340) 
-            shift = st.slider("Select the shift ", 1, 340)
+            width = st.slider("Select the width:", 1, 344) 
+            shift = st.slider("Select the shift:", 1, 344)
             if tier_lists[A_choice]:
                 case_level= st.radio("Cases entities: ", [1, 2])
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -252,15 +247,15 @@ def page3():
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             B_choice=st.radio("Expression B -> ", expression_choicesB)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            width = st.slider("Select the width ", 1, 340) 
-            shift = st.slider("Select the shift ", 1, 340)
+            width = st.slider("Select the width:", 1, 344) 
+            shift = st.slider("Select the shift:", 1, 344)
             if tier_lists[A_choice] and tier_lists[B_choice]:
                 case_level= st.radio("Cases entities: ", [1, 2])
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                 entity_levelA = tier_lists[A_choice]
                 entity_levelB = tier_lists[B_choice]
                 if case_level==1:
-                    entity1 = st.radio("Entity 1 ->", entity_levelA)
+                    entity1 = st.radio("Entity 1:", entity_levelA)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                     fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice), databases_list1)
                     if fig != None:
@@ -268,9 +263,9 @@ def page3():
                     else :
                         st.write("No data to display")
                 else:
-                    entity1 = st.radio("Entity 1 -> ", entity_levelA)
+                    entity1 = st.radio("Entity 1:", entity_levelA)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    entity2 = st.radio("Entity 2 -> ", entity_levelB)
+                    entity2 = st.radio("Entity 2:", entity_levelB)
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                     fig = plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2), databases_list1)
                     if fig != None:
