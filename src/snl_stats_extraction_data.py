@@ -18,190 +18,153 @@ import pandas as pd
 from scipy.stats import pearsonr 
 from src.json_creation import create_json_from_directory
 
-#JSON_________________________________________________________
-
+#JSON____________________________________________________________________
 # Creates JSON file with the directory structure and annotation information
 create_json_from_directory()
-
-current_dir = os.getcwd()
-json_file_path = os.path.join(current_dir, 'data.json')
-
-#____________________________________________________________________
+current_dir=os.getcwd()
+json_file_path=os.path.join(current_dir, 'data.json')
+#________________________________________________________________________
 
 def get_parameters():
     """This function get the parameters from the json file.
-
+    
     Args:
-        json_path (str): path of the json file.
-
+        None
     Returns:
-        A tuple with the parameters.
+        A tuple with the parameters
     """
     if os.path.exists(json_file_path):
         # Read the data from the JSON file
         with open(json_file_path, 'r') as f:
-            parameters = json.load(f)
+            parameters=json.load(f)
     else:
         # Handle the case when the JSON file doesn't exist
         print("data.json file not found.")
-    
     DIR=parameters["FOLDER_PATHS"]["DIR"]
-    databases_pair_paths = parameters["DATABASES_PAIR_PATHS"]
-    databases_paths = parameters["DATABASES_PATHS"]
-    tier_lists = parameters["TIER_LISTS"]
-
-    databases = {}
-    databases_pairs = {}
-    tiers = {}
+    databases_pair_paths=parameters["DATABASES_PAIR_PATHS"]
+    databases_paths=parameters["DATABASES_PATHS"]
+    tier_lists=parameters["TIER_LISTS"]
+    databases={}
+    databases_pairs={}
+    tiers={}
     # Browsing pairs datasets
     for db_name, db_path in parameters["DATABASES_PAIR_PATHS"].items():
-        databases_pairs[db_name] = db_path
-
+        databases_pairs[db_name]=db_path
     # Browsing datasets
     for db_name, db_path in parameters["DATABASES_PATHS"].items():
-        databases[db_name] = db_path
-
+        databases[db_name]=db_path
     # Browsing expression tiers
     for tier_name, tier_list in parameters["TIER_LISTS"].items():
-        tiers[f"intensity_{tier_name.lower()}"] = tier_list
-
+        tiers[f"intensity_{tier_name.lower()}"]=tier_list
     return DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers
 
-
-def correct_dict_role_smiles(dict_,listpaths,string):
+def correct_dict_role_smiles(dict_, listpaths, string):
     """This function set to 0 intensities that doesn't exist in our eaf files for smiles.
-
+    
     Args:
         dict_ (list): list of the tuple we have to fix
         listpaths (list): list of eaf paths of a database
         string (str): nae of the database concerned
-
     Returns:
-        A list with previously non-existent intensities set to 0.    
+        A list with previously non-existent intensities set to 0   
     """
     dict_sub=[]
     dict_present_subject=[]
     label_present_subject=[]
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    # print(len(dict_))
-    # print(dict_[0])
-    #Si un sujet n'existe pas, on l'ajoute et on mets tous ses labels à 0
-    subjects=[i for i in range(1,len(listpaths)+1)]
-    #print(subjects)
-    for _ in dict_:dict_sub.append(_[0])
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
+    subjects=[i for i in range(1, len(listpaths)+1)]
+    for _ in dict_: dict_sub.append(_[0])
     for subject in subjects:
         if subject not in dict_sub:
             for i in tier_lists["Smiles"]:
-                dict_.append((subject,string,i,0,0,dict_[0][5]))
+                dict_.append((subject, string, i, 0, 0, dict_[0][5]))
         else:
-            #Si un sujet existe 
             for _ in dict_: 
                 if _[0]==subject: 
                     dict_present_subject.append(_) 
-                    for i in dict_present_subject : label_present_subject.append(i[2]) #je prends les labels du sujet qui existe que je stocke 
-            #Si un des labels normaux n'est pas dans cette liste de label, on le mets à 0
-                    for l in tier_lists["Smiles"] :
-                        if l not in label_present_subject :
-                            dict_.append((subject, string,l,0,0,dict_[0][5]))# dict_=list(df_to_correct.to_records(index=False))
-    #print(len(dict_))
-
+                    for i in dict_present_subject : label_present_subject.append(i[2]) 
+                    for l in tier_lists["Smiles"]:
+                        if l not in label_present_subject:
+                            dict_.append((subject, string, l, 0, 0, dict_[0][5]))
     return dict_
 
-def correct_dict_role_laughs(dict_,listpaths,string):
+def correct_dict_role_laughs(dict_, listpaths, string):
     """This function set to 0 intensities that doesn't exist in our eaf files for laughs.
-
+    
     Args:
         dict_ (list): list of the tuple we have to fix
         listpaths (list): list of eaf paths of a database
         string (str): nae of the database concerned
-
     Returns:
-        A list with previously non-existent intensities set to 0.    
+        A list with previously non-existent intensities set to 0   
     """
     dict_sub=[]
     dict_present_subject=[]
     label_present_subject=[]
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    # print(len(dict_))
-    # print(dict_[0])
-    #Si un sujet n'existe pas, on l'ajoute et on mets tous ses labels à 0
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
     subjects=[i for i in range(1,len(listpaths)+1)]
-    #print(subjects)
-    for _ in dict_:dict_sub.append(_[0])
+    for _ in dict_: dict_sub.append(_[0])
     for subject in subjects:
         if subject not in dict_sub:
             for i in tier_lists["Laughs"]:
-                dict_.append((subject,string,i,0,0,dict_[0][5]))
-        else:
-            #Si un sujet existe 
+                dict_.append((subject, string, i, 0, 0, dict_[0][5]))
+        else: 
             for _ in dict_: 
                 if _[0]==subject: 
                     dict_present_subject.append(_) 
-                    for i in dict_present_subject : label_present_subject.append(i[2]) #je prends les labels du sujet qui existe que je stocke 
-            #Si un des labels normaux n'est pas dans cette liste de label, on le mets à 0
-                    for l in tier_lists["Laughs"] :
+                    for i in dict_present_subject : label_present_subject.append(i[2]) 
+                    for l in tier_lists["Laughs"]:
                         if l not in label_present_subject :
-                            dict_.append((subject, string,l,0,0,dict_[0][5]))# dict_=list(df_to_correct.to_records(index=False))
-    #print(len(dict_))
-
+                            dict_.append((subject, string, l, 0, 0, dict_[0][5]))
     return dict_
 
-def correct_dict_role_tier(dict_,listpaths,string, tier):
+def correct_dict_role_tier(dict_, listpaths, string, tier):
     """This function set to 0 intensities that doesn't exist in our eaf files for tier.
-
+    
     Args:
         dict_ (list): list of the tuple we have to fix
         listpaths (list): list of eaf paths of a database
         string (str): nae of the database concerned
         tier (str): name of the tier concerned
-
     Returns:
-        A list with previously non-existent intensities set to 0.    
+        A list with previously non-existent intensities set to 0    
     """
     dict_sub=[]
     dict_present_subject=[]
     label_present_subject=[]
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    # print(len(dict_))
-    # print(dict_[0])
-    #Si un sujet n'existe pas, on l'ajoute et on mets tous ses labels à 0
-    subjects=[i for i in range(1,len(listpaths)+1)]
-
-    for _ in dict_:dict_sub.append(_[0])
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
+    subjects=[i for i in range(1, len(listpaths)+1)]
+    for _ in dict_: dict_sub.append(_[0])
     for subject in subjects:
         if subject not in dict_sub:
             for i in tier_lists[tier]:
-                dict_.append((subject,string,i,0,0,dict_[0][5]))
+                dict_.append((subject, string, i, 0, 0, dict_[0][5]))
         else:
-            #Si un sujet existe 
             for _ in dict_: 
                 if _[0]==subject: 
                     dict_present_subject.append(_) 
-                    for i in dict_present_subject : label_present_subject.append(i[2]) #je prends les labels du sujet qui existe que je stocke 
-            #Si un des labels normaux n'est pas dans cette liste de label, on le mets à 0
-                    for l in tier_lists[tier] :
+                    for i in dict_present_subject : label_present_subject.append(i[2])
+                    for l in tier_lists[tier]:
                         if l not in label_present_subject :
-                            dict_.append((subject, string,l,0,0,dict_[0][5]))# dict_=list(df_to_correct.to_records(index=False))
-    #print(len(dict_))
-
+                            dict_.append((subject, string, l, 0, 0, dict_[0][5]))
     return dict_
 
 def get_SLdict(root):
+    """ Return a list of S&L with the label corresponding to the Smiles_0 and Laughs_0 dictionnaries.
+    
+    Args:
+        root (str): Path of the file
+    Returns:
+        lst (list): List of S&L
     """
-    Return a list of S&L with the label corresponding to the Smiles_0 and Laughs_0 dictionnaries
-
-    Args :
-        root (str) -> Path of the file
-    """
-    lst1 = get_Sdict(root)
-    lst2 = get_Ldict(root)
-    to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
+    lst1=get_Sdict(root)
+    lst2=get_Ldict(root)
+    to_dict=read_eaf_to_dict(root, mark=True, tiers=None)
     lst=to_dict["S&L_0"]
-
     nb=0
     for _ in range (0, len(lst),1): 
         for j in lst1:
-            if (lst[_][0] == j[0]) and (lst[_][1] == j[1]):
+            if (lst[_][0]==j[0]) and (lst[_][1]==j[1]):
                 nb+=1
                 y=list(lst[_])
                 y[2]='S'
@@ -210,7 +173,7 @@ def get_SLdict(root):
     nb=0
     for _ in range (0, len(lst),1): 
         for j in lst2:
-            if (lst[_][0] == j[0]) and (lst[_][1] == j[1]):
+            if (lst[_][0]==j[0]) and (lst[_][1]==j[1]):
                 nb+=1
                 y=list(lst[_])
                 y[2]='L'
@@ -219,25 +182,23 @@ def get_SLdict(root):
     return lst
 
 def get_TCdict(root, track, check):
+    """ Return a list of Track & Check tier with the label corresponding to the track and check tiers dictionnaries.
+    
+    Args:
+        root (str): Path of the file
+        track (str): Name of the track tier
+        check (str): Name of the check tier
+    Returns:
+        lst (list): List of Track & Check
     """
-    Return a list of Track & Check tier with the label corresponding to the track and check tiers dictionnaries
-
-    Args :
-        root (str) -> Path of the file
-    """
-    lst1 = get_tier_dict(root, track)
-    lst2 = get_tier_dict(root, check)
-    to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
-    # if track not in to_dict:
-    #     track = track + '_0'
-    # if check not in to_dict:
-    #     check = check + '_0'
+    lst1=get_tier_dict(root, track)
+    lst2=get_tier_dict(root, check)
+    to_dict=read_eaf_to_dict(root, mark=True, tiers=None)
     lst=to_dict[track] + to_dict[check]
-
     nb=0
     for _ in range (0, len(lst),1):
         for j in lst1:
-            if (lst[_][0] == j[0]) and (lst[_][1] == j[1]):
+            if (lst[_][0]==j[0]) and (lst[_][1]==j[1]):
                 nb+=1
                 y=list(lst[_])
                 y[2]=track
@@ -253,114 +214,86 @@ def get_TCdict(root, track, check):
                 lst[_]=tuple(y)
     #print(f"Nb check in TC : {nb}", lst)
     return lst
+
 def get_Sdict(root):
+    """ Give the list of smiles from a file.
+    
+    Args: 
+        root (str): path of the file
+    Returns:
+        lst (list): list of smiles
     """
-    Give the list of smiles from a file.
-    Arg : root (str) -> path of the file
-    """
-    to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
-    lst = to_dict["Smiles_0"]
+    to_dict=read_eaf_to_dict(root, mark=True, tiers=None)
+    lst=to_dict["Smiles_0"]
     return lst
 
 def get_Ldict(root):
+    """ Give the laughs's list from a file.
+    
+    Args: 
+        root (str): path of the file
+    Returns:
+        lst (list): list of laughs
     """
-    Give the laughs's list from a file
-    Arg : root (str) -> path of the file
-    """
-    to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
-    lst = to_dict["Laughs_0"]
+    to_dict=read_eaf_to_dict (root, mark=True, tiers=None)
+    lst=to_dict["Laughs_0"]
     return lst
 
 def get_Rdict(root):
+    """ Give the role's list from a file.
+    
+    Args: 
+        root (str): path of the file
+    Returns:
+        lst (list): list of roles
     """
-    Give the role's list from a file
-    Arg : root (str) -> path of the file
-    """
-    to_dict = read_eaf_to_dict (root, mark=True, tiers=None)
-    lst = to_dict["Role"]
+    to_dict=read_eaf_to_dict(root, mark=True, tiers=None)
+    lst=to_dict["Role"]
     return lst
 
 def get_tier_dict(root, tier):
-    """
-    Retrieve the list of a specific tier from a file.
-
+    """ Retrieve the list of a specific tier from a file.
+    
     Args:
-        root (str): Path of the file.
-        tier (str): Tier name.
-
+        root (str): Path of the file
+        tier (str): Tier name
     Returns:
-        list: List of the specified tier from the file.
+        list: List of the specified tier from the file
     """
-    to_dict = read_eaf_to_dict(root, mark=True, tiers=None)
-    lst = None
-    # if tier not in to_dict:
-    #     tier = tier + '_0'
+    to_dict=read_eaf_to_dict(root, mark=True, tiers=None)
+    lst=None
     lst = to_dict[tier]
     return lst
 
 def get_IR_list(root, expression, intensity):
+    """ Give the list of tier from a file for a given entity or a given role.
+    
+    Args:
+        root (str): path of the file
+        expression (str): tier name
+        intensity (str): entity or role of the tier
+    Returns:
+        lst (list): list of tier
     """
-    Give the list of tier from a file for a given intensity or a given role
-    Args :
-        root (str) -> path of the file
-        expression (str) -> tier name
-        intensity (str) -> intensity or role of the tier
-    """
-    tier= get_tier_from_file(root, expression, intensity)
-    lst= tier[expression]
-
+    tier=get_tier_from_file(root, expression, intensity)
+    lst=tier[expression]
     return lst
 
 def get_tier_dict_folder(filespaths, database, tier):
-    """
-    Retrieve the dataframe of a specified tier from a folder.
+    """ Retrieve the dataframe of a specified tier from a folder.
+    
     Args:
-        filespaths (list): List of file paths in the folder.
-        database (str): Database name (e.g., "ccdb", "ifadv", "ndc").
-        tier (str): Tier name to retrieve the data from.
+        filespaths (list): List of file paths in the folder
+        database (str): Dataset name (e.g., "ccdb", "ifadv", "ndc")
+        tier (str): Tier name to retrieve the data from
     Returns:
-        A list of tuples and the column names.
+        A list of tuples and the column names
     """
-    startime, endtime, label, subject, duration = ([] for _ in range(5))
-    s = 1
-    for file in filespaths:
-        lst_ = get_tier_dict(file, tier)
-        eaf = pympi.Elan.Eaf(file)
-        c = check_duration(eaf)
-        for i in range(len(lst_)):
-            subject.append(s)
-            startime.append(lst_[i][0])
-            endtime.append(lst_[i][1])
-            label.append(lst_[i][2])
-            duration.append(c)
-
-        s += 1  
-    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject,'startime':startime, 
-    'endtime':endtime,'label':label,'duration':duration})
-    df['diff_time']=df['endtime']-df['startime']
-
-    df.columns = ['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
-    df = df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'])
-
-    lst = df_to_list(df)
-    col = ['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
-
-    return lst, col
-
-def get_smiles_dict_folder(filespaths,database):
-    """
-    Give the dataframe of smiles from a folder.
-    Args : 
-        filespaths (list) -> Cointain the filespath of the folder
-        database (str) -> ccdb, ifadv or ndc
-    Return :
-        A list of tuple and the list L = ['startime','endtime','label', 'subject', 'diff_time', 'duration','database'] 
-    """
-    startime, endtime, label, subject,duration = ([] for _ in range(5))
+    startime, endtime, label, subject, duration=([] for _ in range(5))
     s=1
-    for _ in filespaths:
-        lst_ = get_Sdict(_)
-        eaf = pympi.Elan.Eaf(_)
+    for file in filespaths:
+        lst_=get_tier_dict(file, tier)
+        eaf=pympi.Elan.Eaf(file)
         c=check_duration(eaf)
         for i in range(len(lst_)):
             subject.append(s)
@@ -368,36 +301,62 @@ def get_smiles_dict_folder(filespaths,database):
             endtime.append(lst_[i][1])
             label.append(lst_[i][2])
             duration.append(c)
-
-        s+=1
-
-    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject,'startime':startime, 
-    'endtime':endtime,'label':label,'duration':duration})
+        s+=1  
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject':subject, 'startime':startime, 
+    'endtime':endtime, 'label':label, 'duration':duration})
     df['diff_time']=df['endtime']-df['startime']
-   
-    df.columns=['database','subject','startime','endtime','label','duration','diff_time']
-    #df.drop(df.columns[[2,3,4]], axis=1, inplace=True)
-    df=df.reindex(columns=['startime','endtime','label','subject','diff_time', 'duration','database'])
+    df.columns = ['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df = df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'])
+    lst = df_to_list(df)
+    col = ['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
+def get_smiles_dict_folder(filespaths, database):
+    """ Give the dataframe of smiles from a folder.
+    
+    Args: 
+        filespaths (list): Cointain the filespath of the folder
+        database (str): Dataset name (e.g., "ccdb", "ifadv", "ndc")
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'] 
+    """
+    startime, endtime, label, subject, duration=([] for _ in range(5))
+    s=1
+    for _ in filespaths:
+        lst_=get_Sdict(_)
+        eaf=pympi.Elan.Eaf(_)
+        c=check_duration(eaf)
+        for i in range(len(lst_)):
+            subject.append(s)
+            startime.append(lst_[i][0])
+            endtime.append(lst_[i][1])
+            label.append(lst_[i][2])
+            duration.append(c)
+        s+=1
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject':subject, 'startime':startime, 
+    'endtime':endtime, 'label':label, 'duration':duration})
+    df['diff_time']=df['endtime']-df['startime']
+    df.columns=['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df=df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration','database'])
     lst=df_to_list(df)
-    col=['startime','endtime','label', 'subject','diff_time', 'duration','database']
+    col=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-    return lst,col
-
-def get_laughs_dict_folder(filespaths,database):
+def get_laughs_dict_folder(filespaths, database):
+    """ Give the dataframe of laughs from a folder.
+    
+    Args: 
+        filespaths (list): Cointain the filespath of the folder
+        database (str): Dataset name (e.g., "ccdb", "ifadv", "ndc")
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'] 
     """
-    Give the dataframe of laughs from a folder.
-    Args : 
-        filespaths (list) -> Cointain the filespath of the folder
-    Return :
-        A list of tuple and the list L = ['startime','endtime','label', 'subject', 'diff_time', 'duration','database'] 
-    """
-    startime, endtime, label, subject , duration= ([] for _ in range(5))
+    startime, endtime, label, subject, duration=([] for _ in range(5))
     s=1
     n=1
     for _ in filespaths:
-        lst_ = get_Ldict(_)
-        eaf = pympi.Elan.Eaf(_)
+        lst_=get_Ldict(_)
+        eaf=pympi.Elan.Eaf(_)
         c=check_duration(eaf)
         for i in range(len(lst_)):
             subject.append(s)
@@ -406,165 +365,147 @@ def get_laughs_dict_folder(filespaths,database):
             label.append(lst_[i][2])
             duration.append(c)
             n+=1
-
         s+=1
-
-    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject, 'startime':startime, 
-    'endtime':endtime,'label':label,'duration':duration})
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject':subject, 'startime':startime, 
+    'endtime':endtime, 'label':label, 'duration':duration})
     df['diff_time']=df['endtime']-df['startime']
-    df.columns=['database','subject','startime','endtime','label','duration','diff_time']
-    #df.drop(df.columns[[2,3,4]], axis=1, inplace=True)
-
-    df=df.reindex(columns=['startime','endtime','label', 'subject','diff_time', 'duration','database'])
+    df.columns=['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df=df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(df)
-    col=['startime','endtime','label', 'subject','diff_time', 'duration','database']
+    col=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-    return lst,col
-
-def get_smiles_dict_conv_folder(filespaths,database):
+def get_smiles_dict_conv_folder(filespaths, database):
+    """ Give the dataframe of smiles from a folder.
+    
+    Args: 
+        filespaths (list): Cointain the filespath of the folder
+        database (str): Dataset name (e.g., "ccdb", "ifadv", "ndc")
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'] 
     """
-    Give the dataframe of smiles from a folder.
-    Args : 
-        filespaths (list) -> Cointain the filespath of the folder
-        database (str) -> ccdb, ifadv or ndc
-    Return a list of tuple and the list L =['startime','endtime','label', 'subject','diff_time', 'duration','database'] 
-    """
-    startime, endtime, label, subject,duration = ([] for _ in range(5))
+    startime, endtime, label, subject, duration=([] for _ in range(5))
     s=1
     n=0
     for _ in range (len(filespaths)):
-        #print("file ",_,"duration n°",n)
-        lst_ = get_Sdict(filespaths[_])
-        eaf = pympi.Elan.Eaf(filespaths[n])
-        eaf2= pympi.Elan.Eaf(filespaths[n+1])
+        lst_=get_Sdict(filespaths[_])
+        eaf=pympi.Elan.Eaf(filespaths[n])
+        eaf2=pympi.Elan.Eaf(filespaths[n+1])
         c=check_duration(eaf)
-        c2= check_duration(eaf2)
+        c2=check_duration(eaf2)
         for i in range(len(lst_)):
             subject.append(s)
             startime.append(lst_[i][0])
             endtime.append(lst_[i][1])
             label.append(lst_[i][2])
             duration.append(max(c,c2))
-
         s+=1
-
         if ((s-1)%2==0):
             n+=2
-
-    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject, 'startime':startime, 
-    'endtime':endtime,'label':label,'duration':duration})
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject':subject, 'startime':startime, 
+    'endtime':endtime, 'label':label, 'duration':duration})
     df['diff_time']=df['endtime']-df['startime']
-    df.columns=['database','subject','startime','endtime','label','duration','diff_time']
-    df=df.reindex(columns=['startime','endtime','label', 'subject','diff_time', 'duration','database' ])
-
+    df.columns=['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df=df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(df)
-    col=['startime','endtime','label', 'subject','diff_time', 'duration','database' ]
-    return lst,col
+    col=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-def get_laughs_dict_conv_folder(filespaths,database):
+def get_laughs_dict_conv_folder(filespaths, database):
+    """ Give the dataframe of laughs from a folder.
+
+    Args: 
+        filespaths (list): Cointain the filespath of the folder
+        database (str): Dataset name (e.g., "ccdb", "ifadv", "ndc")
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'] 
     """
-    Give the dataframe of laughs from a folder.
-    Args : 
-        filespaths (list) -> Cointain the filespath of the folder
-        database (str) -> ccdb, ifadv or ndc
-    Return a list of tuple and the list L =['startime','endtime','label', 'subject','diff_time', 'duration','database'] 
-    """
-    startime, endtime, label, subject,duration = ([] for _ in range(5))
+    startime, endtime, label, subject, duration=([] for _ in range(5))
     s=1
     n=0
     for _ in range (len(filespaths)):
-        #print("file ",_,"duration n°",n)
-        lst_ = get_Ldict(filespaths[_])
-        eaf = pympi.Elan.Eaf(filespaths[n])
-        eaf2= pympi.Elan.Eaf(filespaths[n+1])
+        lst_=get_Ldict(filespaths[_])
+        eaf=pympi.Elan.Eaf(filespaths[n])
+        eaf2=pympi.Elan.Eaf(filespaths[n+1])
         c=check_duration(eaf)
-        c2= check_duration(eaf2)
+        c2=check_duration(eaf2)
         for i in range(len(lst_)):
             subject.append(s)
             startime.append(lst_[i][0])
             endtime.append(lst_[i][1])
             label.append(lst_[i][2])
             duration.append(max(c,c2))
-
         s+=1
         if ((s-1)%2==0):
             n+=2
-
-    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject, 'startime':startime, 
-    'endtime':endtime,'label':label,'duration':duration})
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject':subject, 'startime':startime, 
+    'endtime':endtime, 'label':label, 'duration':duration})
     df['diff_time']=df['endtime']-df['startime']
-   
-    df.columns=['database','subject','startime','endtime','label','duration','diff_time']
-    df=df.reindex(columns=['startime','endtime','label', 'subject','diff_time', 'duration','database' ])
-
+    df.columns=['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df=df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(df)
-    col=['startime','endtime','label', 'subject','diff_time', 'duration','database' ]
-    return lst,col
+    col=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
 def get_tier_dict_conv_folder(filespaths,database,tier):
+    """ Give the dataframe of a tier from a folder.
+    
+    Args:
+        filespaths (list): Cointain the filespath of the folder
+        database (str): your dataset selected
+        tier (str): tier name
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
     """
-    Give the dataframe of a tier from a folder.
-    Args :
-        filespaths (list) -> Cointain the filespath of the folder
-        database (str) -> your dataset selected
-        tier (str) -> tier name
-    Return a list of tuple and the list L =['startime','endtime','label', 'subject','diff_time', 'duration','database']
-    """
-    startime, endtime, label, subject,duration = ([] for _ in range(5))
+    startime, endtime, label, subject, duration=([] for _ in range(5))
     s=1
     n=0
     for _ in range (len(filespaths)):
-        #print("file ",_,"duration n°",n)
-        lst_ = get_tier_dict(filespaths[_],tier)
-        eaf = pympi.Elan.Eaf(filespaths[n])
-        eaf2= pympi.Elan.Eaf(filespaths[n+1])
+        lst_=get_tier_dict(filespaths[_],tier)
+        eaf=pympi.Elan.Eaf(filespaths[n])
+        eaf2=pympi.Elan.Eaf(filespaths[n+1])
         c=check_duration(eaf)
-        c2= check_duration(eaf2)
+        c2=check_duration(eaf2)
         for i in range(len(lst_)):
             subject.append(s)
             startime.append(lst_[i][0])
             endtime.append(lst_[i][1])
             label.append(lst_[i][2])
             duration.append(max(c,c2))
-
         s+=1
         if ((s-1)%2==0):
             n+=2
-
-    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)),'subject':subject, 'startime':startime, 
-    'endtime':endtime,'label':label,'duration':duration})
+    df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject':subject, 'startime':startime, 
+    'endtime':endtime, 'label':label, 'duration':duration})
     df['diff_time']=df['endtime']-df['startime']
-    df.columns=['database','subject','startime','endtime','label','duration','diff_time']
-    df=df.reindex(columns=['startime','endtime','label', 'subject','diff_time', 'duration','database' ])
-
+    df.columns=['database', 'subject', 'startime', 'endtime', 'label', 'duration', 'diff_time']
+    df=df.reindex(columns=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database' ])
     lst=df_to_list(df)
-    col=['startime','endtime','label', 'subject','diff_time', 'duration','database' ]
-    return lst,col
+    col=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database' ]
+    return lst, col
 
 #By file _____________________________________________________________________________________________________________________________
 #Here, the get_overlapping_seg function (defined in interaction_analysis.py) makes directly intersection between the segments.
 def get_smiles_from_spk(root):
-    """
-    Give a list of smiles when the subject is a speaker.
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  startime, endtime, label, duration, diff_time, subject
+    """ Give a list of smiles when the subject is a speaker.
+    
+    Args:
+        root (str): file path
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
     """
     """
     Process: 
     We want the overlap of speaker's segments and smiles segments
     """
-    spk_lst = get_IR_list(root,"Role","spk")
-    smiles_lst = get_Sdict(root)
-    startime, endtime, label,duration, diff_time, subject= ([] for _ in range(6))
-   
+    spk_lst=get_IR_list(root, "Role", "spk")
+    smiles_lst=get_Sdict(root)
+    startime, endtime, label, duration, diff_time, subject=([] for _ in range(6))
     b=get_overlapping_seg(spk_lst, smiles_lst)
     sub=1
-    eaf = pympi.Elan.Eaf(root)
+    eaf=pympi.Elan.Eaf(root)
     c=check_duration(eaf)
-
-    for _ in range(0,len(b),1):     
+    for _ in range(0, len(b), 1):     
         startime.append(b[_][0])
         endtime.append(b[_][1])
         diff_time.append(b[_][1] - b[_][0])
@@ -572,31 +513,26 @@ def get_smiles_from_spk(root):
         duration.append(c)
         subject.append(sub)
         sub+=1
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l,m,n) for i,j,k,l,m,n in zip(startime,endtime, label,duration, diff_time, subject)]
-    col=['startime', 'endtime', 'label','duration','diff_time','subject']
-
-    return lst,col
+    lst=[(i, j, k, l, m, n) for i, j, k, l, m, n in zip(startime, endtime, label, duration, diff_time, subject)]
+    col=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
+    return lst, col
 
 def get_smiles_from_lsn(root):
-    """
-    Give a list of smiles when the subject is a listener
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  startime, endtime, label, duration, diff_time, subject
-    """
-    lsn_lst = get_IR_list(root,"Role","lsn")
-    lst = get_Sdict(root)
-    startime, endtime, label,duration, diff_time, subject= ([] for _ in range(6))
+    """ Give a list of smiles when the subject is a listener.
     
+    Args:
+        root (str): file path
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
+    """
+    lsn_lst=get_IR_list(root, "Role", "lsn")
+    lst=get_Sdict(root)
+    startime, endtime, label, duration, diff_time, subject=([] for _ in range(6))
     b=get_overlapping_seg(lsn_lst, lst)
     sub=1
     eaf = pympi.Elan.Eaf(root)
     c=check_duration(eaf)
-
-    for _ in range(0,len(b),1):     
+    for _ in range(0, len(b), 1):     
         startime.append(b[_][0])
         endtime.append(b[_][1])
         diff_time.append(b[_][1] - b[_][0])
@@ -604,30 +540,26 @@ def get_smiles_from_lsn(root):
         duration.append(c)
         subject.append(sub)
         sub+=1
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l,m,n) for i,j,k,l,m,n in zip(startime,endtime, label,duration, diff_time, subject)]
-    col=['startime', 'endtime', 'label','duration','diff_time','subject']
-
-    return lst,col
+    lst=[(i, j, k, l, m, n) for i, j, k, l, m, n in zip(startime, endtime, label, duration, diff_time, subject)]
+    col=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
+    return lst, col
 
 def get_laughs_from_spk(root):
-    """
-    Give a list of laughs when the subject is a speaker
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  startime, endtime, label, duration, diff_time, subject
-    """
-    spk_lst = get_IR_list(root,"Role","spk")
-    lst = get_Ldict(root)
-    startime, endtime, label,duration, diff_time, subject= ([] for _ in range(6))
+    """ Give a list of laughs when the subject is a speaker.
     
+    Args:
+        root (str) -> file path
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
+    """
+    spk_lst=get_IR_list(root, "Role", "spk")
+    lst=get_Ldict(root)
+    startime, endtime, label, duration, diff_time, subject=([] for _ in range(6))
     b=get_overlapping_seg(spk_lst, lst)
-    eaf = pympi.Elan.Eaf(root)
+    eaf=pympi.Elan.Eaf(root)
     c=check_duration(eaf)
     sub=1
-    for _ in range(0,len(b),1):     
+    for _ in range(0, len(b), 1):     
         startime.append(b[_][0])
         endtime.append(b[_][1])
         diff_time.append(b[_][1] - b[_][0])
@@ -635,30 +567,26 @@ def get_laughs_from_spk(root):
         duration.append(c)
         subject.append(sub)
         sub+=1
-    
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l,m,n) for i,j,k,l,m,n in zip(startime,endtime, label,duration, diff_time, subject)]
-    col=['startime', 'endtime', 'label','duration','diff_time','subject']
-    return lst,col
+    lst=[(i, j, k, l, m, n) for i, j, k, l, m, n in zip(startime, endtime, label, duration, diff_time, subject)]
+    col=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
+    return lst, col
 
 def get_laughs_from_lsn(root):
+    """ Give a list of laughs when the subject is a listener.
+    
+    Args:
+        root (str): file path
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label', 'duration', 'diff_time', 'subject']
     """
-    Give a list of laughs when the subject is a listener
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  startime, endtime, label, duration, diff_time, subject
-    """
-    lsn_lst = get_IR_list(root,"Role","lsn")
-    lst = get_Ldict(root)
-
-    startime, endtime, label,duration, diff_time, subject= ([] for _ in range(6))
-   
+    lsn_lst=get_IR_list(root, "Role", "lsn")
+    lst=get_Ldict(root)
+    startime, endtime, label, duration, diff_time, subject=([] for _ in range(6))
     b=get_overlapping_seg(lsn_lst, lst)
-    eaf = pympi.Elan.Eaf(root)
+    eaf=pympi.Elan.Eaf(root)
     c=check_duration(eaf)
     sub=1
-    for _ in range(0,len(b),1):     
+    for _ in range(0, len(b), 1):     
         startime.append(b[_][0])
         endtime.append(b[_][1])
         diff_time.append(b[_][1] - b[_][0])
@@ -666,251 +594,201 @@ def get_laughs_from_lsn(root):
         duration.append(c)
         subject.append(sub)
         sub+=1
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l,m,n) for i,j,k,l,m,n in zip(startime,endtime, label,duration, diff_time, subject)]
-    col=['startime', 'endtime', 'label','duration','diff_time','subject']
-    return lst,col
+    lst=[(i, j, k, l, m, n) for i, j, k, l, m, n in zip(startime, endtime, label, duration, diff_time, subject)]
+    col=['startime', 'endtime', 'label', 'duration', 'diff_time','subject']
+    return lst, col
 
 #Here, the get_overlapping_segments function (defined in interaction_analysis.py) doesn't make directly intersection between the segments.
 def get_smiles_from_spk2(root):
-    """
-    Give a list of smiles when the subject is a speaker.
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  'startime', 'endtime', 'label','duration'
+    """ Give a list of smiles when the subject is a speaker.
+    
+    Args:
+        root (str): file path
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label','duration']
     """
     """
     Process: 
     We want the overlap of speaker's segments and smiles segments
     """
-    spk_lst = get_IR_list(root,"Role","spk")
-    smiles_lst = get_Sdict(root)
-    startime, endtime, label, nsmile, role_ind , duration= ([] for _ in range(6))
-
+    spk_lst=get_IR_list(root, "Role", "spk")
+    smiles_lst=get_Sdict(root)
+    startime, endtime, label, nsmile, role_ind, duration=([] for _ in range(6))
     b=list(get_overlapping_segments(spk_lst, smiles_lst).values())
     b=list(itertools.chain(*b))
-    
-    eaf = pympi.Elan.Eaf(root)
+    eaf=pympi.Elan.Eaf(root)
     c=check_duration(eaf)
-
-    for _ in range(0,len(b),1):     
+    for _ in range(0, len(b), 1):     
         startime.append(b[_][0])
         endtime.append(b[_][1])
         label.append(b[_][2])
         duration.append(c)
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l) for i,j,k,l in zip(startime,endtime, label,duration)]
-    col=['startime', 'endtime', 'label','duration']
-
-
-    return lst,col
+    lst=[(i, j, k, l) for i, j, k, l in zip(startime, endtime, label, duration)]
+    col=['startime', 'endtime', 'label', 'duration']
+    return lst, col
 
 def get_smiles_from_lsn2(root):
-    """
-    Give a list of smiles when the subject is a listener
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  'startime', 'endtime', 'label','duration'
-    """
-    lsn_lst = get_IR_list(root,"Role","lsn")
-    lst = get_Sdict(root)
-    startime, endtime, label, duration = ([] for _ in range(4))
-    
-    b=list(get_overlapping_segments(lsn_lst, lst).values())
-    b=list(itertools.chain(*b))
-
-    eaf = pympi.Elan.Eaf(root)
-    c=check_duration(eaf)
-
-    for _ in range(0,len(b),1):     
-        startime.append(b[_][0])
-        endtime.append(b[_][1])
-        label.append(b[_][2])
-        duration.append(c)
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l) for i,j,k,l in zip(startime,endtime, label,duration)]
-    col=['startime', 'endtime', 'label','duration']
-
-
-    return lst,col
-
-def get_laughs_from_spk2(root):
-    """
-    Give a list of laughs when the subject is a speaker
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  'startime', 'endtime', 'label','duration'
-    """
-    spk_lst = get_IR_list(root,"Role","spk")
-    lst = get_Ldict(root)
-
-    startime, endtime, label, duration = ([] for _ in range(4))
-    
-    b=list(get_overlapping_segments(spk_lst, lst).values())
-    b=list(itertools.chain(*b))
-    
-    eaf = pympi.Elan.Eaf(root)
-    c=check_duration(eaf)
-
-    for _ in range(0,len(b),1):     
-        startime.append(b[_][0])
-        endtime.append(b[_][1])
-        label.append(b[_][2])
-        duration.append(c)
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l) for i,j,k,l in zip(startime,endtime, label,duration)]
-    col=['startime', 'endtime', 'label','duration']
-
-    return lst,col
-
-def get_laughs_from_lsn2(root):
-    """
-    Give a list of laughs when the subject is a listener
-    Args :
-        root (str) -> file path
-    Return :
-        A list of tuple and the list L =  'startime', 'endtime', 'label','duration'
-    """
-    lsn_lst = get_IR_list(root,"Role","lsn")
-    lst = get_Ldict(root)
-
-    startime, endtime, label,duration = ([] for _ in range(4))
-   
-    b=list(get_overlapping_segments(lsn_lst, lst).values())
-    b=list(itertools.chain(*b))
- 
-    
-    eaf = pympi.Elan.Eaf(root)
-    c=check_duration(eaf)
-    for _ in range(0,len(b),1):     
-        startime.append(b[_][0])
-        endtime.append(b[_][1])
-        label.append(b[_][2])
-        duration.append(c)
-
-    # lst=df_to_list(df)
-    lst=[(i,j,k,l) for i,j,k,l in zip(startime,endtime, label,duration)]
-    col=['startime', 'endtime', 'label','duration']
-
-    return lst,col
-
-def get_tier_from_lsn2(root, tier):
-    """
-    Retrieve a specified tier from an LSN file when the subject is a listener.
+    """ Give a list of smiles when the subject is a listener.
     
     Args:
-        root (str): File path.
-        tier (str): Name of the tier to retrieve.
-        
+        root (str): file path
     Returns:
-        tuple: A list of tuples representing the specified tier and the list of column names.
+        A list of tuple and the list L=['startime', 'endtime', 'label','duration']
     """
-    lsn_lst = get_IR_list(root, "Role", "lsn")
-    lst = get_tier_dict(root, tier)
-    startime, endtime, label, duration = ([] for _ in range(4))
-   
-    b = list(get_overlapping_segments(lsn_lst, lst).values())
-    b = list(itertools.chain(*b))
+    lsn_lst=get_IR_list(root, "Role", "lsn")
+    lst=get_Sdict(root)
+    startime, endtime, label, duration=([] for _ in range(4))
+    b=list(get_overlapping_segments(lsn_lst, lst).values())
+    b=list(itertools.chain(*b))
+    eaf=pympi.Elan.Eaf(root)
+    c=check_duration(eaf)
+    for _ in range(0, len(b), 1):     
+        startime.append(b[_][0])
+        endtime.append(b[_][1])
+        label.append(b[_][2])
+        duration.append(c)
+    lst=[(i, j, k, l) for i, j, k, l in zip(startime, endtime, label, duration)]
+    col=['startime', 'endtime', 'label', 'duration']
+    return lst, col
+
+def get_laughs_from_spk2(root):
+    """ Give a list of laughs when the subject is a speaker.
     
-    eaf = pympi.Elan.Eaf(root)
-    duration = check_duration(eaf)
+    Args:
+        root (str): file path
+    Return:
+        A list of tuple and the list L=['startime', 'endtime', 'label','duration']
+    """
+    spk_lst=get_IR_list(root, "Role", "spk")
+    lst=get_Ldict(root)
+    startime, endtime, label, duration=([] for _ in range(4))
+    b=list(get_overlapping_segments(spk_lst, lst).values())
+    b=list(itertools.chain(*b))
+    eaf=pympi.Elan.Eaf(root)
+    c=check_duration(eaf)
+    for _ in range(0, len(b), 1):     
+        startime.append(b[_][0])
+        endtime.append(b[_][1])
+        label.append(b[_][2])
+        duration.append(c)
+    lst=[(i, j, k, l) for i, j, k, l in zip(startime, endtime, label, duration)]
+    col=['startime', 'endtime', 'label', 'duration']
+    return lst, col
+
+def get_laughs_from_lsn2(root):
+    """ Give a list of laughs when the subject is a listener.
     
+    Args:
+        root (str): file path
+    Returns:
+        A list of tuple and the list L=['startime', 'endtime', 'label','duration']
+    """
+    lsn_lst=get_IR_list(root, "Role", "lsn")
+    lst=get_Ldict(root)
+    startime, endtime, label, duration=([] for _ in range(4))
+    b=list(get_overlapping_segments(lsn_lst, lst).values())
+    b=list(itertools.chain(*b))
+    eaf=pympi.Elan.Eaf(root)
+    c=check_duration(eaf)
+    for _ in range(0, len(b), 1):     
+        startime.append(b[_][0])
+        endtime.append(b[_][1])
+        label.append(b[_][2])
+        duration.append(c)
+    lst=[(i, j, k, l) for i, j, k, l in zip(startime, endtime, label, duration)]
+    col=['startime', 'endtime', 'label', 'duration']
+    return lst, col
+
+def get_tier_from_lsn2(root, tier):
+    """Retrieve a specified tier from a file when the subject is a listener.
+    
+    Args:
+        root (str): File path
+        tier (str): Name of the tier to retrieve
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names
+    """
+    lsn_lst=get_IR_list(root, "Role", "lsn")
+    lst=get_tier_dict(root, tier)
+    startime, endtime, label, duration=([] for _ in range(4))
+    b=list(get_overlapping_segments(lsn_lst, lst).values())
+    b=list(itertools.chain(*b))
+    eaf=pympi.Elan.Eaf(root)
+    duration=check_duration(eaf)
     for item in b:     
         startime.append(item[0])
         endtime.append(item[1])
         label.append(item[2])
-    
-    lst = [(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
-    columns = ['startime', 'endtime', 'label', 'duration']
-
+    lst=[(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
+    columns=['startime', 'endtime', 'label', 'duration']
     return lst, columns
 
 def get_tier_from_spk2(root, tier):
-    """
-    Retrieve a specified tier from an SPK file when the subject is a speaker.
+    """ Retrieve a specified tier from a file when the subject is a speaker.
     
     Args:
-        root (str): File path.
-        tier (str): Name of the tier to retrieve.
-        
+        root (str): File path
+        tier (str): Name of the tier to retrieve
     Returns:
-        tuple: A list of tuples representing the specified tier and the list of column names.
+        tuple: A list of tuples representing the specified tier and the list of column names
     """
-    spk_lst = get_IR_list(root, "Role", "spk")
-    lst = get_tier_dict(root, tier)
-    startime, endtime, label, duration = ([] for _ in range(4))
-   
-    b = list(get_overlapping_segments(spk_lst, lst).values())
-    b = list(itertools.chain(*b))
-    
-    eaf = pympi.Elan.Eaf(root)
-    duration = check_duration(eaf)
-    
+    spk_lst=get_IR_list(root, "Role", "spk")
+    lst=get_tier_dict(root, tier)
+    startime, endtime, label, duration=([] for _ in range(4))
+    b=list(get_overlapping_segments(spk_lst, lst).values())
+    b=list(itertools.chain(*b))
+    eaf=pympi.Elan.Eaf(root)
+    duration=check_duration(eaf)
     for item in b:     
         startime.append(item[0])
         endtime.append(item[1])
         label.append(item[2])
-    
-    lst = [(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
-    columns = ['startime', 'endtime', 'label', 'duration']
-
+    lst=[(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
+    columns=['startime', 'endtime', 'label', 'duration']
     return lst, columns
 
 def get_tier_from_entity(root, tier1, tier2, entity):
-    """
-    Retrieve a specified tier from another tier.
+    """ Retrieve a specified tier from another tier.
     
     Args:
-        root (str): File path.
-        tier1 (str): Name of the tier from which one retrieves the other.
-        tier2 (str): Name of the tier to retrieve.
-        entity (str): Name of the entity of the tier1.
+        root (str): File path
+        tier1 (str): Name of the tier from which one retrieves the other
+        tier2 (str): Name of the tier to retrieve
+        entity (str): Name of the entity of the tier1
         
     Returns:
-        tuple: A list of tuples representing the specified tier and the list of column names.
+        tuple: A list of tuples representing the specified tier and the list of column names
     """
-    lsn_lst = get_IR_list(root, tier1, entity)
-    lst = get_tier_dict(root, tier2)
-    startime, endtime, label, duration = ([] for _ in range(4))
-   
-    b = list(get_overlapping_segments(lsn_lst, lst).values())
-    b = list(itertools.chain(*b))
-    
-    eaf = pympi.Elan.Eaf(root)
-    duration = check_duration(eaf)
-    
+    lsn_lst=get_IR_list(root, tier1, entity)
+    lst=get_tier_dict(root, tier2)
+    startime, endtime, label, duration=([] for _ in range(4))
+    b=list(get_overlapping_segments(lsn_lst, lst).values())
+    b=list(itertools.chain(*b))
+    eaf=pympi.Elan.Eaf(root)
+    duration=check_duration(eaf)
     for item in b:     
         startime.append(item[0])
         endtime.append(item[1])
         label.append(item[2])
-    
-    lst = [(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
-    columns = ['startime', 'endtime', 'label', 'duration']
-
+    lst=[(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
+    columns=['startime', 'endtime', 'label', 'duration']
     return lst, columns
 
 #By folder
-def get_smiles_from_spk_folder(listpaths,string):
-    """
-    Same as get_smiles_from_spk but from a folder
-    Args : listpaths (list) -> list of folder's filespath 
-    Return :
-        A list of tuple and the list L =  'subject','diff_time','label','duration','database'
+def get_smiles_from_spk_folder(listpaths, string):
+    """ Same as get_smiles_from_spk but from a folder.
+
+    Args: 
+        listpaths (list): list of folder's filespath 
+    Returns:
+        A list of tuple and the list L=['subject', 'diff_time', 'label', 'duration', 'database']
     """
     L=[]
     subject=[]
     i=1
     for _ in listpaths:
         df0=list_to_df(get_smiles_from_spk2(_)[0], get_smiles_from_spk2(_)[1])
-        #df0.drop(df0.columns[[4,5]], axis=1, inplace=True)
-        subject.append(list_of_words(i,len(df0['startime'])))
+        subject.append(list_of_words(i, len(df0['startime'])))
         L.append(df0)
         i+=1
     S=[]
@@ -919,31 +797,27 @@ def get_smiles_from_spk_folder(listpaths,string):
     df=pd.concat([L[_] for _ in range (len(L))])
     df['subject']=S
     df['database']=list_of_words(string, len(df['subject']))
-
     df['diff_time']=df['endtime']-df['startime']
-
     df.drop(df.columns[[0,1]], axis=1, inplace=True)
-    df=df.reindex(columns=['subject','diff_time','label','duration','database'])
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
     lst=df_to_list(df)
-    columns=['subject','diff_time','label','duration','database']
-    return lst,columns
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
+    return lst, columns
 
 def get_smiles_from_lsn_folder(listpaths, string):
-    """
-    Same as get_smiles_from_spk but from a folder
-    Args : listpaths (list) -> list of folder's filespath 
-    Return :
-        A list of tuple and the list L =  'subject','diff_time','label','duration','database'
-    """
+    """ Same as get_smiles_from_spk but from a folder.
 
+    Args: 
+        listpaths (list): list of folder's filespath 
+    Returns:
+        A list of tuple and the list L=['subject', 'diff_time', 'label', 'duration', 'database']
+    """
     L=[]
     subject=[]
-    
     i=1
     for _ in listpaths:
         df0=list_to_df(get_smiles_from_lsn2(_)[0], get_smiles_from_lsn2(_)[1])
-        #df0.drop(df0.columns[[4,5]], axis=1, inplace=True)
-        subject.append(list_of_words(i,len(df0['startime'])))
+        subject.append(list_of_words(i, len(df0['startime'])))
         L.append(df0)
         i+=1
     S=[]
@@ -953,28 +827,26 @@ def get_smiles_from_lsn_folder(listpaths, string):
     df['subject']=S
     df['database']=list_of_words(string, len(df['subject']))
     df['diff_time']=df['endtime']-df['startime']
-
     df.drop(df.columns[[0,1]], axis=1, inplace=True)
-    df=df.reindex(columns=['subject','diff_time','label','duration','database'])
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
     lst=df_to_list(df)
-    columns=['subject','diff_time','label','duration','database']
-    return lst,columns
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
+    return lst, columns
 
 def get_laughs_from_spk_folder(listpaths,string):
-    """
-    Same as get_smiles_from_spk but from a folder
-    Args : listpaths (list) -> list of folder's filespath 
-    Return :
-        A list of tuple and the list L =  'subject','diff_time','label','duration','database'
+    """ Same as get_smiles_from_spk but from a folder.
+
+    Args:
+        listpaths (list): list of folder's filespath 
+    Returns:
+        A list of tuple and the list L=['subject', 'diff_time', 'label', 'duration', 'database']
     """
     L=[]
     subject=[]
-    
     i=1
     for _ in listpaths:
         df0=list_to_df(get_laughs_from_spk2(_)[0], get_laughs_from_spk2(_)[1])
-        #df0.drop(df0.columns[[4,5]], axis=1, inplace=True)
-        subject.append(list_of_words(i,len(df0['startime'])))
+        subject.append(list_of_words(i, len(df0['startime'])))
         L.append(df0)
         i+=1
     S=[]
@@ -984,27 +856,26 @@ def get_laughs_from_spk_folder(listpaths,string):
     df['subject']=S
     df['database']=list_of_words(string, len(df['subject']))
     df['diff_time']=df['endtime']-df['startime']
-
     df.drop(df.columns[[0,1]], axis=1, inplace=True)
-    df=df.reindex(columns=['subject','diff_time','label','duration','database'])
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
     lst=df_to_list(df)
-    columns=['subject','diff_time','label','duration','database']
-    return lst,columns
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
+    return lst, columns
 
 def get_laughs_from_lsn_folder(listpaths, string):
-    """
-    Same as get_smiles_from_spk but from a folder
-    Args : listpaths (list) -> list of folder's filespath 
+    """ Same as get_smiles_from_spk but from a folder.
+
+    Args : 
+        listpaths (list): list of folder's filespath 
     Return :
-        A list of tuple and the list L =  'subject','diff_time','label','duration','database'
+        A list of tuple and the list L=['subject', 'diff_time', 'label', 'duration', 'database']
     """
     L=[]
     subject=[]
     i=1
     for _ in listpaths:
         df0=list_to_df(get_laughs_from_lsn2(_)[0], get_laughs_from_lsn2(_)[1])
-        #df0.drop(df0.columns[[4,5]], axis=1, inplace=True)
-        subject.append(list_of_words(i,len(df0['startime'])))
+        subject.append(list_of_words(i, len(df0['startime'])))
         L.append(df0)
         i+=1
     S=[]
@@ -1014,467 +885,372 @@ def get_laughs_from_lsn_folder(listpaths, string):
     df['subject']=S
     df['database']=list_of_words(string, len(df['subject']))
     df['diff_time']=df['endtime']-df['startime']
-
     df.drop(df.columns[[0,1]], axis=1, inplace=True)
-    df=df.reindex(columns=['subject','diff_time','label','duration','database'])
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
     lst=df_to_list(df)
-    columns=['subject','diff_time','label','duration','database']
-    return lst,columns
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
+    return lst, columns
 
 def get_tier_from_spk_folder(listpaths, string, tier):
-    """
-    Retrieve specified tiers from SPK files in a folder.
+    """ Retrieve specified tiers from files in a folder.
     
     Args:
-        listpaths (list): List of folder file paths.
-        string (str): String to be used as the 'database' value.
-        tier (str): Name of the tier to retrieve.
-        
+        listpaths (list): List of folder file paths
+        string (str): Name of the dataset
+        tier (str): Name of the tier to retrieve
     Returns:
-        tuple: A list of tuples representing the specified tier and the list of column names.
+        tuple: A list of tuples representing the specified tier and the list of column names
     """
-    L = []
-    subject = []
-    i = 1
+    L=[]
+    subject=[]
+    i=1
     for path in listpaths:
         df0 = list_to_df(get_tier_from_spk2(path, tier)[0], get_tier_from_spk2(path, tier)[1])
         subject.append(list_of_words(i, len(df0['startime'])))
         L.append(df0)
-        i += 1
-    S = []
-    for _ in subject:
-        S=S+_
-    df=pd.concat([L[_] for _ in range (len(L))])
-    df['subject'] = S
-    df['database'] = list_of_words(string, len(df['subject']))
-    df['diff_time'] = df['endtime'] - df['startime']
-    
-    df.drop(df.columns[[0, 1]], axis=1, inplace=True)
-    df = df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
-    lst = df_to_list(df)
-    columns = ['subject', 'diff_time', 'label', 'duration', 'database']
-    return lst, columns
-
-def get_tier_from_lsn_folder(listpaths, string, tier):
-    """
-    Retrieve specified tiers from LSN files in a folder.
-    
-    Args:
-        listpaths (list): List of folder file paths.
-        string (str): String to be used as the 'database' value.
-        tier (str): Name of the tier to retrieve.
-        
-    Returns:
-        tuple: A list of tuples representing the specified tier and the list of column names.
-    """
-    L = []
-    subject = []
-    i = 1
-    for path in listpaths:
-        df0 = list_to_df(get_tier_from_lsn2(path, tier)[0], get_tier_from_lsn2(path, tier)[1])
-        subject.append(list_of_words(i, len(df0['startime'])))
-        L.append(df0)
-        i += 1
+        i+=1
     S=[]
     for _ in subject:
         S=S+_
     df=pd.concat([L[_] for _ in range (len(L))])
-    df['subject'] = S
-    df['database'] = list_of_words(string, len(df['subject']))
-    df['diff_time'] = df['endtime'] - df['startime']
+    df['subject']=S
+    df['database']=list_of_words(string, len(df['subject']))
+    df['diff_time']=df['endtime']-df['startime']
+    df.drop(df.columns[[0, 1]], axis=1, inplace=True)
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
+    lst=df_to_list(df)
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
+    return lst, columns
+
+def get_tier_from_lsn_folder(listpaths, string, tier):
+    """ Retrieve specified tiers from files in a folder.
+    
+    Args:
+        listpaths (list): List of folder file paths
+        string (str): Name of the dataset
+        tier (str): Name of the tier to retrieve
+    Returns:
+        tuple: A list of tuples representing the specified tier and the list of column names
+    """
+    L=[]
+    subject=[]
+    i=1
+    for path in listpaths:
+        df0=list_to_df(get_tier_from_lsn2(path, tier)[0], get_tier_from_lsn2(path, tier)[1])
+        subject.append(list_of_words(i, len(df0['startime'])))
+        L.append(df0)
+        i+=1
+    S=[]
+    for _ in subject:
+        S=S+_
+    df=pd.concat([L[_] for _ in range (len(L))])
+    df['subject']=S
+    df['database']=list_of_words(string, len(df['subject']))
+    df['diff_time']=df['endtime']-df['startime']
     
     df.drop(df.columns[[0, 1]], axis=1, inplace=True)
-    df = df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
-    lst = df_to_list(df)
-    columns = ['subject', 'diff_time', 'label', 'duration', 'database']
-    
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
+    lst=df_to_list(df)
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
     return lst, columns
 
 def get_tier_from_tier(listpaths, string, tier1, tier2, entity):
-    """
-    Retrieve specified tiers from TIER files in a folder.
+    """ Retrieve specified tiers from TIER files in a folder.
 
     Args:
-        listpaths (list): List of folder file paths.
-        string (str): String to be used as the 'database' value.
-        tier1 (str): Name of the first tier.
-        tier2 (str): Name of the second tier.
-        entity (str): Name of the entity of the tier1.
-
+        listpaths (list): List of folder file paths
+        string (str): Name of the dataset
+        tier1 (str): Name of the first tier
+        tier2 (str): Name of the second tier
+        entity (str): Name of the entity of the tier1
     Returns:
-        tuple: A list of tuples representing the specified tier and the list of column names.
+        tuple: A list of tuples representing the specified tier and the list of column names
     """
-    L = []
-    subject = []
-    i = 1
+    L=[]
+    subject=[]
+    i=1
     for path in listpaths:
-        df0 = list_to_df(get_tier_from_entity(path, tier1, tier2, entity)[0], get_tier_from_entity(path, tier1, tier2, entity)[1])
+        df0=list_to_df(get_tier_from_entity(path, tier1, tier2, entity)[0], get_tier_from_entity(path, tier1, tier2, entity)[1])
         subject.append(list_of_words(i, len(df0['startime'])))
         L.append(df0)
-        i += 1
-    S = []
+        i+=1
+    S=[]
     for _ in subject:
-        S = S + _
-    df = pd.concat([L[_] for _ in range(len(L))])
-    df['subject'] = S
-    df['database'] = list_of_words(string, len(df['subject']))
-    df['diff_time'] = df['endtime'] - df['startime']
+        S=S+_
+    df=pd.concat([L[_] for _ in range(len(L))])
+    df['subject']=S
+    df['database']=list_of_words(string, len(df['subject']))
+    df['diff_time']=df['endtime']-df['startime']
 
     df.drop(df.columns[[0, 1]], axis=1, inplace=True)
-    df = df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
-    lst = df_to_list(df)
-    columns = ['subject', 'diff_time', 'label', 'duration', 'database']
+    df=df.reindex(columns=['subject', 'diff_time', 'label', 'duration', 'database'])
+    lst=df_to_list(df)
+    columns=['subject', 'diff_time', 'label', 'duration', 'database']
     return lst, columns
 
 #Roles versus _____________________________________________________________________________________________________________________________
-def get_smiles_from_spk_vs_lsn_folder(listpaths,string):
+def get_smiles_from_spk_vs_lsn_folder(listpaths, string):
     """This function gives the list of smiles when a speaker is in front of a listener.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['conv','role','label','subject','diff_time','duration','database'])
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     """
-    df=list_to_df(get_smiles_from_spk_folder(listpaths,string)[0], get_smiles_from_spk_folder(listpaths,string)[1])
-    #df.drop(df.columns[[0,1]], axis = 1, inplace = True)     
-    df['role']=list_of_words('spk',len(df['label'])) 
-    #print(list(np.unique((df.subject))))
-
-    dg=list_to_df(get_smiles_from_lsn_folder(listpaths,string)[0], get_smiles_from_lsn_folder(listpaths,string)[1])
-    #dg.drop(dg.columns[[0,1]], axis = 1, inplace = True)     
-    dg['role']=list_of_words('lsn',len(dg['label'])) 
-    #print(list(np.unique((dg.subject))))
-
-    #Some corrections
-    df=df.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    df=list_to_df(get_smiles_from_spk_folder(listpaths, string)[0], get_smiles_from_spk_folder(listpaths, string)[1]) 
+    df['role']=list_of_words('spk', len(df['label']))
+    dg=list_to_df(get_smiles_from_lsn_folder(listpaths, string)[0], get_smiles_from_lsn_folder(listpaths, string)[1])     
+    dg['role']=list_of_words('lsn', len(dg['label'])) 
+    df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_=list(df.to_records(index=False))
-    dg=dg.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dg=dg.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_2=list(dg.to_records(index=False))
-
-    df=correct_dict_role_smiles(dict_,listpaths,string)
-    dg=correct_dict_role_smiles(dict_2,listpaths,string)
-    
-    df=pd.DataFrame.from_records(df, columns=['subject', 'database','label','duration','diff_time','role'])
-    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database','label','duration','diff_time','role'])
-    
+    df=correct_dict_role_smiles(dict_, listpaths, string)
+    dg=correct_dict_role_smiles(dict_2, listpaths, string)
+    df=pd.DataFrame.from_records(df, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
+    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     L1=[]
     L2=[]
     subj = list(np.unique((df.subject)))
     for i in subj:
-        if i%2!=0 :     #if the number of the subject is unpair
+        if i%2!=0:     #if the number of the subject is unpair
             L1.append(df[df.subject.eq(i)])
         else:
             L2.append(dg[dg.subject.eq(i)])
-    
     df=pd.concat(L1)
     dg=pd.concat(L2)
-    
     #Put together these dataframes ordered by subject
-    db=pd.concat([df,dg])
-    db=pd.DataFrame(db.loc[:,['label','duration','diff_time','subject','database','role']]).reset_index()
-    db=db.drop(['index'],axis=1)
+    db=pd.concat([df, dg])
+    db=pd.DataFrame(db.loc[:,['label', 'duration', 'diff_time', 'subject', 'database', 'role']]).reset_index()
+    db=db.drop(['index'], axis=1)
     db=db.sort_values(['subject'], ascending=[True])
-    
     c=1
     conv=[]
-    for i in range (1, len(db.duration),2):
-        values=[i,i+1]
-        dgg= db[db.subject.isin(values)]
+    for i in range (1, len(db.duration), 2):
+        values=[i, i+1]
+        dgg=db[db.subject.isin(values)]
         conv+=list_of_words(c, len(dgg.subject))
         c+=1
     db['conv']=conv
-
     #If subject change, take duration
     duration=[]
-    for _ in list(np.unique((db.subject))) :
-        duration+=(list(np.unique(db.loc[db.subject.eq(_),'duration'])))
-    #duration=list(np.unique((db.duration)))
-    #print(duration)
-
-    if 0 not in duration : pass
-    else : duration.remove(0)
-    #print(duration, len(duration))
-    
+    for _ in list(np.unique((db.subject))):
+        duration+=(list(np.unique(db.loc[db.subject.eq(_), 'duration'])))
+    if 0 not in duration: pass
+    else: duration.remove(0)
     conv=list(np.unique((db.conv)))
     d=[]
     for _ in range(0,len(duration),2):
-        if(_+1) < len(duration) :
+        if(_+1) < len(duration):
             d.append((duration[_], duration[_+1]))
-
     d=list(reversed(d))
-    for i,j in zip (conv,d):
-        db.loc[db.conv.eq(i),'duration']=max(j)
-    
-    db=db.reindex(columns=['conv','role','label','subject','diff_time','duration','database'])
+    for i, j in zip(conv, d):
+        db.loc[db.conv.eq(i), 'duration']=max(j)
+    db=db.reindex(columns=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(db)
-    col=['conv','role','label','subject','diff_time','duration','database']
+    col=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-    return lst,col
-
-def get_smiles_from_lsn_vs_spk_folder(listpaths,string):
-    """This function gives the list of smiles when a listener is in front of a speaker.
+def get_smiles_from_lsn_vs_spk_folder(listpaths, string):
+    """ This function gives the list of smiles when a listener is in front of a speaker.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['conv','role','label','subject','diff_time','duration','database'])
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     """
-    df=list_to_df(get_smiles_from_lsn_folder(listpaths,string)[0], get_smiles_from_lsn_folder(listpaths,string)[1])
-    #df.drop(df.columns[[0,1]], axis = 1, inplace = True) 
-    df['role']=list_of_words('lsn',len(df['subject'])) 
+    df=list_to_df(get_smiles_from_lsn_folder(listpaths, string)[0], get_smiles_from_lsn_folder(listpaths, string)[1])
+    df['role']=list_of_words('lsn', len(df['subject'])) 
     df=pd.DataFrame(df).reset_index()
-    df.drop(df.columns[[0]], axis = 1, inplace = True) 
-    #print(list(np.unique((df.subject))))
-
-    dg=list_to_df(get_smiles_from_spk_folder(listpaths,string)[0], get_smiles_from_spk_folder(listpaths,string)[1])
-    #dg.drop(dg.columns[[0,1]], axis = 1, inplace = True)     
-    dg['role']=list_of_words('spk',len(dg['subject'])) 
+    df.drop(df.columns[[0]], axis=1, inplace=True) 
+    dg=list_to_df(get_smiles_from_spk_folder(listpaths, string)[0], get_smiles_from_spk_folder(listpaths, string)[1])    
+    dg['role']=list_of_words('spk', len(dg['subject'])) 
     dg=pd.DataFrame(dg).reset_index()
-    dg.drop(dg.columns[[0]], axis = 1, inplace = True) 
-    #print(list(np.unique((dg.subject))))
-
-    #Some corrections
-    df=df.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dg.drop(dg.columns[[0]], axis=1, inplace=True)
+    df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_=list(df.to_records(index=False))
-    dg=dg.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dg=dg.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_2=list(dg.to_records(index=False))
-
-    df=correct_dict_role_smiles(dict_,listpaths,string)
-    dg=correct_dict_role_smiles(dict_2,listpaths,string)
-    
-    df=pd.DataFrame.from_records(df, columns=['subject', 'database','label','duration','diff_time','role'])
-    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database','label','duration','diff_time','role'])
-    
+    df=correct_dict_role_smiles(dict_, listpaths, string)
+    dg=correct_dict_role_smiles(dict_2, listpaths, string)
+    df=pd.DataFrame.from_records(df, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
+    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     L1=[]
     L2=[]
-    subj = list(np.unique((df.subject)))
+    subj=list(np.unique((df.subject)))
     for i in subj:
-        if i%2!=0 :     #if the number of the subject is unpair
+        if i%2!=0:     #if the number of the subject is unpair
             L1.append(df[df.subject.eq(i)])
         else:
             L2.append(dg[dg.subject.eq(i)])
-    
     df=pd.concat(L1)
     dg=pd.concat(L2)
-    
     #Put together these dataframes ordered by subject
-    db=pd.concat([df,dg])
-    db=pd.DataFrame(db.loc[:,['label','duration','diff_time','subject','database','role']]).reset_index()
-    db=db.drop(['index'],axis=1)
+    db=pd.concat([df, dg])
+    db=pd.DataFrame(db.loc[:,['label', 'duration', 'diff_time', 'subject', 'database', 'role']]).reset_index()
+    db=db.drop(['index'], axis=1)
     db=db.sort_values(['subject'], ascending=[True])
-    
-
     c=1
     conv=[]
-    for i in range (1, len(db.duration),2):
-        values=[i,i+1]
-        dgg= db[db.subject.isin(values)]
+    for i in range (1, len(db.duration), 2):
+        values=[i, i+1]
+        dgg=db[db.subject.isin(values)]
         conv+=list_of_words(c, len(dgg.subject))
         c+=1
     db['conv']=conv
-
     #If subject change, take duration
     duration=[]
-    for _ in list(np.unique((db.subject))) :
-        duration+=(list(np.unique(db.loc[db.subject.eq(_),'duration'])))
-    #duration=list(np.unique((db.duration)))
-    #print(duration)
-
-    if 0 not in duration : pass
-    else : duration.remove(0)
-    #print(duration, len(duration))
-    
+    for _ in list(np.unique((db.subject))):
+        duration+=(list(np.unique(db.loc[db.subject.eq(_), 'duration'])))
+    if 0 not in duration: pass
+    else: duration.remove(0)
     conv=list(np.unique((db.conv)))
     d=[]
-    for _ in range(0,len(duration),2):
-        if(_+1) < len(duration) :
+    for _ in range(0, len(duration), 2):
+        if(_+1) < len(duration):
             d.append((duration[_], duration[_+1]))
-
     d=list(reversed(d))
-    for i,j in zip (conv,d):
-        db.loc[db.conv.eq(i),'duration']=max(j)
-    db=db.reindex(columns=['conv','role','label','subject','diff_time','duration','database'])
+    for i, j in zip(conv, d):
+        db.loc[db.conv.eq(i), 'duration']=max(j)
+    db=db.reindex(columns=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(db)
-    col=['conv','role','label','subject','diff_time','duration','database']
+    col=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-    return lst,col
-
-def get_laughs_from_spk_vs_lsn_folder(listpaths,string):
-    """This function gives the list of laughs when a speaker is in front of a listener.
+def get_laughs_from_spk_vs_lsn_folder(listpaths, string):
+    """ This function gives the list of laughs when a speaker is in front of a listener.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['conv','role','label','subject','diff_time','duration','database'])
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['conv', 'role', 'label', 'subject', 'diff_time',v 'duration', 'database'])
     """
-    df=list_to_df(get_laughs_from_spk_folder(listpaths,string)[0], get_laughs_from_spk_folder(listpaths,string)[1])
-    #df.drop(df.columns[[0,1]], axis = 1, inplace = True)     
-    df['role']=list_of_words('spk',len(df['label'])) 
+    df=list_to_df(get_laughs_from_spk_folder(listpaths, string)[0], get_laughs_from_spk_folder(listpaths, string)[1])    
+    df['role']=list_of_words('spk', len(df['label'])) 
     df=pd.DataFrame(df).reset_index()
-    df.drop(df.columns[[0]], axis = 1, inplace = True) 
-
-    dg=list_to_df(get_laughs_from_lsn_folder(listpaths,string)[0], get_laughs_from_lsn_folder(listpaths,string)[1])
-    #dg.drop(dg.columns[[0,1]], axis = 1, inplace = True)     
-    dg['role']=list_of_words('lsn',len(dg['label'])) 
+    df.drop(df.columns[[0]], axis=1, inplace=True) 
+    dg=list_to_df(get_laughs_from_lsn_folder(listpaths, string)[0], get_laughs_from_lsn_folder(listpaths, string)[1])    
+    dg['role']=list_of_words('lsn', len(dg['label'])) 
     dg=pd.DataFrame(dg).reset_index()
-    dg.drop(dg.columns[[0]], axis = 1, inplace = True) 
-
+    dg.drop(dg.columns[[0]], axis=1, inplace=True) 
     #Some corrections
-    df=df.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_=list(df.to_records(index=False))
-    dg=dg.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dg=dg.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_2=list(dg.to_records(index=False))
-
-    df=correct_dict_role_smiles(dict_,listpaths,string)
-    dg=correct_dict_role_smiles(dict_2,listpaths,string)
-    
-    df=pd.DataFrame.from_records(df, columns=['subject', 'database','label','duration','diff_time','role'])
-    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database','label','duration','diff_time','role'])
-    
+    df=correct_dict_role_smiles(dict_, listpaths, string)
+    dg=correct_dict_role_smiles(dict_2, listpaths, string)
+    df=pd.DataFrame.from_records(df, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
+    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     L1=[]
     L2=[]
-    subj = list(np.unique((df.subject)))
+    subj=list(np.unique((df.subject)))
     for i in subj:
-        if i%2!=0 :     #if the number of the subject is unpair
+        if i%2!=0:     #if the number of the subject is unpair
             L1.append(df[df.subject.eq(i)])
         else:
             L2.append(dg[dg.subject.eq(i)])
-    
     df=pd.concat(L1)
     dg=pd.concat(L2)
-    
     #Put together these dataframes ordered by subject
-    db=pd.concat([df,dg])
-    db=pd.DataFrame(db.loc[:,['label','duration','diff_time','subject','database','role']]).reset_index()
-    db=db.drop(['index'],axis=1)
+    db=pd.concat([df, dg])
+    db=pd.DataFrame(db.loc[:,['label', 'duration', 'diff_time', 'subject', 'database', 'role']]).reset_index()
+    db=db.drop(['index'], axis=1)
     db=db.sort_values(['subject'], ascending=[True])
-
     c=1
     conv=[]
-    for i in range (1, len(db.duration),2):
-        values=[i,i+1]
-        dgg= db[db.subject.isin(values)]
+    for i in range (1, len(db.duration), 2):
+        values=[i, i+1]
+        dgg=db[db.subject.isin(values)]
         conv+=list_of_words(c, len(dgg.subject))
         c+=1
     db['conv']=conv
-
     #If subject change, take duration
     duration=[]
     for _ in list(np.unique((db.subject))) :
-        duration+=(list(np.unique(db.loc[db.subject.eq(_),'duration'])))
-    #duration=list(np.unique((db.duration)))
-    #print(duration)
-
-    if 0 not in duration : pass
-    else : duration.remove(0)
-    #print(duration, len(duration))
-    
+        duration+=(list(np.unique(db.loc[db.subject.eq(_), 'duration'])))
+    if 0 not in duration: pass
+    else: duration.remove(0)
     conv=list(np.unique((db.conv)))
     d=[]
-    for _ in range(0,len(duration),2):
-        if (_+1) < len(duration) : 
+    for _ in range(0, len(duration), 2):
+        if (_+1) < len(duration): 
             d.append((duration[_], duration[_+1]))
-
     d=list(reversed(d))
-    for i,j in zip (conv,d):
-        db.loc[db.conv.eq(i),'duration']=max(j)
-    db=db.reindex(columns=['conv','role','label','subject','diff_time','duration','database'])
+    for i, j in zip(conv, d):
+        db.loc[db.conv.eq(i), 'duration']=max(j)
+    db=db.reindex(columns=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(db)
-    col=['conv','role','label','subject','diff_time','duration','database']
+    col=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-    return lst,col
-
-def get_laughs_from_lsn_vs_spk_folder(listpaths,string):
-    """This function gives the list of laughs when a listener is in front of a speaker.
+def get_laughs_from_lsn_vs_spk_folder(listpaths, string):
+    """ This function gives the list of laughs when a listener is in front of a speaker.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['conv','role','label','subject','diff_time','duration','database'])
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     """
-    df=list_to_df(get_laughs_from_lsn_folder(listpaths,string)[0], get_laughs_from_lsn_folder(listpaths,string)[1])
-    #df.drop(df.columns[[0,1]], axis = 1, inplace = True)     
-    df['role']=list_of_words('lsn',len(df['label'])) 
-    
-    dg=list_to_df(get_laughs_from_spk_folder(listpaths,string)[0], get_laughs_from_spk_folder(listpaths,string)[1])
-    #dg.drop(dg.columns[[0,1]], axis = 1, inplace = True)     
-    dg['role']=list_of_words('spk',len(dg['label'])) 
-
-    #Some corrections
-    df=df.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    df=list_to_df(get_laughs_from_lsn_folder(listpaths, string)[0], get_laughs_from_lsn_folder(listpaths, string)[1])
+    df['role']=list_of_words('lsn', len(df['label'])) 
+    dg=list_to_df(get_laughs_from_spk_folder(listpaths, string)[0], get_laughs_from_spk_folder(listpaths, string)[1])   
+    dg['role']=list_of_words('spk', len(dg['label']))
+    df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_=list(df.to_records(index=False))
-    dg=dg.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dg=dg.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_2=list(dg.to_records(index=False))
-
-    df=correct_dict_role_smiles(dict_,listpaths,string)
-    dg=correct_dict_role_smiles(dict_2,listpaths,string)
-    
-    df=pd.DataFrame.from_records(df, columns=['subject', 'database','label','duration','diff_time','role'])
-    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database','label','duration','diff_time','role'])
-    
+    df=correct_dict_role_smiles(dict_, listpaths, string)
+    dg=correct_dict_role_smiles(dict_2, listpaths, string)
+    df=pd.DataFrame.from_records(df, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
+    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     L1=[]
     L2=[]
-    subj = list(np.unique((df.subject)))
+    subj=list(np.unique((df.subject)))
     for i in subj:
-        if i%2!=0 :     #if the number of the subject is unpair
+        if i%2!=0:     #if the number of the subject is unpair
             L1.append(df[df.subject.eq(i)])
         else:
             L2.append(dg[dg.subject.eq(i)])
-    
     df=pd.concat(L1)
     dg=pd.concat(L2)
-    
     #Put together these dataframes ordered by subject
-    db=pd.concat([df,dg])
-    db=pd.DataFrame(db.loc[:,['label','duration','diff_time','subject','database','role']]).reset_index()
-    db=db.drop(['index'],axis=1)
+    db=pd.concat([df, dg])
+    db=pd.DataFrame(db.loc[:,['label', 'duration', 'diff_time', 'subject', 'database', 'role']]).reset_index()
+    db=db.drop(['index'], axis=1)
     db=db.sort_values(['subject'], ascending=[True])
-    
-
     c=1
     conv=[]
-    for i in range (1, len(db.duration),2):
-        values=[i,i+1]
+    for i in range (1, len(db.duration), 2):
+        values=[i, i+1]
         dgg= db[db.subject.isin(values)]
         conv+=list_of_words(c, len(dgg.subject))
         c+=1
     db['conv']=conv
-
     #If subject change, take duration
     duration=[]
-    for _ in list(np.unique((db.subject))) :
-        duration+=(list(np.unique(db.loc[db.subject.eq(_),'duration'])))
-    #duration=list(np.unique((db.duration)))
-    #print(duration)
-
-    if 0 not in duration : pass
-    else : duration.remove(0)
-    #print(duration, len(duration))
-    
+    for _ in list(np.unique((db.subject))):
+        duration+=(list(np.unique(db.loc[db.subject.eq(_), 'duration'])))
+    if 0 not in duration: pass
+    else: duration.remove(0)
     conv=list(np.unique((db.conv)))
     d=[]
-    for _ in range(0,len(duration),2):
-        if (_+1) < len(duration) : 
+    for _ in range(0, len(duration), 2):
+        if (_+1) < len(duration): 
             d.append((duration[_], duration[_+1]))
-
     d=list(reversed(d))
-    for i,j in zip (conv,d):
-        db.loc[db.conv.eq(i),'duration']=max(j)
-    db=db.reindex(columns=['conv','role','label','subject','diff_time','duration','database'])
+    for i, j in zip(conv, d):
+        db.loc[db.conv.eq(i), 'duration']=max(j)
+    db=db.reindex(columns=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(db)
-    col=['conv','role','label','subject','diff_time','duration','database']
+    col=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
-    return lst,col
-
-def get_tier_from_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1,entity2):
+def get_tier_from_entity1_vs_entity2_folder(listpaths, string, tier1, tier2, entity1, entity2):
     """This function gives the list of tier when entity1 is in front of entity2.
 
     Args:
@@ -1484,214 +1260,190 @@ def get_tier_from_entity1_vs_entity2_folder(listpaths,string,tier1,tier2,entity1
         tier2 (str): name of the tier of entity2
         entity1 (str): name of the entity1
         entity2 (str): name of the entity2
-
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['conv','role','label','subject','diff_time','duration','database'])
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     """
-    df=list_to_df(get_tier_from_tier(listpaths,string,tier1,tier2,entity1)[0], get_tier_from_tier(listpaths,string,tier1,tier2,entity1)[1])
-    df['role']=list_of_words(entity1,len(df['label']))
-    dg=list_to_df(get_tier_from_tier(listpaths,string,tier1,tier2,entity2)[0], get_tier_from_tier(listpaths,string,tier1,tier2,entity2)[1])
-    dg['role']=list_of_words(entity2,len(dg['label']))
-
+    df=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity1)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity1)[1])
+    df['role']=list_of_words(entity1, len(df['label']))
+    dg=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity2)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity2)[1])
+    dg['role']=list_of_words(entity2, len(dg['label']))
     #Some corrections
-    df=df.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
     dict_=list(df.to_records(index=False))
-    dg=dg.loc[:,['subject', 'database','label','duration','diff_time','role']]
+    dg=dg.loc[:,['subject', 'database', 'label','duration', 'diff_time', 'role']]
     dict_2=list(dg.to_records(index=False))
-
-    df=correct_dict_role_tier(dict_,listpaths,string, tier2)
-    dg=correct_dict_role_tier(dict_2,listpaths,string, tier2)
-
-    df=pd.DataFrame.from_records(df, columns=['subject', 'database','label','duration','diff_time','role'])
-    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database','label','duration','diff_time','role'])
-
+    df=correct_dict_role_tier(dict_, listpaths, string, tier2)
+    dg=correct_dict_role_tier(dict_2, listpaths, string, tier2)
+    df=pd.DataFrame.from_records(df, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
+    dg=pd.DataFrame.from_records(dg, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     L1=[]
     L2=[]
-    subj = list(np.unique((df.subject)))
+    subj=list(np.unique((df.subject)))
     for i in subj:
-        if i%2!=0 :     #if the number of the subject is unpair
+        if i%2!=0:     #if the number of the subject is unpair
             L1.append(df[df.subject.eq(i)])
         else:
             L2.append(dg[dg.subject.eq(i)])
-
     df=pd.concat(L1)
     dg=pd.concat(L2)
-
     #Put together these dataframes ordered by subject
-    db=pd.concat([df,dg])
-    db=pd.DataFrame(db.loc[:,['label','duration','diff_time','subject','database','role']]).reset_index()
-    db=db.drop(['index'],axis=1)
+    db=pd.concat([df, dg])
+    db=pd.DataFrame(db.loc[:,['label', 'duration', 'diff_time', 'subject', 'database', 'role']]).reset_index()
+    db=db.drop(['index'], axis=1)
     db=db.sort_values(['subject'], ascending=[True])
-
-
     c=1
     conv=[]
-    for i in range (1, len(db.duration),2):
-        values=[i,i+1]
+    for i in range (1, len(db.duration), 2):
+        values=[i, i+1]
         dgg= db[db.subject.isin(values)]
         conv+=list_of_words(c, len(dgg.subject))
         c+=1
     db['conv']=conv
-
     #If subject change, take duration
     duration=[]
-    for _ in list(np.unique((db.subject))) :
-        duration+=(list(np.unique(db.loc[db.subject.eq(_),'duration'])))
-    #duration=list(np.unique((db.duration)))
-    #print(duration)
-
-    if 0 not in duration : pass
-    else : duration.remove(0)
-    #print(duration, len(duration))
-
+    for _ in list(np.unique((db.subject))):
+        duration+=(list(np.unique(db.loc[db.subject.eq(_), 'duration'])))
+    if 0 not in duration: pass
+    else: duration.remove(0)
     conv=list(np.unique((db.conv)))
     d=[]
-    for _ in range(0,len(duration),2):
-        if (_+1) < len(duration) :
+    for _ in range(0, len(duration), 2):
+        if (_+1) < len(duration):
             d.append((duration[_], duration[_+1]))
-
     d=list(reversed(d))
-    for i,j in zip (conv,d):
-        db.loc[db.conv.eq(i),'duration']=max(j)
-    db=db.reindex(columns=['conv','role','label','subject','diff_time','duration','database'])
+    for i, j in zip(conv, d):
+        db.loc[db.conv.eq(i), 'duration']=max(j)
+    db=db.reindex(columns=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     lst=df_to_list(db)
-    col=['conv','role','label','subject','diff_time','duration','database']
-
-    return lst,col
+    col=['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database']
+    return lst, col
 
 #Mean, Std, median, max, min from all datasets _________________________________________________________________
 def get_rd_stats(df):
-    """This function calculate the mean, median and standard deviation of the relative duration of three lists of tuple.
+    """ This function calculate the mean, median and standard deviation of the relative duration of list of tuple.
+    
     Args:
-        df1, df2 and df3 (list): They are lists of tuple
-
+        df (list): list of tuple
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['database','label','mean_p','median_p','std_p','min_p','max_p']))
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']))
     """
-
-    dg1=df.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    dg1=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=(dg1['diff_time']/dg1['duration'])*100
-    # dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1 = dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
+    dg1=dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
+    dg=dg1.loc[:,['database', 'label', 'percentage']]
 
-    dg=dg1.loc[:,['database','label','percentage']]
-    df_mean=dg1.loc[:,['database','label','percentage']]
-    df_mean=df_mean.groupby(['database','label']).mean().reset_index()
+    df_mean=dg1.loc[:,['database', 'label', 'percentage']]
+    df_mean=df_mean.groupby(['database', 'label']).mean().reset_index()
+
+    df_median=dg1.loc[:,['database', 'label', 'percentage']]
+    df_median=df_median.groupby(['database', 'label']).median().reset_index()
+
+    df_std=dg1.loc[:,['database', 'label', 'percentage']]
+    df_std=df_std.groupby(['database', 'label']).std().reset_index()
     
-    df_median=dg1.loc[:,['database','label','percentage']]
-    df_median=df_median.groupby(['database','label']).median().reset_index()
-    
-    df_std=dg1.loc[:,['database','label','percentage']]
-    df_std=df_std.groupby(['database','label']).std().reset_index()
-    
-    df_min = dg1.loc[:, ['database', 'label', 'percentage']]
-    df_min = df_min.groupby(['database', 'label']).min().reset_index()
+    df_min=dg1.loc[:, ['database', 'label', 'percentage']]
+    df_min=df_min.groupby(['database', 'label']).min().reset_index()
 
-    df_max = dg1.loc[:, ['database', 'label', 'percentage']]
-    df_max = df_max.groupby(['database', 'label']).max().reset_index()
+    df_max=dg1.loc[:, ['database', 'label', 'percentage']]
+    df_max=df_max.groupby(['database', 'label']).max().reset_index()
 
-    df_mean.columns=['database','label','mean_p']
-    df_median.columns = ['database', 'label', 'median_p']
-    df_std.columns = ['database', 'label', 'std_p']
-    df_min.columns = ['database', 'label', 'min_p']
-    df_max.columns = ['database', 'label', 'max_p']
+    df_mean.columns=['database', 'label', 'mean_p']
+    df_median.columns=['database', 'label', 'median_p']
+    df_std.columns=['database', 'label', 'std_p']
+    df_min.columns=['database', 'label', 'min_p']
+    df_max.columns=['database', 'label', 'max_p']
 
-    dg = df_mean.merge(df_median, on=['database', 'label'])
-    dg = dg.merge(df_std, on=['database', 'label'])
-    dg = dg.merge(df_min, on=['database', 'label'])
-    dg = dg.merge(df_max, on=['database', 'label'])
+    dg=df_mean.merge(df_median, on=['database', 'label'])
+    dg=dg.merge(df_std, on=['database', 'label'])
+    dg=dg.merge(df_min, on=['database', 'label'])
+    dg=dg.merge(df_max, on=['database', 'label'])
     
     lst=df_to_list(dg)
-    col = ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']
-    return lst,col
+    col=['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']
+    return lst, col
 
 def get_rd_stats_byrole(df):
-    """This function calculate the mean, median and standard deviation of the relative duration of three lists of tuple filtered by role.
+    """This function calculate the mean, median and standard deviation of the relative duration of list of tuple filtered by role.
+    
     Args:
-        df1, df2 and df3 (list): They are lists of tuple
-
+        df (list): list of tuple
     Returns:
-        list of tuple and a description of what is inside the tuple : (list of tuple, ['database','label','mean_p','median_p','std_p','min_p','max_p'])
+        list of tuple and a description of what is inside the tuple: (list of tuple, ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p'])
     """
-    dg1=df.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    dg1=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=(dg1['diff_time']/dg1['duration'])*100
-    # dg1.columns=['subject','database','label','duration','sum_time','percentage']
     dg1 = dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
+    dg=dg1.loc[:,['database', 'label', 'percentage']]
 
-    dg=dg1.loc[:,['database','label','percentage']]
-    df_mean=dg1.loc[:,['database','label','percentage']]
-    df_mean=df_mean.groupby(['database','label']).mean().reset_index()
+    df_mean=dg1.loc[:,['database', 'label', 'percentage']]
+    df_mean=df_mean.groupby(['database', 'label']).mean().reset_index()
     
-    df_median=dg1.loc[:,['database','label','percentage']]
-    df_median=df_median.groupby(['database','label']).median().reset_index()
+    df_median=dg1.loc[:,['database', 'label', 'percentage']]
+    df_median=df_median.groupby(['database', 'label']).median().reset_index()
     
-    df_std=dg1.loc[:,['database','label','percentage']]
-    df_std=df_std.groupby(['database','label']).std().reset_index()
+    df_std=dg1.loc[:,['database', 'label', 'percentage']]
+    df_std=df_std.groupby(['database', 'label']).std().reset_index()
     
-    df_min = dg1.loc[:, ['database', 'label', 'percentage']]
-    df_min = df_min.groupby(['database', 'label']).min().reset_index()
+    df_min=dg1.loc[:, ['database', 'label', 'percentage']]
+    df_min=df_min.groupby(['database', 'label']).min().reset_index()
 
-    df_max = dg1.loc[:, ['database', 'label', 'percentage']]
-    df_max = df_max.groupby(['database', 'label']).max().reset_index()
+    df_max=dg1.loc[:, ['database', 'label', 'percentage']]
+    df_max=df_max.groupby(['database', 'label']).max().reset_index()
 
-    df_mean.columns=['database','label','mean_p']
-    df_median.columns = ['database', 'label', 'median_p']
-    df_std.columns = ['database', 'label', 'std_p']
-    df_min.columns = ['database', 'label', 'min_p']
-    df_max.columns = ['database', 'label', 'max_p']
+    df_mean.columns=['database', 'label', 'mean_p']
+    df_median.columns=['database', 'label', 'median_p']
+    df_std.columns=['database', 'label', 'std_p']
+    df_min.columns=['database', 'label', 'min_p']
+    df_max.columns=['database', 'label', 'max_p']
 
-    dg = df_mean.merge(df_median, on=['database', 'label'])
-    dg = dg.merge(df_std, on=['database', 'label'])
-    dg = dg.merge(df_min, on=['database', 'label'])
-    dg = dg.merge(df_max, on=['database', 'label'])
+    dg=df_mean.merge(df_median, on=['database', 'label'])
+    dg=dg.merge(df_std, on=['database', 'label'])
+    dg=dg.merge(df_min, on=['database', 'label'])
+    dg=dg.merge(df_max, on=['database', 'label'])
     
     lst=df_to_list(dg)
-    col = ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']
-    return lst,col
+    col=['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']
+    return lst, col
 
 #Intra _________________________________________________________________________________________________________________________
 #By folder 
-def get_intra_smiles_absolute_duration_folder(listpaths,string):
+def get_intra_smiles_absolute_duration_folder(listpaths, string):
     """This function calculates absolute duration for smiles in a database considering one person.
+    
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df1=list_to_df(get_smiles_dict_folder(listpaths,string)[0], get_smiles_dict_folder(listpaths,string)[1])
-
-    dg1=df1.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    df1=list_to_df(get_smiles_dict_folder(listpaths, string)[0], get_smiles_dict_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
-
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
-    col=['subject','database','label','sum_time','time']
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
-    return lst,col
-
-def get_intra_laughs_absolute_duration_folder(listpaths,string):
+def get_intra_laughs_absolute_duration_folder(listpaths, string):
     """This function calculates absolute duration for laughs in a database considering one person.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject','database','label','sum_time','time'])
     """
-    df2=list_to_df(get_laughs_dict_folder(listpaths,string)[0], get_laughs_dict_folder(listpaths,string)[1])
-
-    dg2=df2.loc[:,['subject','database','label','diff_time']]
-    dg2=dg2.groupby(['subject','database','label']).sum().reset_index()
+    df2=list_to_df(get_laughs_dict_folder(listpaths, string)[0], get_laughs_dict_folder(listpaths, string)[1])
+    dg2=df2.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg2=dg2.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg2['time']=seconds_to_hmsms_list(dg2['diff_time'])
-    dg2.columns=['subject','database','label','sum_time','time']
+    dg2.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg2)
-    col=['subject','database','label','sum_time','time']
-
-    return lst,col
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
 def get_intra_tiers_absolute_duration_folder(listpaths, string, expression_choice):
     """This function calculates absolute duration for tiers in a database considering one person.
@@ -1701,55 +1453,53 @@ def get_intra_tiers_absolute_duration_folder(listpaths, string, expression_choic
         string (str): name of the database
         expression_choice (str): name of the expression
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df3=list_to_df(get_tier_dict_folder(listpaths,string,expression_choice)[0], get_tier_dict_folder(listpaths,string,expression_choice)[1])
-    dg3=df3.loc[:,['subject','database','label','diff_time']]
-    dg3=dg3.groupby(['subject','database','label']).sum().reset_index()
+    df3=list_to_df(get_tier_dict_folder(listpaths, string, expression_choice)[0], get_tier_dict_folder(listpaths, string, expression_choice)[1])
+    dg3=df3.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg3=dg3.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg3['time']=seconds_to_hmsms_list(dg3['diff_time'])
-    dg3.columns=['subject','database','label','sum_time','time']
+    dg3.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg3)
-    col=['subject','database','label','sum_time','time']
+    col=['subject', 'database', 'label', 'sum_time', 'time']
     return lst, col
 
-def get_intra_smiles_relative_duration_folder(listpaths,string):
+def get_intra_smiles_relative_duration_folder(listpaths, string):
     """This function calculates relative duration for smiles in a database considering one person.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','duration','sum_time','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'duration', 'sum_time', 'percentage'])
     """
-    df1=list_to_df(get_smiles_dict_folder(listpaths,string)[0], get_smiles_dict_folder(listpaths,string)[1])
-
-    dg1=df1.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    df1=list_to_df(get_smiles_dict_folder(listpaths, string)[0], get_smiles_dict_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
+    dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     lst=df_to_list(dg1)
-    col=['subject','database','label','duration','sum_time','percentage']
+    col=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    return lst, col
 
-    return lst,col
-
-def get_intra_laughs_relative_duration_folder(listpaths,string):
+def get_intra_laughs_relative_duration_folder(listpaths, string):
     """This function calculates relative duration for laughs in a database considering one person.
+    
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','duration','sum_time','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'duration', 'sum_time', 'percentage'])
     """
-    df2=get_laughs_dict_folder(listpaths,string)
+    df2=get_laughs_dict_folder(listpaths, string)
     df2=list_to_df(df2[0], df2[1])
-    dg2=df2.loc[:,['subject','database','label','duration','diff_time']]
-    dg2=dg2.groupby(['subject','database','label','duration']).sum().reset_index()
+    dg2=df2.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg2=dg2.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg2['percentage']=round(((dg2['diff_time']/dg2['duration'])*100),2)
-    dg2.columns=['subject','database','label','duration','sum_time','percentage']
+    dg2.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     lst=df_to_list(dg2)
-    col=['subject','database','label','duration','sum_time','percentage']
-
-    return lst,col
+    col=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    return lst, col
 
 def get_intra_tiers_relative_duration_folder(listpaths, string, expression_choice):
     """This function calculates relative duration for tiers in a database considering one person.
@@ -1759,38 +1509,36 @@ def get_intra_tiers_relative_duration_folder(listpaths, string, expression_choic
         string (str): name of the database
         expression_choice (str): name of the expression
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','duration','sum_time','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'duration', 'sum_time', 'percentage'])
     """
-    df3=get_tier_dict_folder(listpaths,string,expression_choice)
+    df3=get_tier_dict_folder(listpaths, string, expression_choice)
     df3=list_to_df(df3[0], df3[1])
-    dg3=df3.loc[:,['subject','database','label','duration','diff_time']]
-    dg3=dg3.groupby(['subject','database','label','duration']).sum().reset_index()
+    dg3=df3.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg3=dg3.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg3['percentage']=round(((dg3['diff_time']/dg3['duration'])*100),2)
-    dg3.columns=['subject','database','label','duration','sum_time','percentage']
+    dg3.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     lst=df_to_list(dg3)
-    col=['subject','database','label','duration','sum_time','percentage']
+    col=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     return lst, col
 
 #By roles
-def get_intra_smiles_ad_from_lsn_folder(listpaths,string):
+def get_intra_smiles_ad_from_lsn_folder(listpaths, string):
     """This function calculates absolute duration for smiles in a database considering one person who is listener.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df1=list_to_df(get_smiles_from_lsn_folder(listpaths,string)[0], get_smiles_from_lsn_folder(listpaths,string)[1])
-
-    dg1=df1.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    df1=list_to_df(get_smiles_from_lsn_folder(listpaths, string)[0], get_smiles_from_lsn_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
-    col=['subject','database','label','sum_time','time']
-    return lst,col
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
 def get_intra_smiles_rd_from_lsn_folder(listpaths,string):
     """This function calculates relative duration for smiles in a database considering one person who is listener.
@@ -1799,134 +1547,129 @@ def get_intra_smiles_rd_from_lsn_folder(listpaths,string):
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'percentage'])
     """
-    df1=list_to_df(get_smiles_from_lsn_folder(listpaths,string)[0], get_smiles_from_lsn_folder(listpaths,string)[1])
-    dg1=df1.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    df1=list_to_df(get_smiles_from_lsn_folder(listpaths, string)[0], get_smiles_from_lsn_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1.drop(dg1.columns[[3,4]], axis=1, inplace=True)
+    dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
     lst=df_to_list(dg1)
-    col=['subject','database','label','percentage']
-    return lst,col
+    col=['subject', 'database', 'label', 'percentage']
+    return lst, col
 
-def get_intra_smiles_ad_from_spk_folder(listpaths,string):
+def get_intra_smiles_ad_from_spk_folder(listpaths, string):
     """This function calculates absolute duration for smiles in a database considering one person who is speaker.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df1=list_to_df(get_smiles_from_spk_folder(listpaths,string)[0], get_smiles_from_spk_folder(listpaths,string)[1])
-    dg1=df1.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    df1=list_to_df(get_smiles_from_spk_folder(listpaths, string)[0], get_smiles_from_spk_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
-    col=['subject','database','label','sum_time','time']
-    return lst,col
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
-def get_intra_smiles_rd_from_spk_folder(listpaths,string):
+def get_intra_smiles_rd_from_spk_folder(listpaths, string):
     """This function calculates relative duration for smiles in a database considering one person who is speaker.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'percentage'])
     """
-    df1=list_to_df(get_smiles_from_spk_folder(listpaths,string)[0], get_smiles_from_spk_folder(listpaths,string)[1])
+    df1=list_to_df(get_smiles_from_spk_folder(listpaths, string)[0], get_smiles_from_spk_folder(listpaths, string)[1])
 
-    dg1=df1.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1.drop(dg1.columns[[3,4]], axis=1, inplace=True)
+    dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
     lst=df_to_list(dg1)
-    col=['subject','database','label','percentage']
-    return lst,col
+    col=['subject', 'database', 'label', 'percentage']
+    return lst, col
 
-def get_intra_laughs_ad_from_lsn_folder(listpaths,string):
+def get_intra_laughs_ad_from_lsn_folder(listpaths, string):
     """This function calculates absolute duration for laughs in a database considering one person who is listener.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df1=list_to_df(get_laughs_from_lsn_folder(listpaths,string)[0], get_laughs_from_lsn_folder(listpaths,string)[1])
-
-    dg1=df1.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    df1=list_to_df(get_laughs_from_lsn_folder(listpaths, string)[0], get_laughs_from_lsn_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
-    col=['subject','database','label','sum_time','time']
-    return lst,col
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
-def get_intra_laughs_rd_from_lsn_folder(listpaths,string):
+def get_intra_laughs_rd_from_lsn_folder(listpaths, string):
     """This function calculates relative duration for laughs in a database considering one person who is listener.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'percentage'])
     """
-    df1=list_to_df(get_laughs_from_lsn_folder(listpaths,string)[0], get_laughs_from_lsn_folder(listpaths,string)[1])
-    dg1=df1.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    df1=list_to_df(get_laughs_from_lsn_folder(listpaths, string)[0], get_laughs_from_lsn_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1.drop(dg1.columns[[3,4]], axis=1, inplace=True)
+    dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
     lst=df_to_list(dg1)
-    col=['subject','database','label','percentage']
-    return lst,col
+    col=['subject', 'database', 'label', 'percentage']
+    return lst, col
 
-def get_intra_laughs_ad_from_spk_folder(listpaths,string):
+def get_intra_laughs_ad_from_spk_folder(listpaths, string):
     """This function calculates absolute duration for laughs in a database considering one person who is speaker.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df1=list_to_df(get_laughs_from_spk_folder(listpaths,string)[0], get_laughs_from_spk_folder(listpaths,string)[1])
-    dg1=df1.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    df1=list_to_df(get_laughs_from_spk_folder(listpaths, string)[0], get_laughs_from_spk_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
-    col=['subject','database','label','sum_time','time']
-    return lst,col
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
-def get_intra_laughs_rd_from_spk_folder(listpaths,string):
+def get_intra_laughs_rd_from_spk_folder(listpaths, string):
     """This function calculates relative duration for laughs in a database considering one person who is speaker.
 
     Args:
         listpaths (list): list of filespath
         string (str): name of the database
-
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'percentage'])
     """
-    df1=list_to_df(get_laughs_from_spk_folder(listpaths,string)[0], get_laughs_from_spk_folder(listpaths,string)[1])
-
-    dg1=df1.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    df1=list_to_df(get_laughs_from_spk_folder(listpaths, string)[0], get_laughs_from_spk_folder(listpaths, string)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1.drop(dg1.columns[[3,4]], axis=1, inplace=True)
+    dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
     lst=df_to_list(dg1)
-    col=['subject','database','label','percentage']
-    return lst,col
+    col=['subject', 'database', 'label', 'percentage']
+    return lst, col
 
 #By tier 
 def get_intra_tier_ad_from_tier_folder(listpaths, string, tier1, tier2, entity):
@@ -1939,16 +1682,16 @@ def get_intra_tier_ad_from_tier_folder(listpaths, string, tier1, tier2, entity):
         tier2 (str): name of the tier to retrieve
         entity (str): name of the entity of tier1
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','sum_time','time'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'sum_time', 'time'])
     """
-    df1=list_to_df(get_tier_from_tier(listpaths,string,tier1,tier2,entity)[0], get_tier_from_tier(listpaths,string,tier1,tier2,entity)[1])
-    dg1=df1.loc[:,['subject','database','label','diff_time']]
-    dg1=dg1.groupby(['subject','database','label']).sum().reset_index()
+    df1=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
-    dg1.columns=['subject','database','label','sum_time','time']
+    dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
-    col=['subject','database','label','sum_time','time']
-    return lst,col
+    col=['subject', 'database', 'label', 'sum_time', 'time']
+    return lst, col
 
 def get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity):
     """This function calculates relative duration for a tier in a database considering one entity.
@@ -1960,17 +1703,17 @@ def get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity):
         tier2 (str): name of the tier to retrieve
         entity (str): name of the entity of tier1
     Returns:
-        Tuple: (list of tuple , description of tuples) -> ([], ['subject','database','label','percentage'])
+        Tuple: (list of tuple, description of tuples) -> ([], ['subject', 'database', 'label', 'percentage'])
     """
-    df1=list_to_df(get_tier_from_tier(listpaths,string,tier1,tier2,entity)[0], get_tier_from_tier(listpaths,string,tier1,tier2,entity)[1])
-    dg1=df1.loc[:,['subject','database','label','duration','diff_time']]
-    dg1=dg1.groupby(['subject','database','label','duration']).sum().reset_index()
+    df1=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity)[1])
+    dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
-    dg1.columns=['subject','database','label','duration','sum_time','percentage']
-    dg1.drop(dg1.columns[[3,4]], axis=1, inplace=True)
+    dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
+    dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
     lst=df_to_list(dg1)
-    col=['subject','database','label','percentage']
-    return lst,col
+    col=['subject', 'database', 'label', 'percentage']
+    return lst, col
 
 #Inter _________________________________________________________________________________________________________________________
 #By folder
