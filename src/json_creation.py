@@ -3,13 +3,13 @@ from os.path import join, relpath, abspath, dirname
 import json
 from bs4 import BeautifulSoup
 from pympi import Eaf
-script_path = os.path.realpath(os.path.dirname("IBPY"))
+script_path=os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 from IBPY.extract_data import *
 
 # Set the script path and add it to the system path
-script_path = os.path.realpath(os.path.dirname("IBPY"))
+script_path=os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 
@@ -17,108 +17,65 @@ sys.path.append("..")
 from IBPY import db
 
 def create_json_from_directory():
-    """Creates a JSON file containing information about a directory of ELAN files.
+    """ Creates a JSON file containing information about a directory of ELAN files.
 
     Args:
         None
-
     Returns:
         None
     """
-
-    # Absolute path of the "data" directory
-    script_dir = dirname(os.path.abspath(__file__))
-    root = os.path.abspath(os.path.join(script_dir, '..', 'data'))
-
-    # Deletes any existing "data.json" file
+    script_dir=dirname(os.path.abspath(__file__))
+    root=os.path.abspath(os.path.join(script_dir, '..', 'data'))
     delete_file_if_exists('data.json')
-
-    # Specify the relative path to the parent folder from the script directory
-    parent_path = abspath(os.path.join(script_dir, '..'))
-
-    # Get a list of directories in the root directory
-    datasets = os.listdir(root)
-
-    # Create a list of the full paths to the directories
-    datasets_full = [join(root, d) for d in datasets]
-
-    # Create an empty dictionary to store the data
-    dct = {}
-    
-    # Add a sub-dictionary for the folder paths
-    dct['FOLDER_PATHS'] = {}
-    dct['FOLDER_PATHS']['DIR'] = join('..', relpath(relpath(root, os.getcwd()), parent_path))
+    parent_path=abspath(os.path.join(script_dir, '..'))
+    datasets=os.listdir(root)
+    datasets_full=[join(root, d) for d in datasets]
+    dct={}
+    dct['FOLDER_PATHS']={}
+    dct['FOLDER_PATHS']['DIR']=join('..', relpath(relpath(root, os.getcwd()), parent_path))
     for i, folder_path in enumerate(datasets_full):
-        dct['FOLDER_PATHS'][f'ROOT{i+1}'] = join('..', relpath(relpath(folder_path, os.getcwd()), parent_path))
-    
+        dct['FOLDER_PATHS'][f'ROOT{i+1}']=join('..', relpath(relpath(folder_path, os.getcwd()), parent_path))
     # Add a sub-dictionary for the database paths
-    dct['DATABASES_PATHS'] = {}
-    dct['DATABASES_PAIR_PATHS'] = {} # new sub-dictionary for pairs
+    dct['DATABASES_PATHS']={}
+    dct['DATABASES_PAIR_PATHS']={} 
     for d in range(len(datasets_full)):
-        folder_name = datasets[d]
-        temp = os.listdir(datasets_full[d])
-        eaf_files = [f for f in temp if f.endswith('.eaf')]
-        dct['DATABASES_PATHS'][f'{folder_name}_paths'] = [join('..', relpath(relpath(join(datasets_full[d], f), os.getcwd()), parent_path)) for f in eaf_files]
-        
+        folder_name=datasets[d]
+        temp=os.listdir(datasets_full[d])
+        eaf_files=[f for f in temp if f.endswith('.eaf')]
+        dct['DATABASES_PATHS'][f'{folder_name}_paths']=[join('..', relpath(relpath(join(datasets_full[d], f), os.getcwd()), parent_path)) for f in eaf_files]
         # Create pairs for the "DATABASES_PAIR_PATHS" sub-dictionary
-        pair_func_name = f"form_pairs_{folder_name.lower()}"
+        pair_func_name=f"form_pairs_{folder_name.lower()}"
         if hasattr(db, pair_func_name):
-            pair_func = getattr(db, pair_func_name)
-            pair_files = []
+            pair_func=getattr(db, pair_func_name)
+            pair_files=[]
             try:
-                pair_files = pair_func(eaf_files)
+                pair_files=pair_func(eaf_files)
             except Exception as e:
                 print(f"Error while creating pairs for folder {folder_name}: {e}")
                 continue
             if pair_files:
-                pair_paths = []
+                pair_paths=[]
                 for f in pair_files:
                     if isinstance(f, tuple):
                         pair_paths.extend([join('..', relpath(relpath(join(str(datasets_full[d]), str(p)), os.getcwd()), parent_path)) for p in f])
                     else:
                         pair_paths.append(join('..', relpath(relpath(join(str(datasets_full[d]), str(f)), os.getcwd()), parent_path)))
-                dct['DATABASES_PAIR_PATHS'][f'{folder_name}_pairs'] = pair_paths
-
+                dct['DATABASES_PAIR_PATHS'][f'{folder_name}_pairs']=pair_paths
     # Create a dictionary for the tiers and annotations
-    dct['TIER_LISTS'] = {}
+    dct['TIER_LISTS']={}
     for d in range(len(datasets_full)):
-        temp = os.listdir(datasets_full[d])
+        temp=os.listdir(datasets_full[d])
         for f in temp:
             if f.endswith('.eaf'):
-                # eaf = Eaf(join(datasets_full[d], f))
-                # tiers = list(eaf.get_tier_names())
-                # parent_tiers = set()
-                
-                # # for tier_name in tiers:
-                # #     param = eaf.get_parameters_for_tier(tier_name)
-                #     # if "PARENT_REF" in param:
-                #     #     parent_tier = param["PARENT_REF"]
-                #     #     parent_tiers.add(parent_tier)
-                # for tier_name in tiers:
-                #     if tier_name not in parent_tiers:
-                #         if tier_name not in dct['TIER_LISTS'] :
-                #             dct['TIER_LISTS'][tier_name] = []
-
-                # for tier_name in tiers:
-                #     if tier_name not in parent_tiers:
-                #         annotations = eaf.get_annotation_data_for_tier(tier_name)
-                #         for annotation in annotations:
-                #             value = annotation[2].strip()
-                #             if value and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
-                #                 dct['TIER_LISTS'][tier_name].append(value)
-                filepath = join(datasets_full[d], f)
-                tier_dict = read_eaf_to_dict(filepath)  # Get tier names and values using read_eaf_to_dict
-                
+                filepath=join(datasets_full[d], f)
+                tier_dict=read_eaf_to_dict(filepath) 
                 for tier_name, annotations in tier_dict.items():
                     if tier_name not in dct['TIER_LISTS']:
-                        dct['TIER_LISTS'][tier_name] = []
-
+                        dct['TIER_LISTS'][tier_name]=[]
                     for annotation in annotations:
-                        value = annotation[2].strip()
+                        value=annotation[2].strip()
                         if isinstance(value, str) and value and not value.isspace() and not value.isdigit() and value not in dct['TIER_LISTS'][tier_name]:
                             dct['TIER_LISTS'][tier_name].append(value)
-
-
     # TO IMPROVE
     # Create a dictionary for the ML stats : IN_OUT
 
@@ -128,11 +85,10 @@ def create_json_from_directory():
 
 
 def delete_file_if_exists(filename):
-    """Deletes a file if it exists.
+    """ Deletes a file if it exists.
 
     Args:
         filename (str): The path of the file to delete.
-
     Returns:
         None
     """
