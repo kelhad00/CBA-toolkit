@@ -9,7 +9,7 @@ os.chdir(script_path)
 sys.path.append("..")
 
 from src.page6.snl_stats_visualization_page6 import *
-from src.page6.snl_stats_visualisation_database import *
+from src.page6.snl_stats_visualization_database import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
 
 def page5():

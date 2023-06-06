@@ -1,66 +1,49 @@
 ## src
 
-This folder contains :
+This folder contains:
 
-**1) snl_stats_extraction_data.py :**
+**1) snl_stats_extraction_data.py:**
 This file contains all extraction functions for the statistics.
 
-**2) snl_stats_visualization.py :**
-This file contains all the vizualisation functions to vizualise the statistics.
-
-**3) preprocessing.py :**
-This file contains functions that help to extract data from eaf files coming from the datasets.
+**2) preprocessing.py:**
+This file contains functions that help to extract data from eaf files coming from the datasets for the machine learning part.
 setup_label_database() and divide_seq_to_frames() are the main functions used.
 
-**4) settings.py :**
+**3) settings.py:**
 This file contains somes variables used in the other python files of this folder.
 
-**5) ml_stats.py :**
-This file contains the functions that make the necessary statistics.
+**4) ml_stats.py:**
+This file contains the functions that make the necessary statistics for machine learning part.
 
-**6) ml_stats_vizusalisation.py :**
-This file contains the function to vizualise the statistics.
+**5) ml_stats_vizusalisation.py:**
+This file contains the function to vizualise the statistics for machine learning part.
 
-**7) tests.py :**
+**6) tests.py:**
 This file has a function test(). This function is there just to help try out functions inside other files.
 
-**8) to_improve.py :**
+**7) to_improve.py:**
 This file contains the functions to be improved in order to succeed in certain specific actions.
 
-**9) json_creation.py :**
+**8) json_creation.py:**
 This file generates a JSON file from the directory data containing EAF files.
 
-**10) data.json :**
-This file contains a dictionnary where you can find some parameters you need to work with.
-Here are precisions you need to know to understand the parameters. This is the explanation of how you need to manage directories.
+**9) page2:**
+This folder contains the scripts for the second page of the Streamlit interface:
+* snl_stats_visualization_page2.py : This file contains the functions to display the statistics of the expressions in the second page of the Streamlit interface.
+* function_thread_page2.py : This file contains the functions to display in multi-threading the statistics of the expressions in the second page of the Streamlit interface.
 
- **In FOLDER_PATHS :**
- - DIR is the path where we have all databases. 
-     This directory is called "data" and it has to be at the same level than the other folders of the project.
+**10) page3:**
+This folder contains the scripts for the third page of the Streamlit interface:
+* snl_stats_visualization_page3.py : This file contains the functions to display the statistics of the expressions in the third page of the Streamlit interface.
+* function_thread_page3.py : This file contains the functions to display in multi-threading the statistics of the expressions in the third page of the Streamlit interface.
 
- - ROOT1 is the path for ccdb database. This directory is inside data directory.
- - ROOT2 is the path for ifadv database. This directory is inside data directory.
- - ROOT3 is the path for ndc database. This directory is inside data directory.
- - ROOTX is the path for your database and so on. This directory is inside data directory
+**11) page4:**
+This folder contains the scripts for the fourth page of the Streamlit interface:
+* snl_stats_visualization_page4.py : This file contains the functions to display the statistics of the expressions in the fourth page of the Streamlit interface.
 
- **In DATABASES_PATHS :**
- You find the paths of files of each database.
+**12) page6:**
+This folder contains the scripts for the sixth page of the Streamlit interface:
+* snl_stats_visualization_page6.py : This file contains the functions to display the statistics of the expressions in the sixth page of the Streamlit interface.
+* snl_stats_visualization_database.py : This file contains the functions to display informations about the database in the sixth page of the Streamlit interface.
 
- **In DATABASES_PAIR_PATHS :**
- You find the paths of the pair files of each database.
-
- **In TIER_LISTS :**
- Here are tiers and annotations values present in the EAF files.
- 
- **TO IMPROVE**
-
- **In the previous JSON : parameters.json**
- **In _databasename_IN_OUT:**
- - PATH_IN_databasename : path of all person 1 in the database pairs
- - PATH_OUT_databasename : path of all person 2 in the database pairs
-
- Here we have paths for video pairs from each database. 
- Create a folder "data_in_out" (it has to be in the same folder as the repository (snlstats) you cloned.)
- Inside this folder, create three folders according to this notation "databasename_in_out".
- Inside each databasename_in_out folder, create two folders named "In" and "Out"
 
