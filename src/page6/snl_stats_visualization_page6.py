@@ -57,10 +57,13 @@ def plot_expression_per_min_I(folder, expression, intensity):
         for i in range(len(folder)):
             element=folder[i]
             split_elements.append(element.split('\\'))
-        for i in range (len(tier_lists[expression])):
-            if intensity==tier_lists[expression][i]:
-                fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
-                title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
+        if all(item == 0 for item in lst):
+            fig = None
+        else:
+            for i in range (len(tier_lists[expression])):
+                if intensity==tier_lists[expression][i]:
+                    fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
+                    title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
     except:
         fig=None
     return fig
