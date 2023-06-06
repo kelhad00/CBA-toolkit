@@ -46,10 +46,10 @@ def page5():
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             entity_choice=st.radio("Entity: ", tier_lists[expression_choice])
             if entity_choice is not None:
-                if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice)==None)) :
-                    str.write("No data available")
+                if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice))==None) :
+                    st.write("No data available")
                 else:
-                    st.plotly_chart(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice)))
+                    st.write(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice)))
             else:
                 st.write("No data available")
 
