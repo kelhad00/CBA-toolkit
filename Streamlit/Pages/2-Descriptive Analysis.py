@@ -38,15 +38,15 @@ def page1():
                 if fig1_0!=None:    
                     st.write(fig1_0)
                 else:
-                    st.write("No Data available")
+                    st.write(f"No Data available for {expression_choice}")
             else:
                 fig2_0=plot_relative_duration(expression_choice, choice, name_databases)
                 if fig2_0!=None:
                     st.write(fig2_0)
                 else:
-                    st.write("No Data available")
+                    st.write(f"No Data available for {expression_choice}")
         else:
-            st.write("No Data available")
+            st.write(f"No Data available for {expression_choice}")
     elif expression_choice=='all': 
         figures1=[]
         if figs=='Absolute duration':
@@ -98,7 +98,7 @@ def page1():
                         else: 
                             st.write(f"No data available for: {entity} {expression_choice_1}")
             else:
-                st.write("No data available")
+                st.write(f"No data available for {expression_choice_copy} with {expression_choice_1}")
         elif expression_choice_copy=='all': 
             figures=[]
             if "Absolute" in figs1:
@@ -117,7 +117,7 @@ def page1():
                 else:
                     st.write("No Data available")
     else:
-        st.write("No data available")
+        st.write(f"No data available for {expression_choice_1}")
 
 subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
 page1()
