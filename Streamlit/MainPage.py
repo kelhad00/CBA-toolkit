@@ -80,7 +80,16 @@ def main_page():
 
     st.markdown('''Each dataset of your database has files containing a list of tiers/expressions expressed during interactions between two people to be studied. 
     \nWe explored these tiers and we tried to know which kind of effects they could have on a person or during an interaction.
-    \n\nNow look at each page of the web page!''')
+    \n\nNow look at each page of the web page!
+    ''')
+    st.markdown('')
+    st.markdown('')
+    st.markdown('''Here you can enter your own code to explore your database.
+    \nYou can use the following functions to explore your database with "foldername" the name of the dataset you want to explore:
+    \n- form_pairs_foldername: to form pairs of expressions
+    \n- form_list_pairs_foldername: to form a list of pairs of expressions
+    \nFor more informations, please read the README.md file.
+    ''')
     if 'cnt' not in st.session_state:
         st.session_state.cnt = 0
     content = st_ace(language='python', keybinding="vscode", theme='dracula')
