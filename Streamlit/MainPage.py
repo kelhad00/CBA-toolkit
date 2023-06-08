@@ -84,10 +84,9 @@ def main_page():
     ''')
     st.markdown('')
     st.markdown('')
-    st.markdown('''Here you can enter your own code to explore your database.
-    \nYou can use the following functions to explore your database with "foldername" the name of the dataset you want to explore:
-    \n- form_pairs_foldername: to form pairs of expressions
-    \n- form_list_pairs_foldername: to form a list of pairs of expressions
+    st.markdown('''Here enter your own code to explore your database.
+    \nYou will use these functions to explore your database with "foldername" the name of the dataset you want to explore:
+    \n- form_pairs_foldername: to form pairs of expressions.
     \nFor more informations, please read the README.md file.
     ''')
     if 'cnt' not in st.session_state:
