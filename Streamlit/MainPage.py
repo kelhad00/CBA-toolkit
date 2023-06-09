@@ -95,12 +95,10 @@ def main_page():
     st.session_state.cnt += 1
     
     if content:
-        print(content)
         if st.session_state.cnt > 1:
             try:
                 exec(content)
-                pattern_fonction_verifie = r"form_pairs_.*"
-                pattern_fonction_verifie2 = r"form_list_pairs_.*"
+                pattern_fonction_verifie = r"form_list_pairs_.*"
                 nom_fichier = "./temp.py"
                 target_file = "../IBPY/db.py"
 
@@ -127,13 +125,12 @@ def main_page():
                     # Vérification si une déclaration de fonction est présente
                 if arbre_syntaxique:
                     contient_declaration_fonction = any((isinstance(noeud, ast.FunctionDef) and re.match(pattern_fonction_verifie, noeud.name) for noeud in ast.walk(arbre_syntaxique)))
-                    contient_declaration_fonction2 = any((isinstance(noeud, ast.FunctionDef) and re.match(pattern_fonction_verifie2, noeud.name) for noeud in ast.walk(arbre_syntaxique)))
                     fonctions_source = [node.name for node in ast.walk(arbre_syntaxique) if isinstance(node, ast.FunctionDef)]
                     fonctions_destination = [node.name for node in ast.walk(arbre_syntaxique_destination) if isinstance(node, ast.FunctionDef)]
                     doublons = set(fonctions_source) & set(fonctions_destination)
-                    print(doublons)
-                    if contient_declaration_fonction == True and contient_declaration_fonction2 == True and not doublons :
+                    if contient_declaration_fonction == True and not doublons :
                         with open(target_file, 'a') as f_destination:
+                            f_destination.write('\n')  # Ajoute une ligne vide
                             f_destination.write(code_python)
                         os.remove(nom_fichier)
                         st.success("Code successfuly uploaded !!")
