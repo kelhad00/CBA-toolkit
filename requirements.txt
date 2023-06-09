@@ -1,0 +1,12 @@
+numpy
+pandas
+streamlit
+matplotlib
+plotly
+pympi-ling
+scipy
+python-Levenshtein
+seaborn
+streamlit-ace
+pyunpack
+fuzzywuzzy

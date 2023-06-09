@@ -98,7 +98,7 @@ def main_page():
         if st.session_state.cnt > 1:
             try:
                 exec(content)
-                pattern_fonction_verifie = r"form_list_pairs_.*"
+                pattern_fonction_verifie = r"form_pairs_.*"
                 nom_fichier = "./temp.py"
                 target_file = "../IBPY/db.py"
 

@@ -44,4 +44,16 @@ python pair_data.py --path_ndc <path to the NDC-ME audio, video or eaf files>
 ```
 ## Installation
 
-To install the toolkit, clone the repository and install : ...
+To install the toolkit, clone the repository and install : 
+
+First of all, you need to clone the repository on github (https://github.com/kelhad00/CBA-toolkit/tree/dev) or download it.
+
+After that, you need to create a virtual environment to use web interface (Streamlit) :
+
+    Step 1 : Install Environment creation Tool (Anaconda or Miniconda for examples).
+    Step 2 : Launch Visual Studio Code from your tool.
+    Step 3 : Install dependencies (libraries). All dependencies are on requirements.txt
+                - To install dependencies you need to open terminal on Visual Studio Code and write ``` pip install [name of the library] ``` 
+                                                FOR EXAMPLES : ``` pip install streamlit ```
+
+That's it, your project is set up to start !
