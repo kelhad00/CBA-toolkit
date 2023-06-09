@@ -122,7 +122,7 @@ def main_page():
                     arbre_syntaxique = None
                     os.remove(nom_fichier)
 
-                    # Vérification si une déclaration de fonction est présente
+                    # Checking if a function declaration is present
                 if arbre_syntaxique:
                     contient_declaration_fonction = any((isinstance(noeud, ast.FunctionDef) and re.match(pattern_fonction_verifie, noeud.name) for noeud in ast.walk(arbre_syntaxique)))
                     fonctions_source = [node.name for node in ast.walk(arbre_syntaxique) if isinstance(node, ast.FunctionDef)]
@@ -130,7 +130,7 @@ def main_page():
                     doublons = set(fonctions_source) & set(fonctions_destination)
                     if contient_declaration_fonction == True and not doublons :
                         with open(target_file, 'a') as f_destination:
-                            f_destination.write('\n')  # Ajoute une ligne vide
+                            f_destination.write('\n')  # Add an empty line
                             f_destination.write(code_python)
                         os.remove(nom_fichier)
                         st.success("Code successfuly uploaded !!")

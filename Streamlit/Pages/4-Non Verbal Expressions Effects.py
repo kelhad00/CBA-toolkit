@@ -156,7 +156,9 @@ def page3():
 
     def page3_3():               
         st.header('Correlation')
-        st.markdown('Here, we look at the correlation between two sequences of expressions')
+        st.markdown('''Here, we look at the correlation between two sequences of expressions.
+                    \nBe careful if the selected sampling values (shift and width) are too large or not adequate, you may have zero correlation graphs. 
+                    \n\nYou must select appropriate values according to the annotation times of your files.''')
 
         st.subheader("********    By dataset    ********")
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
@@ -206,15 +208,15 @@ def page3():
             if databases_choice1==databases_1[i].replace('_pairs','').upper():
                 databases_list1=databases_pair_paths[databases_1[i]]
 
-        st.text("Between two expressions or two entities")
-        st.text("EXPLICATION")
-        st.text("Choose if you want to look at the correlation between two different expressions (2) or not (1).")
+        st.markdown("Between two expressions or two entities")
+        st.text("EXPLICATION:")
+        st.markdown("--> Choose if you want to look at the correlation between two different expressions (2) or not (1).")
         case_=st.radio("Cases expressions: ", [1, 2])
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         expression_choicesA=list(tier_lists.keys())
         expression_choicesB=list(tier_lists.keys()) 
         if case_==1:
-            A_choice=st.radio("Expression -> ", expression_choicesA)
+            A_choice=st.radio("Expression: ", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             width=st.slider("Select the width: ", 1, 344, key='W3')
             shift=st.slider("Select the shift: ", 1, 344, key='S3')
@@ -243,9 +245,9 @@ def page3():
             else:
                 st.write("No data to display")
         else:
-            A_choice=st.radio("Expression A ->", expression_choicesA)
+            A_choice=st.radio("Expression A:", expression_choicesA)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            B_choice=st.radio("Expression B ->", expression_choicesB)
+            B_choice=st.radio("Expression B:", expression_choicesB)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             width=st.slider("Select the width: ", 1, 344, key='W4') 
             shift=st.slider("Select the shift: ", 1, 344, key='S4')
