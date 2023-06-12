@@ -99,48 +99,48 @@ def main_page():
             try:
                 exec(content)
                 pattern_fonction_verifie = r"form_pairs_.*"
-                nom_fichier = "./temp.py"
+                filename = "./temp.py"
                 target_file = "../IBPY/db.py"
 
-                with open(nom_fichier, 'w') as fichier:
+                with open(filename, 'w') as fichier:
                     fichier.write(content)
 
                 try:
-                    with open(nom_fichier, 'r') as fichier:
-                        code_python = fichier.read()
-                        arbre_syntaxique = ast.parse(code_python)
+                    with open(filename, 'r') as fichier:
+                        python_code = fichier.read()
+                        tree = ast.parse(python_code)
 
                     with open(target_file, 'r') as f_destination:
                         code_destination = f_destination.read()
-                        arbre_syntaxique_destination = ast.parse(code_destination)
+                        tree_destination = ast.parse(code_destination)
 
                 except IOError:
-                    arbre_syntaxique = None
-                    os.remove(nom_fichier)
+                    tree = None
+                    os.remove(filename)
 
                 except SyntaxError:
-                    arbre_syntaxique = None
-                    os.remove(nom_fichier)
+                    tree = None
+                    os.remove(filename)
 
                     # Checking if a function declaration is present
-                if arbre_syntaxique:
-                    contient_declaration_fonction = any((isinstance(noeud, ast.FunctionDef) and re.match(pattern_fonction_verifie, noeud.name) for noeud in ast.walk(arbre_syntaxique)))
-                    fonctions_source = [node.name for node in ast.walk(arbre_syntaxique) if isinstance(node, ast.FunctionDef)]
-                    fonctions_destination = [node.name for node in ast.walk(arbre_syntaxique_destination) if isinstance(node, ast.FunctionDef)]
-                    doublons = set(fonctions_source) & set(fonctions_destination)
-                    if contient_declaration_fonction == True and not doublons :
+                if tree:
+                    is_declaration_function = any((isinstance(noeud, ast.FunctionDef) and re.match(pattern_fonction_verifie, noeud.name) for noeud in ast.walk(tree)))
+                    functions_source = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+                    functions_destination = [node.name for node in ast.walk(tree_destination) if isinstance(node, ast.FunctionDef)]
+                    duplicates = set(functions_source) & set(functions_destination)
+                    if is_declaration_function == True and not duplicates :
                         with open(target_file, 'a') as f_destination:
                             f_destination.write('\n')  # Add an empty line
-                            f_destination.write(code_python)
-                        os.remove(nom_fichier)
+                            f_destination.write(python_code)
+                        os.remove(filename)
                         st.success("Code successfuly uploaded !!")
                     else:
-                        os.remove(nom_fichier)
+                        os.remove(filename)
                         st.error("Your code didn't verify conditions")
                     
             except Exception as e:
                 traceback.print_exc()
-                st.error("Error in your code :( :  ")
+                st.error("Error in your code :( ")
                 
             content = False
         else : 
