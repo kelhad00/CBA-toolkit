@@ -53,6 +53,8 @@ After that, you need to create a virtual environment to use web interface (Strea
     Step 1 : Install Environment creation Tool (Anaconda or Miniconda for examples).
     Step 2 : Launch Visual Studio Code from your tool.
     Step 3 : Open project folder.
-    Step 4 : Follow instructions in 'How to run the code'
+    Step 4 : Install dependencies (libraries). All dependencies are on requirements.txt
+                - To install dependencies you need to open terminal on Visual Studio Code and write ``` pip install [name of the library] ``` 
+                                                FOR EXAMPLES : ``` pip install streamlit ```
 
 That's it, your project is set up to start !
