@@ -1,8 +1,7 @@
 import os, sys 
 from os.path import join, relpath, abspath, dirname
 import json
-from bs4 import BeautifulSoup
-from pympi import Eaf
+
 script_path=os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
