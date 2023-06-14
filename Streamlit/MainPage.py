@@ -24,30 +24,31 @@ sys.path.append("..")
 # audio_file = open('music_name.mp3','rb')
 # audio_bytes = audio_file.read()
 # st.audio(audio_bytes, format='audio/mp3')
-
+# Fonction pour extraire le contenu d'une archive ZIP
 def extract_zip(file):
-    """Extract the content of a zip file in the data folder.
-
+    """Extract the content of a zip file in the data folder''
     Args:
         file (zipfile): the zip file to extract
     Returns:
         None
     """
     file_name = file.name.replace('.zip','')
-    path = "../data/"
+    relative_path = os.path.join("..", "data")
+    path = os.path.abspath(relative_path)
     if not os.path.exists(path):
         # Creation of the directory
         os.makedirs(path)
     with zipfile.ZipFile(file, "r") as zip_ref :
         files = zip_ref.namelist()
         only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]	
-        subfolders = [f for f in files if f.endswith('/')]
-        # print(len(subfolders))
-        split_sulfolders = []
+        subfolders = [f for f in files if os.path.isdir(f)]
+        print(len(subfolders))
+        split_subfolders = []
         for folder in subfolders:
-            split_sulfolders.append(folder.split('/')[-2])
-        for folder in split_sulfolders:
-            os.makedirs(path+folder, exist_ok=True)
+            folder_path = os.path.normpath(folder)  # Normaliser le chemin d'accès
+            split_subfolders.append(os.path.split(folder_path)[-1])
+        for folder in split_subfolders:
+            os.makedirs(os.path.join(path, folder), exist_ok=True)
         eaf_files = []  
         for file in only_files :
             if file.endswith(".eaf") :
@@ -56,7 +57,7 @@ def extract_zip(file):
             st.error("Invalid directory")
             return
         zip_ref.extractall(path)
-        for folder in split_sulfolders:
+        for folder in split_subfolders:
             doss = os.path.join(path, file_name)
             doss2 = os.path.join(doss, folder)
             for file2 in os.listdir(doss2):
@@ -65,7 +66,7 @@ def extract_zip(file):
                 # Verification if the file is a file (and not a subfolder)
                 if os.path.isfile(chemin_source):
                     shutil.move(chemin_source, chemin_destination)           
-        if split_sulfolders :
+        if split_subfolders :
             shutil.rmtree(os.path.join(path, file_name))
     st.success("Valid directory!")
 
@@ -100,8 +101,10 @@ def main_page():
             try:
                 exec(content)
                 pattern_fonction_verifie = r"form_pairs_.*"
-                filename = "./temp.py"
-                target_file = "../IBPY/db.py"
+                filename = "temp.py"
+                relative_path = os.path.join("..", "IBPY")
+                relative_path = os.path.join(relative_path, "db.py")
+                target_file = os.path.abspath(relative_path)
 
                 with open(filename, 'w') as fichier:
                     fichier.write(content)
