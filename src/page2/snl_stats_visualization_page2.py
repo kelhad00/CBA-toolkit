@@ -33,19 +33,19 @@ def plot_absolute_duration(expression, choice, name_databases):
                 df_plot=dg[dg['database']==database]
                 df_plot=df_plot[df_plot['label'].isin(labels)]
                 if choice=='Mean':
-                    df_mean=df_plot.groupby('label').mean().reset_index()
+                    df_mean=df_plot.groupby('label').mean(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
                 elif choice=='Median': 
-                    df_median=df_plot.groupby('label').median().reset_index()
+                    df_median=df_plot.groupby('label').median(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
                 elif choice=='Standard deviation':
-                    df_std=df_plot.groupby('label').std().reset_index()
+                    df_std=df_plot.groupby('label').std(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
                 elif choice=='Min':
-                    df_std=df_plot.groupby('label').min().reset_index()
+                    df_std=df_plot.groupby('label').min(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
                 elif choice=='Max':
-                    df_std=df_plot.groupby('label').max().reset_index()
+                    df_std=df_plot.groupby('label').max(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
                 else:
                     fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
@@ -439,19 +439,19 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
                 df_plot=dg[dg['database']==database]
                 df_plot=df_plot[df_plot['label'].isin(labels)]
                 if choice=='Mean':
-                    df_mean=df_plot.groupby('label').mean().reset_index()
+                    df_mean=df_plot.groupby('label').mean(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
                 elif choice=='Median': 
-                    df_median=df_plot.groupby('label').median().reset_index()
+                    df_median=df_plot.groupby('label').median(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
                 elif choice=='Standard deviation':
-                    df_std=df_plot.groupby('label').std().reset_index()
+                    df_std=df_plot.groupby('label').std(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
                 elif choice=='Min':
-                    df_std=df_plot.groupby('label').min().reset_index()
+                    df_std=df_plot.groupby('label').min(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
                 elif choice=='Max':
-                    df_std=df_plot.groupby('label').max().reset_index()
+                    df_std=df_plot.groupby('label').max(only_numeric = True).reset_index()
                     fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
                 else:
                     fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
