@@ -119,9 +119,9 @@ def plot_mimicry(L):
     Pair_files=[]
     for i in range(len(data_path)):
         element=data_path[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     for i in range(0,len(split_elements), 2): 
-        Pair_files.append(split_elements[i][-1]+' / '+split_elements[i+1][-1])
+        Pair_files.append(split_elements[i][-1]+' & '+split_elements[i+1][-1])
     M=[]
     df=list_to_df(L,['count', 'probability', 'database'])
     if not df.empty:
@@ -156,9 +156,9 @@ def plot_correlation(L, folder):
     Pair_Files=[]
     for i in range(len(folder)):
         element=folder[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     for i in range(0,len(split_elements), 2): 
-        Pair_Files.append(split_elements[i][-1]+' / '+split_elements[i+1][-1])
+        Pair_Files.append(split_elements[i][-1]+' & '+split_elements[i+1][-1])
     if L:  
         fig=make_subplots(1, 1)
         fig.add_trace(pg.Scatter(x=[Pair_Files[i] for i in range(len(Pair_Files))], y=L, marker_color='royalblue', name='Correlation'))

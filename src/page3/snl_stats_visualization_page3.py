@@ -115,7 +115,7 @@ def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     split_elements=[]
     for i in range(len(listpaths)):
         element=listpaths[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     for i in range(len(dg1['subject'])):
         temp=dg1['subject'][i]
         dg1['subject'][i]=split_elements[int(temp)-1][-1]
@@ -182,7 +182,7 @@ def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     split_elements=[]
     for i in range(len(listpaths)):
         element=listpaths[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     for i in range(len(dg1['subject'])):
         temp=dg1['subject'][i]
         dg1['subject'][i]=split_elements[int(temp)-1][-1]
@@ -332,7 +332,7 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     split_elements=[]
     for i in range(len(data_path)):
         element=data_path[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     for i in range(len(df['conv'])):
         df['conv'][i]=df['conv'][i]-1
     for i in range(len(df['conv'])):
@@ -365,7 +365,7 @@ def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     split_elements=[]
     for i in range(len(data_path)):
         element=data_path[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     for i in range(len(df['conv'])):
         df['conv'][i]=df['conv'][i]-1
     for i in range(len(df['conv'])):

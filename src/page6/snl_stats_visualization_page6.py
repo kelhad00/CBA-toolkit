@@ -26,12 +26,12 @@ def plot_expression_per_min(folder, expression, case=None):
     split_elements=[]
     for i in range(len(folder)):
         element=folder[i]
-        split_elements.append(element.split('\\'))
+        split_elements.append(os.path.split(element))
     if case is None:
         fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=a[0], title=f'Count of {expression} per minute in {get_database_name(folder)}', 
         labels={'x': 'File', 'y': 'Count'})
     else:
-        fig=px.bar(x = [split_elements[j][-1]+' + '+split_elements[j+1][-1] if (j+1) < len(split_elements) else None for j in range(0, len(split_elements), 2)]
+        fig=px.bar(x = [split_elements[j][-1]+' & '+split_elements[j+1][-1] if (j+1) < len(split_elements) else None for j in range(0, len(split_elements), 2)]
         , y=a[0], title=f'Count of {expression} per minute in {get_database_name(folder)}', 
         labels={'x': 'Pairs files', 'y': 'Count'})
     if (np.count_nonzero(fig.data[0]['y'])==0):
@@ -55,7 +55,7 @@ def plot_expression_per_min_I(folder, expression, intensity):
         split_elements=[]
         for i in range(len(folder)):
             element=folder[i]
-            split_elements.append(element.split('\\'))
+            split_elements.append(os.path.split(element))
         if all(item == 0 for item in lst):
             fig = None
         else:

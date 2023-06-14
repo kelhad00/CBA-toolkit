@@ -21,7 +21,7 @@ def display_general_informations_files(database):
     lst_time=get_time_eaf(database)
     lst_count=get_tier_count(database, tier_lists.keys())
     for i in range(len(database)):
-        file_info=database[i].split('\\')[-1], lst_time[i], *lst_count[i][:len(tier_lists.keys())]
+        file_info=os.path.split(database[i])[-1], lst_time[i], *lst_count[i][:len(tier_lists.keys())]
         lst.append(file_info)
     return lst
 
@@ -42,7 +42,7 @@ def display_specific_informations(database, tier, intensities):
     for i in range(len(database)):
         for intensity in intensities:
             temp.append(lst_tier_count[i][intensity])
-        file_info=database[i].split('\\')[-1], lst_min_time[i], lst_max_time[i], *temp[:len(temp)]
+        file_info=os.path.split(database[i])[-1], lst_min_time[i], lst_max_time[i], *temp[:len(temp)]
         lst.append(file_info)
         temp.clear()
     return lst
