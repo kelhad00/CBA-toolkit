@@ -42,7 +42,7 @@ def extract_zip(file):
         files = zip_ref.namelist()
         only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]	
         subfolders = [f for f in files if os.path.isdir(f)]
-        print(len(subfolders))
+        # print(len(subfolders))
         split_subfolders = []
         for folder in subfolders:
             folder_path = os.path.normpath(folder)  # Normaliser le chemin d'accès
