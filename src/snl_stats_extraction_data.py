@@ -15,7 +15,6 @@ from IBPY.utils import *
 from IBPY.db import *
 from IBPY.extract_data import *
 import pandas as pd
-from scipy.stats import pearsonr 
 from src.json_creation import create_json_from_directory
 
 #JSON____________________________________________________________________

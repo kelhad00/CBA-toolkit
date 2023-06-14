@@ -24,9 +24,10 @@ sys.path.append("..")
 # audio_file = open('music_name.mp3','rb')
 # audio_bytes = audio_file.read()
 # st.audio(audio_bytes, format='audio/mp3')
-# Fonction pour extraire le contenu d'une archive ZIP
+
 def extract_zip(file):
-    """Extract the content of a zip file in the data folder''
+    """Extract the content of a zip file in the data folder.
+
     Args:
         file (zipfile): the zip file to extract
     Returns:
@@ -41,7 +42,7 @@ def extract_zip(file):
         files = zip_ref.namelist()
         only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]	
         subfolders = [f for f in files if f.endswith('/')]
-        print(len(subfolders))
+        # print(len(subfolders))
         split_sulfolders = []
         for folder in subfolders:
             split_sulfolders.append(folder.split('/')[-2])

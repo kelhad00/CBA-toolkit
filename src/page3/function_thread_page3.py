@@ -6,7 +6,6 @@ sys.path.append("..")
 
 result_thread=""
 import plotly.express as px
-from plotly.subplots import make_subplots
 from src.snl_stats_extraction_data import *
 from IBPY.extract_data import *
 from IBPY.visualization import *

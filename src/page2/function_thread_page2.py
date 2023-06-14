@@ -5,7 +5,6 @@ os.chdir(script_path)
 sys.path.append("..")
 
 import plotly.graph_objects as pg
-from plotly.subplots import make_subplots
 from src.snl_stats_extraction_data import *
 from IBPY.extract_data import *
 from IBPY.visualization import *
