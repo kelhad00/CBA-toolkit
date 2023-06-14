@@ -65,11 +65,9 @@ def create_intra_relative_plot(database, queue, database_single, expression_choi
         if database_single==name_databases[i]:
             data_path=databases_[i]
     split_elements=[]
-    # print("Coucou : ", dg['subject'])
     for i in range(len(data_path)):
         element=data_path[i]
         split_elements.append(os.path.split(element))
-    # print("Voici le tableau : ", split_elements)
     for i in range(len(dg['subject'])):
         if dg['database'][i] == database_single.lower() :
             temp=dg['subject'][i]
@@ -95,7 +93,6 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
         list: list of plot
     """
     dg=get_db_from_func_pair(DIR, get_inter_tier_absolute_duration_folder, database, expression_choice, tier_lists)
-    # print("Voici le tableau : ", dg)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
     databases_=[value for value in databases_pair_paths.values()]
     for i in range(len(name_databases)):
