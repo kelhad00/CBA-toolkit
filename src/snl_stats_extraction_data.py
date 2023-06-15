@@ -2739,7 +2739,7 @@ def give_mimicry(lA, lB, delta_t=0):
         float: probability of B mimick A
     """
     count_=count_mimicry(lA, lB, delta_t)
-    return (count_[0], round((count_[0]/len(lB)), 2))
+    return (count_[0], round((count_[0]/len(lB)), 3))
 
 def give_mimicry_folder1(function, folder, filter=None, label=None):
     """ Calculate mimicry of interactions on a folder

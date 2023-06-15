@@ -86,34 +86,37 @@ def page3():
         st.subheader(f'For {expression_choiceA} / {expression_choiceB}')
         if st.checkbox("All entities"):
             if tier_lists[expression_choiceA] and tier_lists[expression_choiceB]:
-                delta = st.slider('Delta time in ms (Time after which expression occuring still counts as mimicry):', 0, 5000, 1)
-                fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta))
-                if fig!=None:
-                    st.plotly_chart(fig)
-                    st.text("Do you want to divide/filter by another expression?")
-                    filter_choice1=st.radio(label="  Choice: ", options=["Yes", "No"], key=1)
-                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    if filter_choice1=="Yes":
-                        expression_filter=list(tier_lists.keys())
-                        expression_filter.remove(expression_choiceA)
-                        if expression_choiceA!=expression_choiceB:
-                            expression_filter.remove(expression_choiceB)
-                        filter=st.multiselect("  Filter: ", expression_filter)
-                        for i in filter:
-                            for entity in tier_lists[i]:
-                                try:
-                                    fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, delta_t=delta))
-                                    if fig!=None:
-                                        st.write(f"For {i} {entity}: ")
-                                        st.plotly_chart(fig)
-                                    else:
-                                        st.write("No data to display")
-                                except:
-                                    st.write(f"No data to display for {entity} {i}")
-                    else:
-                        pass
-                else: 
-                    st.write("No data to display")
+                delta = st.number_input('Delta time in ms (Time after which expression occuring still counts as mimicry):', min_value=0, step=1)
+                try:
+                    fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta))
+                    if fig!=None:
+                        st.plotly_chart(fig)
+                        st.text("Do you want to divide/filter by another expression?")
+                        filter_choice1=st.radio(label="  Choice: ", options=["Yes", "No"], key=1)
+                        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                        if filter_choice1=="Yes":
+                            expression_filter=list(tier_lists.keys())
+                            expression_filter.remove(expression_choiceA)
+                            if expression_choiceA!=expression_choiceB:
+                                expression_filter.remove(expression_choiceB)
+                            filter=st.multiselect("  Filter: ", expression_filter)
+                            for i in filter:
+                                for entity in tier_lists[i]:
+                                    try:
+                                        fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, delta_t=delta))
+                                        if fig!=None:
+                                            st.write(f"For {i} {entity}: ")
+                                            st.plotly_chart(fig)
+                                        else:
+                                            st.write("No data to display")
+                                    except:
+                                        st.write(f"No data to display for {entity} {i}")
+                        else:
+                            pass
+                    else: 
+                        st.write("No data to display")
+                except:
+                    st.write("The delta time is too high, please choose a lower value.")
             else:
                 st.write("No data to display")
         elif st.checkbox("By entity"): 
@@ -124,36 +127,39 @@ def page3():
                 entities_B=st.radio(f"Entities for {expression_choiceB} of person B:", list(tier_lists[expression_choiceB]))   
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
                 if entities_A and entities_B:
-                    delta = st.slider('Delta time in ms (Time after which expression occuring still counts as mimicry):', 0, 5000, 1)
-                    st.write(entities_B, f" {expression_choiceB} mimic ", entities_A, f" {expression_choiceA}: " )
-                    fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
-                                        [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
-                    if fig!=None:
-                        st.plotly_chart(fig)
-                        st.text("Do you want to divide/filter by another expression? ")
-                        filter_choice2=st.radio(label="  Choice: ", options=["Yes", "No"] , key=2)
-                        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                        if filter_choice2=="Yes":
-                            expression_filter2=list(tier_lists.keys())
-                            expression_filter2.remove(expression_choiceA)
-                            if expression_choiceA!=expression_choiceB:
-                                expression_filter2.remove(expression_choiceB)
-                            filter=st.multiselect("  Filter: ", expression_filter2)
-                            for i in filter:
-                                for entity in tier_lists[i]:
-                                    try:
-                                        fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
-                                        if fig!=None:
-                                            st.write(f"For {i} {entity}: ")
-                                            st.plotly_chart(fig)
-                                        else:
-                                            st.write("No data to display")
-                                    except:
-                                        st.write(f"No data to display for {entity} {i}")
+                    delta = st.number_input('Delta time in ms (Time after which expression occuring still counts as mimicry):', min_value=0, step=1)
+                    try:
+                        st.write(entities_B, f" {expression_choiceB} mimic ", entities_A, f" {expression_choiceA}: " )
+                        fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
+                                            [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
+                        if fig!=None:
+                            st.plotly_chart(fig)
+                            st.text("Do you want to divide/filter by another expression? ")
+                            filter_choice2=st.radio(label="  Choice: ", options=["Yes", "No"] , key=2)
+                            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                            if filter_choice2=="Yes":
+                                expression_filter2=list(tier_lists.keys())
+                                expression_filter2.remove(expression_choiceA)
+                                if expression_choiceA!=expression_choiceB:
+                                    expression_filter2.remove(expression_choiceB)
+                                filter=st.multiselect("  Filter: ", expression_filter2)
+                                for i in filter:
+                                    for entity in tier_lists[i]:
+                                        try:
+                                            fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
+                                            if fig!=None:
+                                                st.write(f"For {i} {entity}: ")
+                                                st.plotly_chart(fig)
+                                            else:
+                                                st.write("No data to display")
+                                        except:
+                                            st.write(f"No data to display for {entity} {i}")
+                            else:
+                                pass
                         else:
-                            pass
-                    else:
-                        st.write("No data to display")
+                            st.write("No data to display")
+                    except:
+                        st.write("The delta time is too high, please choose a lower value.")
                 else:
                     st.write("No data to display")
             except:
