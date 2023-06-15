@@ -13,7 +13,7 @@ This file is a display function that uses the Streamlit library to configure and
 This file defines the home page of the Streamlit interface which displays the title of the study and a brief description of the database and the statistics to be displayed.
 
 **3) 2-Descriptive Analysis.py:**
-This file presents descriptive statistics on expressions in a database in the form of graphs.
+This file presents descriptive statistics on expressions in a database in the form of graphs, explore different description areas and view database data.
 
 **4) 3-Non Verbal Expressions Analysis.py:**
 This file is dedicated to the analysis of the absolute and relative durations of different expressions, both at the individual level and at the level of interactions in the form of graphs.
@@ -24,10 +24,7 @@ This file allows to visualize the effects within and between expressions, includ
 **6) 5-ML Statistics.py:**
 This file uses various functions to display machine learning statistics. It allows you to select a database, fill in some parameters, and then display graphs based on that database's data.
 
-**7) 6-Other.py:**
-This file allows you to explore different description areas and view database data.
-
-**8) data.json:**
+**7) data.json:**
 This file contains a dynamic dictionnary where you can find parameters of your database.
 
  **In FOLDER_PATHS:**

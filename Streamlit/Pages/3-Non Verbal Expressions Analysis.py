@@ -15,24 +15,27 @@ DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pai
 def page2():
     st.sidebar.markdown("Non Verbal Expressions Analysis")
     st.title("Non Verbal Expressions Analysis")
-    st.markdown('''We look at the absolute duration and relative duration of each individual or interaction.
-    \nAbsolute duration -> It means the sum of all difference of time over the entire video. 
-    \nRelative duration -> It represents the percentage of the absolute duration compared to the total duration of the video.''')
-    
+    st.markdown('''We look at the absolute duration and relative duration of each individual (intra) or interaction (inter).''')
+    st.markdown(''' ''')
+    st.markdown('''Explanation of the statistics:''')
+    st.write("<style>body { font-size: 14px; }</style><i>Absolute duration -> It means the sum of all difference of time over the entire video.</i>", unsafe_allow_html=True)
+    st.write("<style>body { font-size: 14px; }</style><i>Relative duration -> It represents the percentage of the absolute duration compared to the total duration of the video.</i>", unsafe_allow_html=True)
+    st.markdown(''' ''')
+    st.markdown(''' ''')
+
     #Scatters plots___________________________________________________
     def page2_1():
-        #st.sidebar.markdown("Intra S&L analysis")
         st.header('Intra Non Verbal Expressions Analysis')
-        st.markdown("It's an analysis based on each individual.")
+        st.markdown("It's an analysis based on each individual. We look here at the sequence of expressions of each individual in each eaf file of the datasets.")
 
-        st.subheader('By dataset')
+        st.subheader('Statistics by dataset')
         expression_choices=list(tier_lists.keys())
         expression_choice=st.radio("Expression choice:", expression_choices)
         lst_ad=[f"scatter_plot_{expression_choice}", f"line_plot_{expression_choice}"]
         lst_rd=lst_ad
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
         figs_ad=st.selectbox("Absolute Duration Figures: ", lst_ad) 
-        options=st.multiselect('Datasets list: ', name_databases, key=1)
+        options=st.multiselect('Datasets list (you can select one or more): ', name_databases, key=1)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
         if tier_lists[expression_choice]: 
             list1=plot_intra_absolute_duration(options, expression_choice)
@@ -46,7 +49,7 @@ def page2():
         else:
             st.write("No data available")
         figs_rd=st.selectbox("Relative Duration Figures: ", lst_ad) 
-        options2=st.multiselect('Datasets list: ', name_databases, key=2)
+        options2=st.multiselect('Datasets list (you can select one or more): ', name_databases, key=2)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         if tier_lists[expression_choice]:
             list2=plot_intra_relative_duration(options2, expression_choice)
@@ -59,15 +62,17 @@ def page2():
                             st.write("No Data available")
         else:
             st.write("No data available")
-
-        st.subheader('Basic statistics plots:')
+        st.markdown(''' ''')
+        st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
+        st.markdown(''' ''')
+        st.subheader('Statistics divided by expressions')
         expression_choices_copy=expression_choices.copy()
-        expression_choice_copy=st.radio("By expression: ", expression_choices_copy)
+        expression_choice_copy=st.radio("Divided by expression: ", expression_choices_copy)
         expression_values=list(tier_lists[expression_choice_copy])
         if expression_values: 
             expression_choice_2=expression_choices_copy.copy()
             expression_choice_2.remove(expression_choice_copy)
-            expression_choice_2=st.radio("With: ", expression_choice_2)
+            expression_choice_2=st.radio("Expression to analyse: ", expression_choice_2)
             if tier_lists[expression_choice_2]:
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                 databases_lists=[values for values in databases_pair_paths.values()]
@@ -96,9 +101,9 @@ def page2():
     def page2_2():
         #st.sidebar.markdown("Inter S&L analysis")
         st.header('Inter Non Verbal Expressions Analysis')
-        st.markdown("It's an analysis based on each interaction.")
+        st.markdown("It's an analysis based on each interaction between two persons. All figures are based on the duration of the expressions of each interaction (so two files) in the datasets.")
 
-        st.subheader('By dataset')
+        st.subheader('Statistics by dataset')
         expression_choices1=list(tier_lists.keys())
         expression_choice1=st.radio("Expression choice:", expression_choices1)
         lst_ab=[f"ad_scatter_plot_{expression_choice1}", f"ad_line_plot_{expression_choice1}"]
@@ -106,7 +111,7 @@ def page2():
         name_databases=[key.replace('_paths','').upper() for key in databases_paths.keys()]
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         figs_ab=st.selectbox("Absolute Duration Figures : ", lst_ab)
-        options3=st.multiselect('Datasets list: ', name_databases, key=1)
+        options3=st.multiselect('Datasets list (you can select one or more): ', name_databases, key=1)
         if tier_lists[expression_choice1]:
             lst_1=plot_inter_absolute_duration(options3, expression_choice1)
             for i in range(len(lst_1)):
@@ -119,7 +124,7 @@ def page2():
         else:
             st.write("No data available")
         figs_rd=st.selectbox("Relative Duration Figures: ", lst_rd) 
-        options4=st.multiselect('Datasets list: ', name_databases, key = 2)
+        options4=st.multiselect('Datasets list (you can select one or more): ', name_databases, key = 2)
         if tier_lists[expression_choice1]:
             lst_2=plot_inter_relative_duration(options4, expression_choice1)
             for k in range(len(lst_2)):
@@ -131,15 +136,17 @@ def page2():
                             st.write("No Data available")
         else:
             st.write("No data available")
-
-        st.subheader('By dataset and expression')
+        st.markdown(''' ''')
+        st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
+        st.markdown(''' ''')
+        st.subheader('Statistics divided by expressions for a specific dataset')
         expression_choices_copy1=expression_choices1.copy()
-        expression_choice_copy1=st.radio("By expression: ", expression_choices_copy1)
+        expression_choice_copy1=st.radio("Divided by expression: ", expression_choices_copy1)
         expression_values1=list(tier_lists[expression_choice_copy1])
         if expression_values1:
             expression_choice2=expression_choices_copy1.copy()
             expression_choice2.remove(expression_choice_copy1)
-            expression_choice2=st.radio("With: ", expression_choice2)
+            expression_choice2=st.radio("Expression to analyse: ", expression_choice2)
             database_choice=st.radio("Dataset choice: ", name_databases)
             lst_by_tier=[]
             for entity1 in expression_values1:
@@ -147,9 +154,9 @@ def page2():
                 expression_values2.remove(entity1)
                 if expression_values2:
                     for entity2 in expression_values2:
-                        lst_by_tier.append(f"ad {expression_choice2.lower()} {entity1}_vs_{entity2}")
-                        lst_by_tier.append(f"rd {expression_choice2.lower()} {entity1}_vs_{entity2}")
-            figs_roles=st.selectbox("Versus expression:", lst_by_tier)
+                        lst_by_tier.append(f"Absolute duration {expression_choice2.lower()} {entity1}_vs_{entity2}")
+                        lst_by_tier.append(f"Relative duration {expression_choice2.lower()} {entity1}_vs_{entity2}")
+            figs_roles=st.selectbox("Figures:", lst_by_tier)
             try: 
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                 lst_tiers=plot_inter_ad_entity1_vs_entity2_tier(database_choice, expression_choice_copy1, expression_choice2, entity1, entity2)+plot_inter_rd_entity1_vs_entity2_tier(database_choice, expression_choice_copy1, expression_choice2, entity1, entity2)

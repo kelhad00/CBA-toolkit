@@ -31,6 +31,8 @@ This file generates a JSON file from the directory data containing EAF files.
 This folder contains the scripts for the second page of the Streamlit interface:
 * snl_stats_visualization_page2.py : This file contains the functions to display the statistics of the expressions in the second page of the Streamlit interface.
 * function_thread_page2.py : This file contains the functions to display in multi-threading the statistics of the expressions in the second page of the Streamlit interface.
+* snl_stats_visualization_page6.py : This file contains the functions to display the statistics of the expressions in the second page of the Streamlit interface.
+* snl_stats_visualization_database.py : This file contains the functions to display informations about the database in the second page of the Streamlit interface.
 
 **10) page3:**
 This folder contains the scripts for the third page of the Streamlit interface:
@@ -41,9 +43,5 @@ This folder contains the scripts for the third page of the Streamlit interface:
 This folder contains the scripts for the fourth page of the Streamlit interface:
 * snl_stats_visualization_page4.py : This file contains the functions to display the statistics of the expressions in the fourth page of the Streamlit interface.
 
-**12) page6:**
-This folder contains the scripts for the sixth page of the Streamlit interface:
-* snl_stats_visualization_page6.py : This file contains the functions to display the statistics of the expressions in the sixth page of the Streamlit interface.
-* snl_stats_visualization_database.py : This file contains the functions to display informations about the database in the sixth page of the Streamlit interface.
 
 
