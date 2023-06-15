@@ -21,7 +21,8 @@ def page3():
     def page3_1():
         st.header('Intra Non Verbal Expressions Effects')
         st.subheader('Expressions Track')
-        st.markdown('''Here, we are checking what is before and after an expression in ploting percentage of the preceded and next expression for each individual. That's mean we look at the sequence of expressions in order to see if there is any pattern or influence of the expressions in a same sequence.''')
+        st.markdown('''Here, we are checking what is before and after an expression in ploting percentage of the preceded and next expression for each individual. 
+        \nThat's mean we look at the sequence of expressions of an individual in order to see if there is any pattern or influence of the expressions in a same sequence.''')
         st.markdown('''Explanations of the choices:''')
         st.write("<style>body { font-size: 14px; }</style><i>Track choice --> The expression we want to study.</i>", unsafe_allow_html=True)
         st.write("<style>body { font-size: 14px; }</style><i>Check choice --> Expression before and after the track choice.</i>", unsafe_allow_html=True)
@@ -85,7 +86,8 @@ def page3():
         st.subheader(f'For {expression_choiceA} / {expression_choiceB}')
         if st.checkbox("All entities"):
             if tier_lists[expression_choiceA] and tier_lists[expression_choiceB]:
-                fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB))
+                delta = st.slider('Delta time in ms (Time after which expression occuring still counts as mimicry):', 0, 5000, 1)
+                fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta))
                 if fig!=None:
                     st.plotly_chart(fig)
                     st.text("Do you want to divide/filter by another expression?")
@@ -100,7 +102,7 @@ def page3():
                         for i in filter:
                             for entity in tier_lists[i]:
                                 try:
-                                    fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity))
+                                    fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, delta_t=delta))
                                     if fig!=None:
                                         st.write(f"For {i} {entity}: ")
                                         st.plotly_chart(fig)
@@ -122,9 +124,10 @@ def page3():
                 entities_B=st.radio(f"Entities for {expression_choiceB} of person B:", list(tier_lists[expression_choiceB]))   
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
                 if entities_A and entities_B:
+                    delta = st.slider('Delta time in ms (Time after which expression occuring still counts as mimicry):', 0, 5000, 1)
                     st.write(entities_B, f" {expression_choiceB} mimic ", entities_A, f" {expression_choiceA}: " )
                     fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
-                                        [str.lower(entities_A), str.lower(entities_B)]))
+                                        [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
                     if fig!=None:
                         st.plotly_chart(fig)
                         st.text("Do you want to divide/filter by another expression? ")
@@ -139,7 +142,7 @@ def page3():
                             for i in filter:
                                 for entity in tier_lists[i]:
                                     try:
-                                        fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(entities_A), str.lower(entities_B)]))
+                                        fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
                                         if fig!=None:
                                             st.write(f"For {i} {entity}: ")
                                             st.plotly_chart(fig)
@@ -284,8 +287,8 @@ def page3():
         
 
     page3_names_to_funcs={
-        "Intra Non Verbal Expressions Effects": page3_1,
-        "Inter Non Verbal Expressions Effects": page3_2,
+        "Individual Expression Sequences": page3_1,
+        "Mimicry": page3_2,
         "Correlation": page3_3,
     }
 

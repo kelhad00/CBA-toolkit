@@ -2791,7 +2791,7 @@ def give_mimicry_folder1(function, folder, filter=None, label=None):
         M.append(i)
     return M
 
-def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, tierB, filter=None, label=None):
+def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, tierB, filter=None, label=None, delta_t=0):
     """ The function calculate the mimicry between two lists.
     
     Args:
@@ -2804,6 +2804,9 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
         tierB (string): The mimicked tier by the person B
         label (string or list, optional): If it's a string, it represents the intensity we want and if it's a list, 
         it represents the intensities we want to keep. Defaults to None.
+        delta_t (int, optional): Defaults to 0.
+                                Time after which expression occuring still counts as mimicry.
+                                Should be in the same unit as the times in lstA and lstB 
     Returns:
         list: A list of tuples [(count, probability),....]
     """
@@ -2836,7 +2839,7 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
             LA.append((0, 0, 0, 0))
         if len(LB)==0:
             LB.append((0, 0, 0, 0))
-        count_proba.append(give_mimicry(LA, LB))
+        count_proba.append(give_mimicry(LA, LB, delta_t))
         n+=2
     M=[]
     for i in count_proba:
@@ -2844,7 +2847,7 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
         M.append(i)
     return M
 
-def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity, filter=None, label=None):
+def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity, filter=None, label=None, delta_t=0):
     """ The function calculate the mimicry between two lists with a filter.
     
     Args:
@@ -2859,6 +2862,9 @@ def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, ti
         filter (string, optional): It has to be 'Intensity'. Defaults to None.
         label (string or list, optional): If it's a string, it represents the intensity we want and if it's a list, 
         it represents the intensities we want to keep. Defaults to None.
+        delta_t (int, optional): Defaults to 0.
+                                Time after which expression occuring still counts as mimicry.
+                                Should be in the same unit as the times in lstA and lstB 
     Returns:
         list: A list of tuples [(count, probability),....]
     """
@@ -2891,7 +2897,7 @@ def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, ti
             LA.append((0, 0, 0, 0))
         if len(LB)==0:
             LB.append((0, 0, 0, 0))
-        count_proba.append(give_mimicry(LA, LB))
+        count_proba.append(give_mimicry(LA, LB, delta_t))
         n+=2
     M=[]
     for i in count_proba:
