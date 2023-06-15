@@ -26,10 +26,10 @@ python main.py
 
 For the proper functioning of this toolbox, it is necessary to implement your different datasets with annotated files in EAF format under the same template. You will be asked to provide them to the interface in zip format, one folder at a time.
 
-For each new dataset different from ndc, ifadv or ccdb, you are asked to create in the "db.py" script:
+If your eaf files do not follow the naming convention "A_number_..." & "B_number_..." for each interaction, you are asked to create in the "db.py" script or in the MainPage:
 * a function to return a list of files in pairs according to the way of naming them defined such as: form_pairs_foldername.
 
-Rely on the already existing functions on this subject such as "form_pairs_ccdb" for example.
+Rely on the already existing functions on this subject such as "form_pairs_ab".
 
 ## Examples
 

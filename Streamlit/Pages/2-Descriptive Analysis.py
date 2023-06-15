@@ -11,14 +11,14 @@ sys.path.append("..")
 from src.page2.snl_stats_visualization_page2 import *
 from src.page2.snl_stats_visualization_page6 import *
 from src.page2.snl_stats_visualization_database import *
-from src.snl_stats_extraction_data import get_parameters
+DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
 
 def page1():
     st.sidebar.markdown("Descriptive analysis")
     st.title('Descriptive analysis of the database')
 
     def page1_1() :
-        st.sidebar.markdown("Database Information", )
+        st.sidebar.markdown("Database Information")
         st.header('Database Information')
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[value for value in databases_pair_paths.values()]
@@ -39,7 +39,7 @@ def page1():
             df=pd.DataFrame(data, columns=columns_names)
             st.write(df)
     def page1_2():
-        st.sidebar.markdown("Expression Per Minute", )
+        st.sidebar.markdown("Expression Per Minute")
         # # #Barplots ______________________________________________________
         st.header('Expression Per Minute')
         st.markdown("We count the number of expressions/tiers we have in one minute in each dataset.")
@@ -86,7 +86,6 @@ def page1():
         st.markdown(''' ''')
         st.markdown(''' ''')
         st.subheader('Statistics by dataset')
-        DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
         name_list=["Absolute duration", "Relative duration"]
         expression_choices=list(tier_lists.keys())
         expression_choices.append('all')
@@ -188,7 +187,7 @@ def page1():
     page1_names_to_funcs={
     "Database Information": page1_1,
     "Expression Per Minute": page1_2,
-    "Stats On Non Verbal Expressions": page1_3}
+    "Stats On Non Verbal Expressions": page1_3,}
 
     selected_page=st.sidebar.selectbox("Select a page", page1_names_to_funcs.keys())
     page1_names_to_funcs[selected_page]()

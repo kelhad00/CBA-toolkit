@@ -24,7 +24,7 @@ sys.path.append("..")
 # audio_file = open('music_name.mp3','rb')
 # audio_bytes = audio_file.read()
 # st.audio(audio_bytes, format='audio/mp3')
-# Fonction pour extraire le contenu d'une archive ZIP
+
 def extract_zip(file):
     """Extract the content of a zip file in the data folder''
     Args:
@@ -42,10 +42,9 @@ def extract_zip(file):
         files = zip_ref.namelist()
         only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]	
         subfolders = [f for f in files if os.path.isdir(f)]
-        # print(len(subfolders))
         split_subfolders = []
         for folder in subfolders:
-            folder_path = os.path.normpath(folder)  # Normaliser le chemin d'accès
+            folder_path = os.path.normpath(folder) 
             split_subfolders.append(os.path.split(folder_path)[-1])
         for folder in split_subfolders:
             os.makedirs(os.path.join(path, folder), exist_ok=True)
@@ -61,14 +60,55 @@ def extract_zip(file):
             doss = os.path.join(path, file_name)
             doss2 = os.path.join(doss, folder)
             for file2 in os.listdir(doss2):
-                chemin_source = os.path.join(doss2, file2)
-                chemin_destination = os.path.join(os.path.join(path, folder), file2)
+                src_path = os.path.join(doss2, file2)
+                destination_path = os.path.join(os.path.join(path, folder), file2)
                 # Verification if the file is a file (and not a subfolder)
-                if os.path.isfile(chemin_source):
-                    shutil.move(chemin_source, chemin_destination)           
+                if os.path.isfile(src_path):
+                    shutil.move(src_path, destination_path)           
         if split_subfolders :
             shutil.rmtree(os.path.join(path, file_name))
+        dataset_name = file_name
+        add_form_pairs_function(dataset_name)
     st.success("Valid directory!")
+
+def add_form_pairs_function(dataset_name):
+    relative_path = os.path.join("..", "IBPY")
+    db_py_path = os.path.join(relative_path, "db.py")
+    form_pairs_code = f'''
+def form_pairs_{dataset_name}(lst):
+    """Return filename pairs [(), (), ...].
+
+    Args:
+        lst (list): list of filenames without the path.
+    Returns:
+        list: [(), (), ...].
+    """
+    pairs = form_pairs_ab(lst)
+    return pairs
+'''
+    # Load contents of db.py file
+    with open(db_py_path, "r") as file:
+        content = file.read()
+    # Analyze the source code of the file
+    tree = ast.parse(content)
+    # Check if function already exists
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == f"form_pairs_{dataset_name}":
+            #print("The function already exists.")
+            return
+    # Create AST for the new function
+    new_tree = ast.parse(form_pairs_code)
+    new_function_def = new_tree.body[0]
+    new_function_def.name = f"form_pairs_{dataset_name}"
+    # Add function to existing AST
+    tree.body.append(new_function_def)
+    # Convert the modified AST to text
+    modified_code = ast.unparse(tree)
+    # Write the modified code back to db.py file
+    with open(db_py_path, "w") as file:
+        file.write(modified_code)
+    #print(f"The form_pairs_{dataset_name} function was successfully added.")
+
 
 def main_page():
     
@@ -84,9 +124,10 @@ def main_page():
     \nWe explored these tiers and we tried to know which kind of effects they could have on a person or during an interaction.
     \n\nNow look at each page of the web page!
     ''')
-    st.markdown('')
-    st.markdown('')
-    st.markdown('''Here enter your own code to explore your database.
+    st.markdown(''' ''')
+    st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
+    st.markdown(''' ''')
+    st.markdown('''Here enter your own code to explore your dataset if the way of naming the eaf files by interaction pairs is different from "A_1_..." & "B_1_..." for example.
     \nYou will use these functions to explore your database with "foldername" the name of the dataset you want to explore:
     \n- form_pairs_foldername: to form pairs of expressions.
     \nFor more informations, please read the README.md file.
@@ -106,12 +147,12 @@ def main_page():
                 relative_path = os.path.join(relative_path, "db.py")
                 target_file = os.path.abspath(relative_path)
 
-                with open(filename, 'w') as fichier:
-                    fichier.write(content)
+                with open(filename, 'w') as file:
+                    file.write(content)
 
                 try:
-                    with open(filename, 'r') as fichier:
-                        python_code = fichier.read()
+                    with open(filename, 'r') as file:
+                        python_code = file.read()
                         tree = ast.parse(python_code)
 
                     with open(target_file, 'r') as f_destination:
@@ -126,16 +167,25 @@ def main_page():
                     tree = None
                     os.remove(filename)
 
-                    # Checking if a function declaration is present
+                # Checking if a function declaration is present
                 if tree:
                     is_declaration_function = any((isinstance(noeud, ast.FunctionDef) and re.match(pattern_fonction_verifie, noeud.name) for noeud in ast.walk(tree)))
                     functions_source = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
                     functions_destination = [node.name for node in ast.walk(tree_destination) if isinstance(node, ast.FunctionDef)]
                     duplicates = set(functions_source) & set(functions_destination)
-                    if is_declaration_function == True and not duplicates :
-                        with open(target_file, 'a') as f_destination:
-                            f_destination.write('\n')  # Add an empty line
+                    if is_declaration_function == True:
+                        if duplicates:
+                            # Remove existing function from AST
+                            for node in ast.walk(tree_destination):
+                                if isinstance(node, ast.FunctionDef) and node.name in duplicates:
+                                    tree_destination.body.remove(node)
+
+                        with open(target_file, 'w') as f_destination:
+                            f_destination.write(ast.unparse(tree_destination))
+                            f_destination.write("\n")
+                            f_destination.write("\n")
                             f_destination.write(python_code)
+
                         os.remove(filename)
                         st.success("Code successfuly uploaded !!")
                     else:
@@ -145,8 +195,8 @@ def main_page():
             except Exception as e:
                 traceback.print_exc()
                 st.error("Error in your code :( ")
-                
-            content = False
+
+            content = None
         else : 
 
             return False
