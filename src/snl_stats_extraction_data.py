@@ -2934,6 +2934,65 @@ def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, ti
         M.append(i)
     return M
 
+def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity1, entity2, filter=None, label=None, delta_t=0):
+    """ The function calculate the mimicry between two lists with a filter.
+    
+    Args:
+        folder (list): List of the .eaf files path 
+        database_pairs (string): The dataset of the pairs
+        function1 (function): It's a function giving the list of tuples (start, stop, label) of expressions mimicked
+        function2 (function): It's a function giving the list of tuples (start, stop, label) of expressions mimicking
+        tierA (string): The tier of the person A
+        tierB (string): The mimicked tier by the person B
+        tier_filter : The tier with which we want to filter the data
+        entity1 : The entity of the tier with which we want to filter the data for the person A
+        entity2 : The entity of the tier with which we want to filter the data for the person B
+        filter (string, optional): It has to be 'Intensity'. Defaults to None.
+        label (string or list, optional): If it's a string, it represents the intensity we want and if it's a list, 
+        it represents the intensities we want to keep. Defaults to None.
+        delta_t (int, optional): Defaults to 0.
+                                Time after which expression occuring still counts as mimicry.
+                                Should be in the same unit as the times in lstA and lstB 
+    Returns:
+        list: A list of tuples [(count, probability),....]
+    """
+    string=database_pairs
+    dA=eval('function1')(folder, string, tier_filter, tierA, entity1)
+    dB=eval('function2')(folder, string, tier_filter, tierB, entity2)
+    dA2=keep_info(dA[0], 4)
+    dB2=keep_info(dB[0], 4)
+    dfA=list_to_df(dA2, dA[1][0:4])
+    dfB=list_to_df(dB2, dB[1][0:4])
+    LA=[]
+    LB=[]
+    count_proba=[]
+    lst=list(np.unique(list(dfA['subject'])))
+    del lst[-1]
+    n=1
+    for _ in range(int(len(folder)/2)):
+        if filter is None:    
+            LA=df_to_list(dfA[dfA.subject.eq(n)])
+            LB=df_to_list(dfB[dfB.subject.eq(n+1)])
+        else:
+            if filter=='Intensity':
+                if type(label) is list:
+                    LA=keep_info_with_lab(df_to_list(dfA[dfA.subject.eq(n)]), label[0], 2)
+                    LB=keep_info_with_lab(df_to_list(dfB[dfB.subject.eq(n+1)]), label[1], 2)
+                else:
+                    LA=keep_info_with_lab(df_to_list(dfA[dfA.subject.eq(n)]), label, 2)
+                    LB=keep_info_with_lab(df_to_list(dfB[dfB.subject.eq(n+1)]), label, 2)
+        if len(LA)==0 :
+            LA.append((0, 0, 0, 0))
+        if len(LB)==0:
+            LB.append((0, 0, 0, 0))
+        count_proba.append(give_mimicry(LA, LB, delta_t))
+        n+=2
+    M=[]
+    for i in count_proba:
+        i+=(string,)
+        M.append(i)
+    return M
+
 #Correlation _________________________________________________________________________________________________________________________
 def get_correlation(lA, lB):
     """ This function calculates correlation between two lists.

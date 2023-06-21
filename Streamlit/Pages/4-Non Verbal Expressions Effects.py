@@ -101,16 +101,22 @@ def page3():
                                 expression_filter.remove(expression_choiceB)
                             filter=st.multiselect("  Filter: ", expression_filter)
                             for i in filter:
-                                for entity in tier_lists[i]:
+                                entities1 = tier_lists[i]
+                                entities2 = tier_lists[i]
+                                entity1 = st.radio(f"  Entity of {i} for person A:", entities1)
+                                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                                entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
+                                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                                if entity1 and entity2:
                                     try:
-                                        fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, delta_t=delta))
+                                        fig=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, delta_t=delta))
                                         if fig!=None:
-                                            st.write(f"For {i} {entity}: ")
+                                            st.write(f"For {entity2} mimicking {entity1} - {i}: ")
                                             st.plotly_chart(fig)
                                         else:
                                             st.write("No data to display")
                                     except:
-                                        st.write(f"No data to display for {entity} {i}")
+                                        st.write(f"No data to display for {entity2} mimicking {entity1} - {i}")
                         else:
                             pass
                     else: 
@@ -144,16 +150,21 @@ def page3():
                                     expression_filter2.remove(expression_choiceB)
                                 filter=st.multiselect("  Filter: ", expression_filter2)
                                 for i in filter:
-                                    for entity in tier_lists[i]:
+                                    entities1 = tier_lists[i]
+                                    entities2 = tier_lists[i]
+                                    entity1 = st.radio(f"  Entity of {i} for person A:", entities1)
+                                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                                    entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
+                                    if entity1 and entity2:
                                         try:
-                                            fig=plot_mimicry(give_mimicry_folder3(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, i, entity, 'Intensity', [str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
+                                            fig=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, filter='Intensity', label=[str.lower(entities_A), str.lower(entities_B)], delta_t=delta))
                                             if fig!=None:
-                                                st.write(f"For {i} {entity}: ")
+                                                st.write(f"For {entity2} mimicking {entity1} - {i}: ")
                                                 st.plotly_chart(fig)
                                             else:
                                                 st.write("No data to display")
                                         except:
-                                            st.write(f"No data to display for {entity} {i}")
+                                            st.write(f"No data to display for {entity2} mimicking {entity1} - {i}")
                             else:
                                 pass
                         else:
