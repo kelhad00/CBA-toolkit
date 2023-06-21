@@ -324,7 +324,6 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
         D (list): list of the plots
     """
     df=get_db_from_func_pair_tier(DIR, get_inter_tier_ad_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
-    print("df : ",df)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
     databases_=[value for value in databases_pair_paths.values()]
     for i in range(len(name_databases)):
