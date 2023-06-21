@@ -1684,6 +1684,7 @@ def get_intra_tier_ad_from_tier_folder(listpaths, string, tier1, tier2, entity):
     """
     df1=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
+    dg1['label'] = dg1['label'].str.replace(' ', '')
     dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
@@ -1705,6 +1706,7 @@ def get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity):
     """
     df1=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
+    dg1['label'] = dg1['label'].str.replace(' ', '')
     dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
