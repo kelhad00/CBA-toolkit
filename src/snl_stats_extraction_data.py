@@ -3209,6 +3209,33 @@ def get_correlation_byI(tier1, entity1, folder, width, shift, tier2=None, entity
         corr_l.append(c)
     return corr_l
 
+def get_correlation_by_entity(tier1, entity1, folder, width, shift, tier2, entity2=None):
+    """ This function calculates the correlation in an interaction filtered by entity.
+
+    Args:
+        tier1 (str): tier we want to use of person 1
+        entity1 (str): It's the entity of tier1 we want to use
+        folder (list): list of eaf paths in the dataset chosen
+        width (numeric):  window width in ms
+        shift (numeric):  window shift in ms
+        tier2 (str): tier we want to use of person 2
+        entity2 (str, optional): It's the entity of tier2 we want to use. Defaults to None.
+    Returns:
+        list: List of values corresponding to the correlation of each interaction of the database
+    """
+    corr_l=[]
+    for i in range(0, len(folder), 2):
+        L=[folder[i], folder[i+1]]
+        a=get_IR_list(L[0], tier1, entity1)  
+        if entity2 is None:
+            b=eval('get_tier_dict')(L[1], tier2)
+        else:
+            b=get_IR_list(L[1], tier2, entity2)
+        lst=[tuple_to_int_sequence(a, width=width, shift=shift), tuple_to_int_sequence(b, width=width, shift=shift)]
+        c=get_correlation(lst[0], lst[1])
+        corr_l.append(c)
+    return corr_l
+   
 #Others_______________________________________________________________________________________________________________________
 def get_database_name(folder):
         """ This function give the name of the database corresponding to the folder.

@@ -273,29 +273,77 @@ def page3():
         B_choice=st.radio("Expression of person B to analyse:", expression_choicesB, key= key)
         key += 1
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        if real_tier_lists[A_choice] and real_tier_lists[B_choice]:
-            if real_tier_lists[A_choice]['Replace_Value'] != "" :
-                entity_levelA=[real_tier_lists[A_choice]['Replace_Value'], str("No_" + real_tier_lists[A_choice]['Replace_Value'])]
-            else :
-                entity_levelA=real_tier_lists[A_choice]['Intensities']
-            if real_tier_lists[B_choice]['Replace_Value'] != "" :
-                entity_levelB=[real_tier_lists[B_choice]['Replace_Value'], str("No_" + real_tier_lists[B_choice]['Replace_Value'])]
-            else :
-                entity_levelB=real_tier_lists[B_choice]['Intensities']
-            if real_tier_lists[A_choice]['Intensities'] and real_tier_lists[B_choice]['Intensities']:
-                width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W4') 
-                shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S4')
-                entity1=st.radio("Entity of person A: ", entity_levelA, key='CE5')
-                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                entity2=st.radio("Entity of person B: ", entity_levelB, key='CE6')
-                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                fig=plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2), databases_list1)
-                if fig!=None:
-                    st.plotly_chart(fig)
+        case_choice=st.radio("Choose whether you want to analyse the correlation for one or two specific entities for the two people in the interactions: ", [1, 2], key=key)
+        key += 1
+        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+        if case_choice==1:
+            case_choice1=st.radio("Do you want to study the correlation entity of A or B vs all entities of the other expression: ", ["A", "B"], key=key)
+            key += 1
+            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+            if case_choice1=="A":
+                if real_tier_lists[A_choice]:
+                    if real_tier_lists[A_choice]['Replace_Value'] != "" :
+                        entity_levelA=[real_tier_lists[A_choice]['Replace_Value'], str("No_" + real_tier_lists[A_choice]['Replace_Value'])]
+                    else :
+                        entity_levelA=real_tier_lists[A_choice]['Intensities']
+                    if real_tier_lists[A_choice]['Intensities']:
+                        width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W4') 
+                        shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S4')
+                        entity1=st.radio("Entity of person A: ", entity_levelA, key='CE5')
+                        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                        fig=plot_correlation(get_correlation_by_entity(A_choice, entity1, databases_list1, width, shift, B_choice), databases_list1)
+                        if fig!=None:
+                            st.plotly_chart(fig)
+                        else:
+                            st.write("No data to display")
+                    else:
+                        st.write("No data to display")
                 else:
                     st.write("No data to display")
-        else:
-            st.write("No data to display")
+            else:
+                if real_tier_lists[B_choice]:
+                    if real_tier_lists[B_choice]['Replace_Value'] != "" :
+                        entity_levelB=[real_tier_lists[B_choice]['Replace_Value'], str("No_" + real_tier_lists[B_choice]['Replace_Value'])]
+                    else :
+                        entity_levelB=real_tier_lists[B_choice]['Intensities']
+                    if real_tier_lists[B_choice]['Intensities']:
+                        width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W5') 
+                        shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S5')
+                        entity1=st.radio("Entity of person B: ", entity_levelB, key='CE6')
+                        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                        fig=plot_correlation(get_correlation_by_entity(B_choice, entity1, databases_list1, width, shift, A_choice), databases_list1)
+                        if fig!=None:
+                            st.plotly_chart(fig)
+                        else:
+                            st.write("No data to display")
+                    else:
+                        st.write("No data to display")
+        else :
+            if real_tier_lists[A_choice] and real_tier_lists[B_choice]:
+                if real_tier_lists[A_choice]['Replace_Value'] != "" :
+                    entity_levelA=[real_tier_lists[A_choice]['Replace_Value'], str("No_" + real_tier_lists[A_choice]['Replace_Value'])]
+                else :
+                    entity_levelA=real_tier_lists[A_choice]['Intensities']
+                if real_tier_lists[B_choice]['Replace_Value'] != "" :
+                    entity_levelB=[real_tier_lists[B_choice]['Replace_Value'], str("No_" + real_tier_lists[B_choice]['Replace_Value'])]
+                else :
+                    entity_levelB=real_tier_lists[B_choice]['Intensities']
+                if real_tier_lists[A_choice]['Intensities'] and real_tier_lists[B_choice]['Intensities']:
+                    width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W4') 
+                    shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S4')
+                    entity1=st.radio("Entity of person A: ", entity_levelA, key='CE5')
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    entity2=st.radio("Entity of person B: ", entity_levelB, key='CE6')
+                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                    fig=plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2), databases_list1)
+                    if fig!=None:
+                        st.plotly_chart(fig)
+                    else:
+                        st.write("No data to display")
+                else:
+                    st.write("No data to display")
+            else:
+                st.write("No data to display")
         
 
     page3_names_to_funcs={
