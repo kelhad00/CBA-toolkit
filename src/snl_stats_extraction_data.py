@@ -25,18 +25,22 @@ json_file_path=os.path.join(current_dir, 'data.json')
 #________________________________________________________________________
 
 def get_parameters_tag():
-    current_dir=os.getcwd()
-    json_file_path2=os.path.join(current_dir, 'base_data.json')
-    if os.path.exists(json_file_path2):
-        # Read the data from the JSON file
-        with open(json_file_path2, 'r') as f:
-            parameters1=json.load(f)
-    tier_lists=parameters1["TIER_LISTS"]
-    tiers = {}
-    
-    for tier_name, tier_list in parameters1["TIER_LISTS"].items():
-        tiers[f"intensity_{tier_name.lower()}"]=tier_list
-    return tier_lists, tiers
+
+    try :
+        current_dir=os.getcwd()
+        json_file_path2=os.path.join(current_dir, 'base_data.json')
+        if os.path.exists(json_file_path2):
+            # Read the data from the JSON file
+            with open(json_file_path2, 'r') as f:
+                parameters1=json.load(f)
+        tier_lists=parameters1["TIER_LISTS"]
+        tiers = {}
+        
+        for tier_name, tier_list in parameters1["TIER_LISTS"].items():
+            tiers[f"intensity_{tier_name.lower()}"]=tier_list
+        return tier_lists, tiers
+    except :
+        return None, None
 
 def get_parameters():
     """ This function get the parameters from the json file.

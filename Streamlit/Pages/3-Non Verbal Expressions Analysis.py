@@ -184,7 +184,8 @@ def page2():
 
 subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
 
-if os.path.isfile('base_data.json') and os.path.getsize('base_data.json') > 0:
-    st.error("You didn't choose tiers to anlayze. Go on Modify Tiers")
-else :
+if os.path.isfile('base_data.json') and os.path.getsize('base_data.json') > 26:
+    subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
     page2()
+else :
+    st.error("You didn't choose tiers to anlayze. Go on Modify Tiers")
