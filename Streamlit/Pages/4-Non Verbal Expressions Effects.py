@@ -201,6 +201,7 @@ def page3():
 
     def page3_3():               
         st.header('Correlation')
+        key = 1
         st.markdown('''Here, we look at the correlation between two sequences of expressions.
                     \nBe careful if the selected sampling values (shift and width) are too large or not adequate, you may have zero correlation graphs. 
                     \n\nYou must select appropriate values according to the annotation times of your files.''')
@@ -212,12 +213,14 @@ def page3():
         for i in range(len(databases_)):
             if databases_choice==databases_[i].replace('_pairs','').upper():
                 databases_list=databases_pair_paths[databases_[i]]
-        case_=st.radio("Choose whether you want to analyse the correlation between the same expression or two different ones for the two people in the interactions: ", [1, 2])
+        case_=st.radio("Choose whether you want to analyse the correlation between the same expression or two different ones for the two people in the interactions: ", [1, 2], key=key)
+        key += 1
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         expression_choicesA=list(real_tier_lists.keys())
         expression_choicesB=list(real_tier_lists.keys())
         if case_==1: 
-            A_choice=st.radio("Expression to analyse:", expression_choicesA)
+            A_choice=st.radio("Expression to analyse:", expression_choicesA, key=key)
+            key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             if real_tier_lists[A_choice]:
                 width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W1') 
@@ -230,11 +233,13 @@ def page3():
             else:
                 st.write("No data to display")
         else:
-            A_choice=st.radio("Expression of person A to analyse:", expression_choicesA)
+            A_choice=st.radio("Expression of person A to analyse:", expression_choicesA, key=key)
+            key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            B_choice=st.radio("Expression of person B to analyse:", expression_choicesB)
+            B_choice=st.radio("Expression of person B to analyse:", expression_choicesB, key=key)
+            key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            if tier_lists[A_choice] and tier_lists[B_choice]:     
+            if real_tier_lists[A_choice] and real_tier_lists[B_choice]:     
                 width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W2') 
                 shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S2') 
                 fig=plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice), databases_list)
@@ -250,7 +255,8 @@ def page3():
         st.subheader("********    By dataset and expression    ********")
         name_databases1=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_1=[key for key in databases_pairs.keys()]
-        databases_choice1=st.selectbox("Dataset choice: ", name_databases1, key='1')
+        databases_choice1=st.selectbox("Dataset choice: ", name_databases1, key=key)
+        key += 1
         for i in range(len(databases_1)):
             if databases_choice1==databases_1[i].replace('_pairs','').upper():
                 databases_list1=databases_pair_paths[databases_1[i]]
@@ -259,22 +265,24 @@ def page3():
         st.markdown("Explanation:")
         st.write("<style>body { font-size: 14px; }</style><i>Choose if you want to look at the correlation between two different expressions/entities (2) or not (1) during the interaction betwoon the two people.</i>", unsafe_allow_html=True)
         st.markdown(" ")
-        case_=st.radio("Choice for expressions: ", [1, 2])
+        case_=st.radio("Choice for expressions: ", [1, 2], key=key)
+        key += 1
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         expression_choicesA=list(real_tier_lists.keys())
         expression_choicesB=list(real_tier_lists.keys()) 
         if case_==1:
-            if expression_choicesA['Replace_Value'] != "" :
-                A_choice=st.radio("Expression to analyse for both people: ", [expression_choicesA['Replace_Value'], str("No_" + expression_choicesA['Replace_Value'])])
-            else : 
-                A_choice=st.radio("Expression to analyse for both people: ", expression_choicesA['Intensities'])
+            A_choice=st.radio("Expression to analyse for both people: ", expression_choicesA, key=key)
+            key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W3')
             shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S3')
             if real_tier_lists[A_choice]:
                 case_level=st.radio("Choice of the entities (one or two selected): ", [1, 2] , key='C1')
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                entity_levelA=real_tier_lists[A_choice]
+                if real_tier_lists[A_choice]['Replace_Value'] != "" :
+                    entity_levelA=[real_tier_lists[A_choice]['Replace_Value'], str("No_" + real_tier_lists[A_choice]['Replace_Value'])]
+                else :
+                    entity_levelA=real_tier_lists[A_choice]['Intensities']
                 if case_level==1:
                     entity1=st.radio("Entity of the expression: ", entity_levelA, key='CE1')
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -296,25 +304,25 @@ def page3():
             else:
                 st.write("No data to display")
         else:
-            if expression_choicesA['Replace_Value'] != "" :
-                A_choice=st.radio("Expression to analyse for both people: ", [expression_choicesA['Replace_Value'], str("No_" + expression_choicesA['Replace_Value'])])
-            else : 
-                A_choice=st.radio("Expression to analyse for both people: ", expression_choicesA['Intensities'])
-            if expression_choicesB['Replace_Value'] != "" :
-                B_choice=st.radio("Expression to analyse for both people: ", [expression_choicesB['Replace_Value'], str("No_" + expression_choicesB['Replace_Value'])])
-            else : 
-                B_choice=st.radio("Expression to analyse for both people: ", expression_choicesB['Intensities'])
-
+            A_choice=st.radio("Expression of person A to analyse:", expression_choicesA, key= key)
+            key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            B_choice=st.radio("Expression of person B to analyse:", expression_choicesB)
+            B_choice=st.radio("Expression of person B to analyse:", expression_choicesB, key= key)
+            key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W4') 
             shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S4')
             if real_tier_lists[A_choice] and real_tier_lists[B_choice]:
                 case_level=st.radio("Choice of the entities (one or two selected): ", [1, 2], key='C2')
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                entity_levelA=real_tier_lists[A_choice]
-                entity_levelB=real_tier_lists[B_choice]
+                if real_tier_lists[A_choice]['Replace_Value'] != "" :
+                    entity_levelA=[real_tier_lists[A_choice]['Replace_Value'], str("No_" + real_tier_lists[A_choice]['Replace_Value'])]
+                else :
+                    entity_levelA=real_tier_lists[A_choice]['Intensities']
+                if real_tier_lists[B_choice]['Replace_Value'] != "" :
+                    entity_levelB=[real_tier_lists[B_choice]['Replace_Value'], str("No_" + real_tier_lists[B_choice]['Replace_Value'])]
+                else :
+                    entity_levelB=real_tier_lists[B_choice]['Intensities']
                 if case_level==1:
                     entity1 = st.radio("Entity of person A: ", entity_levelA, key='CE4')
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
