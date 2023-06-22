@@ -27,7 +27,7 @@ def display_general_informations_files(database):
         lst.append(file_info)
     return lst
 
-def display_specific_informations(database, tier, intensities):
+def display_specific_informations(database, tier, intensities, kind):
     """ This function shows the specific informations of the files filtered by a specific tier and entity.
     
     Args:
@@ -38,7 +38,7 @@ def display_specific_informations(database, tier, intensities):
         list: list of tuples with the name of the file, the duration of the file, the min time of the tier, the max time of the tier and the number of entities
     """
     lst=[]
-    lst_tier_count=get_tier_intensities(database, tier, intensities)
+    lst_tier_count=get_tier_intensities(database, tier, intensities, kind)
     lst_min_time, lst_max_time=get_max_min_time_tier(database, tier)
     temp=[]
     for i in range(len(database)):

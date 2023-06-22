@@ -35,10 +35,16 @@ def page1():
             df=pd.DataFrame(data, columns=columns_names)
             st.table(df)
         else:
-            data=display_specific_informations(databases_choice, tiers_choice, tier_lists.get(tiers_choice))
-            columns_names=["Filename", "Min duration", "Max duration"]+real_tier_lists[tiers_choice]['Intensities']
-            df=pd.DataFrame(data, columns=columns_names)
-            st.write(df)
+            if real_tier_lists[tiers_choice]['Replace_Value'] != "":
+                data=display_specific_informations(databases_choice, tiers_choice, [real_tier_lists[tiers_choice]['Replace_Value'], str("No_" + real_tier_lists[tiers_choice]['Replace_Value'])], 'Replace_Value')
+                columns_names=["Filename", "Min duration", "Max duration"]+[real_tier_lists[tiers_choice]['Replace_Value'], str("No_" + real_tier_lists[tiers_choice]['Replace_Value'])]
+                df=pd.DataFrame(data, columns=columns_names)
+                st.write(df)
+            else:
+                data=display_specific_informations(databases_choice, tiers_choice, real_tier_lists[tiers_choice]['Intensities'], 'Intensities')
+                columns_names=["Filename", "Min duration", "Max duration"]+real_tier_lists[tiers_choice]['Intensities']
+                df=pd.DataFrame(data, columns=columns_names)
+                st.write(df)
     def page1_2():
         st.sidebar.markdown("Expression Per Minute")
         # # #Barplots ______________________________________________________
