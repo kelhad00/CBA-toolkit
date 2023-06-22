@@ -12,6 +12,7 @@ from src.page2.snl_stats_visualization_page2 import *
 from src.page2.snl_stats_visualization_page6 import *
 from src.page2.snl_stats_visualization_database import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
+real_tier_lists , real_tiers = get_parameters_tag()
 
 def page1():
     st.sidebar.markdown("Descriptive analysis")
@@ -23,19 +24,19 @@ def page1():
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Dataset choice: ", name_databases)
-        name_tiers=list(tier_lists.keys())+["GENERAL"]
+        name_tiers=list(real_tier_lists.keys())+["GENERAL"]
         tiers_choice=st.selectbox("Expression choice:", name_tiers, index=name_tiers.index("GENERAL"))
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
                 databases_choice=databases_[i]
         if tiers_choice=='GENERAL':
             data=display_general_informations_files(databases_choice)
-            columns_names=["Filename", "Duration"]+list(tier_lists.keys())
+            columns_names=["Filename", "Duration"]+list(real_tier_lists.keys())
             df=pd.DataFrame(data, columns=columns_names)
             st.table(df)
         else:
             data=display_specific_informations(databases_choice, tiers_choice, tier_lists.get(tiers_choice))
-            columns_names=["Filename", "Min duration", "Max duration"]+tier_lists.get(tiers_choice)
+            columns_names=["Filename", "Min duration", "Max duration"]+real_tier_lists[tiers_choice]['Intensities']
             df=pd.DataFrame(data, columns=columns_names)
             st.write(df)
     def page1_2():
@@ -51,7 +52,7 @@ def page1():
             if databases_choice==name_databases[i]:
                 databases_choice=databases_[i]
         if st.checkbox("All entities"):
-            expression_choice=st.radio("Expression to see: ", list(tier_lists.keys()), key="E1")
+            expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E1")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             expression_choice=expression_choice
             choices_case=["Intra (per file/individual)","Inter (per interaction)"]
@@ -66,9 +67,9 @@ def page1():
             else:
                 st.plotly_chart(plot_expression_per_min(databases_choice, expression_choice, case_choice))
         if st.checkbox("By entity"):
-            expression_choice=st.radio("Expression to see: ", list(tier_lists.keys()), key="E2")
+            expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E2")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            entity_choice=st.radio("Entity of the chosen expression: ", tier_lists[expression_choice])
+            entity_choice=st.radio("Entity of the chosen expression: ", real_tier_lists[expression_choice])
             if entity_choice is not None:
                 if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice))==None) :
                     st.write("No data available")
@@ -87,7 +88,7 @@ def page1():
         st.markdown(''' ''')
         st.subheader('Statistics by dataset')
         name_list=["Absolute duration", "Relative duration"]
-        expression_choices=list(tier_lists.keys())
+        expression_choices=list(real_tier_lists.keys())
         expression_choices.append('all')
         expression_choice=st.radio("Expression choice:", expression_choices)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -96,7 +97,7 @@ def page1():
         choice_list=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
         choice=st.radio("Which feature do you want see?  ", choice_list)
         if expression_choice!='all':
-            if tier_lists[expression_choice]:
+            if real_tier_lists[expression_choice]:
                 if figs=='Absolute duration':
                     fig1_0=plot_absolute_duration(expression_choice, choice, name_databases)
                     if fig1_0!=None:    
@@ -131,7 +132,10 @@ def page1():
         expression_choices_1=expression_choices.copy()
         expression_choices_1.remove('all')
         expression_choice_1=st.radio("Divided by expression: ", expression_choices_1)
-        expression_values=tier_lists[expression_choice_1]
+        if real_tier_lists[expression_choice_1]['Replace_Value'] != "" :
+            expression_values = [real_tier_lists[expression_choice_1]['Replace_Value'], str("No_"+real_tier_lists[expression_choice_1]['Replace_Value'])]
+        else :
+            expression_values=real_tier_lists[expression_choice_1]['Intensities']
         if expression_values:
             name_list_by_expression_kind1=[f"Absolute duration from {expression_choice_1.lower()}"]
             name_list_by_expression_kind2=[f"Relative duration from {expression_choice_1.lower()}"]
@@ -145,7 +149,7 @@ def page1():
             choice_list1=["Standard deviation", "Mean", "Median", "Max", "Min", "All"]
             choice1=st.radio("Which feature do you want see?  ", choice_list1, key = count)
             if expression_choice_copy!='all':
-                if tier_lists[expression_choice_copy]:
+                if real_tier_lists[expression_choice_copy]:
                     if "Absolute" in figs1:
                         count+=1
                         for entity in expression_values:

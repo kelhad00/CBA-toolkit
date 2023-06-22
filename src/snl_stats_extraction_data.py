@@ -24,6 +24,20 @@ current_dir=os.getcwd()
 json_file_path=os.path.join(current_dir, 'data.json')
 #________________________________________________________________________
 
+def get_parameters_tag():
+    current_dir=os.getcwd()
+    json_file_path2=os.path.join(current_dir, 'base_data.json')
+    if os.path.exists(json_file_path2):
+        # Read the data from the JSON file
+        with open(json_file_path2, 'r') as f:
+            parameters1=json.load(f)
+    tier_lists=parameters1["TIER_LISTS"]
+    tiers = {}
+    
+    for tier_name, tier_list in parameters1["TIER_LISTS"].items():
+        tiers[f"intensity_{tier_name.lower()}"]=tier_list
+    return tier_lists, tiers
+
 def get_parameters():
     """ This function get the parameters from the json file.
     
@@ -128,6 +142,9 @@ def correct_dict_role_tier(dict_, listpaths, string, tier):
     Returns:
         A list with previously non-existent intensities set to 0    
     """
+
+    real_tier_lists , real_tiers = get_parameters_tag()
+
     dict_sub=[]
     dict_present_subject=[]
     label_present_subject=[]
@@ -136,14 +153,14 @@ def correct_dict_role_tier(dict_, listpaths, string, tier):
     for _ in dict_: dict_sub.append(_[0])
     for subject in subjects:
         if subject not in dict_sub:
-            for i in tier_lists[tier]:
+            for i in real_tier_lists[tier]['Intensities']:
                 dict_.append((subject, string, i, 0, 0, dict_[0][5]))
         else:
             for _ in dict_: 
                 if _[0]==subject: 
                     dict_present_subject.append(_) 
                     for i in dict_present_subject: label_present_subject.append(i[2])
-                    for l in tier_lists[tier]:
+                    for l in real_tier_lists[tier]['Intensities']:
                         if l not in label_present_subject:
                             dict_.append((subject, string, l, 0, 0, dict_[0][5]))
     return dict_
@@ -264,6 +281,27 @@ def get_tier_dict(root, tier):
     lst = to_dict[tier]
     return lst
 
+def get_tier_dict_by_express(root, tier):
+    """ Retrieve the list of a specific tier from a file.
+    
+    Args:
+        root (str): Path of the file
+        tier (str): Tier name
+    Returns:
+        list: List of the specified tier from the file
+    """
+    real_tier_lists , real_tiers = get_parameters_tag()
+    to_dict = read_eaf_to_dict(root, mark=True, tiers=None)
+    if real_tier_lists[tier]['Replace_Value'] != "":
+        for i, item in enumerate(to_dict[tier]):
+            if item[2] != "":
+                to_dict[tier][i] = (item[0], item[1], real_tier_lists[tier]['Replace_Value'])
+            else:
+                to_dict[tier][i] = (item[0], item[1], "No_" + real_tier_lists[tier]['Replace_Value'])
+    lst = to_dict[tier]
+    # print("La liste : ", lst)
+    return lst
+
 def get_IR_list(root, expression, intensity):
     """ Give the list of tier from a file for a given entity or a given role.
     
@@ -274,7 +312,7 @@ def get_IR_list(root, expression, intensity):
     Returns:
         lst (list): list of tier
     """
-    tier=get_tier_from_file(root, expression, intensity)
+    tier=get_tier_from_file(root, expression, intensity, 'base_data')
     lst=tier[expression]
     return lst
 
@@ -298,7 +336,16 @@ def get_tier_dict_folder(filespaths, database, tier):
             subject.append(s)
             startime.append(lst_[i][0])
             endtime.append(lst_[i][1])
-            label.append(lst_[i][2])
+            with open('base_data.json') as json_file:
+                data = json.load(json_file) 
+            replace_value = data['TIER_LISTS'][tier]['Replace_Value'] 
+            if data['TIER_LISTS'][tier]['Replace_Value'] != "" :
+                if lst_[i][2] != "" :
+                    label.append(data['TIER_LISTS'][tier]['Replace_Value'])
+                else :
+                    label.append(str("No_" + data['TIER_LISTS'][tier]['Replace_Value']))
+            else :
+                label.append(lst_[i][2])
             duration.append(c)
         s+=1  
     df=pd.DataFrame({'database': list_of_words(f"{database}", len(subject)), 'subject': subject, 'startime': startime, 
@@ -456,6 +503,8 @@ def get_tier_dict_conv_folder(filespaths, database, tier):
     Returns:
         A list of tuple and the list L=['startime', 'endtime', 'label', 'subject', 'diff_time', 'duration', 'database']
     """
+    real_tier_lists , real_tiers = get_parameters_tag()
+
     startime, endtime, label, subject, duration=([] for _ in range(5))
     s=1
     n=0
@@ -469,7 +518,13 @@ def get_tier_dict_conv_folder(filespaths, database, tier):
             subject.append(s)
             startime.append(lst_[i][0])
             endtime.append(lst_[i][1])
-            label.append(lst_[i][2])
+            if real_tier_lists[tier]['Replace_Value'] != "" :
+                if lst_[i][2] != "" :
+                    label.append(real_tier_lists[tier]['Replace_Value'])
+                else :
+                    label.append(str("No_" + real_tier_lists[tier]['Replace_Value']))
+            else :
+                label.append(lst_[i][2])
             duration.append(max(c,c2))
         s+=1
         if ((s-1)%2==0):
@@ -758,8 +813,12 @@ def get_tier_from_entity(root, tier1, tier2, entity):
     Returns:
         tuple: A list of tuples representing the specified tier and the list of column names
     """
+    real_tier_lists , real_tiers = get_parameters_tag()
+
     lsn_lst=get_IR_list(root, tier1, entity)
-    lst=get_tier_dict(root, tier2)
+    #print("lsn_lst : ", lsn_lst)
+    lst=get_tier_dict_by_express(root, tier2)
+    #print("lst : ", lst)
     startime, endtime, label, duration=([] for _ in range(4))
     b=list(get_overlapping_segments(lsn_lst, lst).values())
     b=list(itertools.chain(*b))
@@ -771,6 +830,7 @@ def get_tier_from_entity(root, tier1, tier2, entity):
         label.append(item[2])
     lst=[(i, j, k, duration) for i, j, k in zip(startime, endtime, label)]
     columns=['startime', 'endtime', 'label', 'duration']
+    #print("STP bro : ", lst)
     return lst, columns
 
 #By folder
@@ -1262,17 +1322,38 @@ def get_tier_from_entity1_vs_entity2_folder(listpaths, string, tier1, tier2, ent
     Returns:
         list of tuple and a description of what is inside the tuple: (list of tuple, ['conv', 'role', 'label', 'subject', 'diff_time', 'duration', 'database'])
     """
-    df=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity1)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity1)[1])
-    df['role']=list_of_words(entity1, len(df['label']))
-    dg=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity2)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity2)[1])
-    dg['role']=list_of_words(entity2, len(dg['label']))
+    real_tier_lists , real_tiers = get_parameters_tag()
+
+    try :
+        df=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity1)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity1)[1])
+        df['role']=list_of_words(entity1, len(df['label']))
+    except :
+        0
+    try :
+        dg=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity2)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity2)[1])
+        dg['role']=list_of_words(entity2, len(dg['label']))
+    except :
+        0
     #Some corrections
-    df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
-    dict_=list(df.to_records(index=False))
-    dg=dg.loc[:,['subject', 'database', 'label','duration', 'diff_time', 'role']]
-    dict_2=list(dg.to_records(index=False))
-    df=correct_dict_role_tier(dict_, listpaths, string, tier2)
-    dg=correct_dict_role_tier(dict_2, listpaths, string, tier2)
+    try :
+        df=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time', 'role']]
+        dict_=list(df.to_records(index=False))
+    except :
+        0
+    
+    try :
+        dg=dg.loc[:,['subject', 'database', 'label','duration', 'diff_time', 'role']]
+        dict_2=list(dg.to_records(index=False))
+    except :
+        0
+
+    if real_tier_lists[tier2]['Replace_Value'] == "" :
+        dg=correct_dict_role_tier(dict_2, listpaths, string, tier2)
+        try :
+            df=correct_dict_role_tier(dict_, listpaths, string, tier2)
+        except :
+            0
+
     df=pd.DataFrame.from_records(df, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     dg=pd.DataFrame.from_records(dg, columns=['subject', 'database', 'label', 'duration', 'diff_time', 'role'])
     L1=[]
@@ -1283,10 +1364,19 @@ def get_tier_from_entity1_vs_entity2_folder(listpaths, string, tier1, tier2, ent
             L1.append(df[df.subject.eq(i)])
         else:
             L2.append(dg[dg.subject.eq(i)])
-    df=pd.concat(L1)
-    dg=pd.concat(L2)
-    #Put together these dataframes ordered by subject
-    db=pd.concat([df, dg])
+    try :
+        df=pd.concat(L1)
+    except :
+        0
+    try :
+        dg=pd.concat(L2)
+    except : 
+        0
+    #Put together these dataframes ordered by subject*
+    try :
+        db=pd.concat([df, dg])
+    except :
+        db = dg
     db=pd.DataFrame(db.loc[:,['label', 'duration', 'diff_time', 'subject', 'database', 'role']]).reset_index()
     db=db.drop(['index'], axis=1)
     db=db.sort_values(['subject'], ascending=[True])
@@ -2135,7 +2225,10 @@ def get_inter_tier_absolute_duration_folder(listpaths, string, tier, label):
     dg1=dg1.reindex(columns=['conv', 'label', 'sum_time', 'roles'])
     dict_=list(dg1.to_records(index=False))
     conv=list(np.unique(conv))
-    labels=label[tier]
+    if label[tier]['Replace_Value'] != "" :
+        labels= [label[tier]['Replace_Value'], str("No_" + label[tier]['Replace_Value'])]
+    else :
+        labels = label[tier]['Intensities']
     for a in conv:
         J_A=[]
         J_B=[]
@@ -2227,7 +2320,10 @@ def get_inter_tier_relative_duration_folder(listpaths, string, tier, label):
     dg1=dg1.loc[:, ['label', 'percentage', 'conv', 'roles']]
     dg1=dg1.reindex(columns=['conv', 'label', 'percentage', 'roles'])
     dict_=list(dg1.to_records(index=False))
-    labels=label[tier]
+    if label[tier]['Replace_Value'] != "" :
+        labels= [label[tier]['Replace_Value'], str("No_" + label[tier]['Replace_Value'])]
+    else :
+        labels = label[tier]['Intensities']
     for a in conv:
         J_A=[]
         J_B=[]
@@ -2556,15 +2652,34 @@ def fill_trackfp_byIR(folder, string, function_to_lst_check, function_to_lst_tra
     Return two databases : for previous and next expressions 
     """
     #Variables
+
+    real_tier_lists , real_tiers = get_parameters_tag()
+
     trackp, trackf, track_number, current_level, database=([] for _ in range(5))
     for root in folder:
         n=1
         sl_lst=get_TCdict(root, track, check)
         lst_check=eval('function_to_lst_check')(root, check)
+        if real_tier_lists[check]['Replace_Value'] != "" :
+             for i, item in enumerate(lst_check):
+                if item[2] != "":
+                    lst_check[i] = (item[0], item[1], real_tier_lists[check]['Replace_Value'])
+                else:
+                    lst_check[i] = (item[0], item[1], "No_" + real_tier_lists[check]['Replace_Value'])
         lst_track=eval('function_to_lst_track')(root, track)
+        if real_tier_lists[track]['Replace_Value'] != "" :
+             for i, item in enumerate(lst_track):
+                if item[2] != "":
+                    lst_track[i] = (item[0], item[1], real_tier_lists[track]['Replace_Value'])
+                else:
+                    lst_track[i] = (item[0], item[1], "No_" + real_tier_lists[track]['Replace_Value'])
         level_list=[]
         current_level=[]
-        for entity in tier_lists[track]:
+        if real_tier_lists[track]['Replace_Value'] != "" :
+            values_track = [real_tier_lists[track]['Replace_Value'], str("No_" + real_tier_lists[track]['Replace_Value'])]
+        else :
+            values_track = real_tier_lists[track]['Intensities']
+        for entity in values_track:
             lst=keep_info_with_lab(lst_track, entity, 2)
             level_list+=lst
             current_level+=list_of_words(entity.lower(), len(lst))
@@ -2820,7 +2935,7 @@ def give_mimicry_folder1(function, folder, filter=None, label=None):
         M.append(i)
     return M
 
-def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, tierB, filter=None, label=None, delta_t=0):
+def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, tierB, filter=None, label=None, delta_t=0, mimic_choice=None):
     """ The function calculate the mimicry between two lists.
     
     Args:
@@ -2835,7 +2950,8 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
         it represents the intensities we want to keep. Defaults to None.
         delta_t (int, optional): Defaults to 0.
                                 Time after which expression occuring still counts as mimicry.
-                                Should be in the same unit as the times in lstA and lstB 
+                                Should be in the same unit as the times in lstA and lstB
+        mimic_choice (string, optional): It has to be B/A (A mimicking B) or A/B (B mimicking A). Defaults to None. 
     Returns:
         list: A list of tuples [(count, probability),....]
     """
@@ -2868,7 +2984,10 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
             LA.append((0, 0, 0, 0))
         if len(LB)==0:
             LB.append((0, 0, 0, 0))
-        count_proba.append(give_mimicry(LA, LB, delta_t))
+        if mimic_choice=='A/B':
+            count_proba.append(give_mimicry(LA, LB, delta_t))
+        elif mimic_choice=='B/A':
+            count_proba.append(give_mimicry(LB, LA, delta_t))
         n+=2
     M=[]
     for i in count_proba:
@@ -2934,7 +3053,7 @@ def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, ti
         M.append(i)
     return M
 
-def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity1, entity2, filter=None, label=None, delta_t=0):
+def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity1, entity2, filter=None, label=None, delta_t=0, mimic_choice=None):
     """ The function calculate the mimicry between two lists with a filter.
     
     Args:
@@ -2953,6 +3072,7 @@ def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, ti
         delta_t (int, optional): Defaults to 0.
                                 Time after which expression occuring still counts as mimicry.
                                 Should be in the same unit as the times in lstA and lstB 
+        mimic_choice (string, optional): It has to be B/A (A mimicking B) or A/B (B mimicking A). Defaults to None.
     Returns:
         list: A list of tuples [(count, probability),....]
     """
@@ -2985,7 +3105,10 @@ def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, ti
             LA.append((0, 0, 0, 0))
         if len(LB)==0:
             LB.append((0, 0, 0, 0))
-        count_proba.append(give_mimicry(LA, LB, delta_t))
+        if mimic_choice=='A/B':
+            count_proba.append(give_mimicry(LA, LB, delta_t))
+        elif mimic_choice=='B/A':
+            count_proba.append(give_mimicry(LB, LA, delta_t))
         n+=2
     M=[]
     for i in count_proba:

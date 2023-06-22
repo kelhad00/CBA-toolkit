@@ -9,8 +9,11 @@ from src.snl_stats_extraction_data import *
 from IBPY.extract_data import *
 from IBPY.visualization import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
+real_tier_lists , real_tiers = get_parameters_tag()
 
 def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
+
+    real_tier_lists , real_tiers = get_parameters_tag()
     ''' Create a plot of the absolute duration of the tiers in the dataset.
     
     Args:
@@ -21,14 +24,17 @@ def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
     Returns:
         A plot of the absolute duration of the tiers in the dataset
     '''
-    if tier_lists[Tiers]:
+    try :
         dg1=get_db_from_func_no_pair(DIR, eval("get_tier_dict_folder"), name_databases, Tiers)
         fig1=pg.Figure()
         if not dg1.empty:
-            labels1=tier_lists[Tiers]   
+            if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], "No_"+real_tier_lists[Tiers]['Replace_Value']]
+            else :
+                labels = real_tier_lists[Tiers]['Intensities']
             for database in (dg1['database'].unique()):
                 df_plot=dg1[dg1['database']==database]
-                df_plot=df_plot[df_plot['label'].isin(labels1)]
+                df_plot=df_plot[df_plot['label'].isin(labels)]
                 if not df_plot.empty:
                     if choice=='Mean':
                         df_mean=df_plot.groupby('label').mean(numeric_only=True).reset_index()
@@ -55,15 +61,15 @@ def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
             yaxis_title="Time (ms)",
             legend_title="Datasets",
             xaxis=dict(
-                categoryarray=labels1,
+                categoryarray=labels,
                 categoryorder='array',
                 tickmode='array',
-                tickvals=labels1,
-                ticktext=labels1
+                tickvals=labels,
+                ticktext=labels
             ))
         else:
             fig1=None
-    else:
+    except:
         fig1=None
     queue.put(fig1)
 
@@ -78,16 +84,21 @@ def create_plot_relative_duration_thread(Tiers, choice, queue, database_names) :
     Returns:
         A plot of the relative duration of the tiers in the dataset
     '''
-    if tier_lists[Tiers]:
+    real_tier_lists , real_tiers = get_parameters_tag()
+
+    try :
         df1=get_db_from_func_no_pair(DIR, eval("get_tier_dict_folder"), database_names, Tiers)
         if not df1.empty:
             dg1=get_rd_stats(df1)
             dg1=list_to_df(dg1[0], dg1[1])
-            labels1=tier_lists[Tiers]     
+            if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], "No_"+real_tier_lists[Tiers]['Replace_Value']]
+            else :
+                labels = real_tier_lists[Tiers]['Intensities']    
             fig1=pg.Figure()
             for database in (dg1['database'].unique()):
                 df_plot=dg1[dg1['database']==database]
-                df_plot=df_plot[df_plot['label'].isin(labels1)]
+                df_plot=df_plot[df_plot['label'].isin(labels)]
                 if choice=='Mean':
                     fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
                 elif choice=='Median': 
@@ -110,15 +121,15 @@ def create_plot_relative_duration_thread(Tiers, choice, queue, database_names) :
             yaxis_title="Percentage (%)",
             legend_title="Datasets",
             xaxis=dict(
-                categoryarray=labels1,
+                categoryarray=labels,
                 categoryorder='array',
                 tickmode='array',
-                tickvals=labels1,
-                ticktext=labels1,
+                tickvals=labels,
+                ticktext=labels,
             ))
         else:
             fig1=None
-    else:
+    except:
         fig1=None
     queue.put(fig1)
     
@@ -134,7 +145,7 @@ def create_absolute_duration_from_spk_thread(Tiers, choice, queue, name_database
     Returns:
         A plot of the absolute duration of the tiers in the dataset filtered by role of the speaker
     '''
-    labels=tier_lists[Tiers]
+    labels=real_tier_lists[Tiers]['Intensities']   
     dg1=get_db_from_func_no_pair(DIR,eval("get_tier_from_spk_folder"), name_databases, Tiers)
     fig1=pg.Figure()
     if not dg1.empty:
@@ -189,7 +200,7 @@ def create_relative_duration_from_spk_thread(Tiers, choice, queue, name_database
     Returns:
         A plot of the relative duration of the tiers in the dataset filtered by role of the speaker
     '''
-    labels=tier_lists[Tiers] 
+    labels=real_tier_lists[Tiers]['Intensities']    
     df1=get_db_from_func_no_pair(DIR,eval("get_tier_from_spk_folder"), name_databases, Tiers)
     if not df1.empty:
         dg1=get_rd_stats_byrole(df1)
@@ -242,7 +253,7 @@ def create_absolute_duration_from_lsn_thread(Tiers, choice, queue, name_database
     Returns:
         A plot of the absolute duration of the tiers in the dataset filtered by role of the listener
     '''
-    labels=tier_lists[Tiers]
+    labels=real_tier_lists[Tiers]['Intensities']   
     dg1=get_db_from_func_no_pair(DIR,eval("get_tier_from_lsn_folder"), name_databases, Tiers)
     fig1=pg.Figure()
     if not dg1.empty:
@@ -297,7 +308,7 @@ def create_relative_duration_from_lsn_thread(Tiers, choice, queue, name_database
     Returns:
         A plot of the relative duration of the tiers in the dataset filtered by role of the listener
     '''
-    labels=tier_lists[Tiers] 
+    labels=real_tier_lists[Tiers]['Intensities']    
     df1=get_db_from_func_no_pair(DIR,eval("get_tier_from_lsn_folder"), name_databases, Tiers)
     if not df1.empty:
         dg1=get_rd_stats_byrole(df1)
@@ -353,8 +364,13 @@ def create_absolute_duration_from_tier_thread(Tiers, choice, queue, name_databas
     Returns:
         fig1 (plotly.graph_objects.Figure): the graph
     '''
-    if tier_lists[Tiers]:
-        labels=tier_lists[Tiers]
+    real_tier_lists , real_tiers = get_parameters_tag()
+
+    try :
+        if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], str("No_"+real_tier_lists[Tiers]['Replace_Value'])]
+        else :
+            labels = real_tier_lists[Tiers]['Intensities']    
         dg1=get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, Tiers, entity)
         fig1=pg.Figure()
         if not dg1.empty:
@@ -395,7 +411,7 @@ def create_absolute_duration_from_tier_thread(Tiers, choice, queue, name_databas
             ))
         else:
             fig1=None
-    else:
+    except:
         fig1=None
     queue.put(fig1)
 
@@ -412,8 +428,12 @@ def create_relative_duration_from_tier_thread(Tiers, choice, queue, name_databas
     Returns:
         fig1 (plotly.graph_objects.Figure): the graph
     '''
-    if tier_lists[Tiers]:
-        labels=tier_lists[Tiers]
+    try :
+        
+        if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], str("No_"+real_tier_lists[Tiers]['Replace_Value'])]
+        else :
+            labels = real_tier_lists[Tiers]['Intensities'] 
         df1=get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, Tiers, entity)
         if not df1.empty:
             dg1=get_rd_stats_byrole(df1)
@@ -452,6 +472,6 @@ def create_relative_duration_from_tier_thread(Tiers, choice, queue, name_databas
             ))   
         else:
             fig1=None
-    else:
+    except:
         fig1=None
     queue.put(fig1)

@@ -22,6 +22,7 @@ def plot_expression_per_min(folder, expression, case=None):
     Returns:
         Figure: Bar plot
     """
+    #print("La case : ", case)
     a=expression_per_min(folder, expression, case)
     split_elements=[]
     for i in range(len(folder)):
