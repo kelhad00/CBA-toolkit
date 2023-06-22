@@ -69,12 +69,15 @@ def page1():
         if st.checkbox("By entity"):
             expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E2")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            entity_choice=st.radio("Entity of the chosen expression: ", real_tier_lists[expression_choice])
+            if real_tier_lists[expression_choice]['Replace_Value'] != "" :
+                 entity_choice=st.radio("Entity of the chosen expression: ", [real_tier_lists[expression_choice]['Replace_Value'], str("No_" + real_tier_lists[expression_choice]['Replace_Value'])])
+            else :
+                entity_choice = st.radio("Entity of the chosen expression: ", real_tier_lists[expression_choice]['Intensities'])
             if entity_choice is not None:
-                if (plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice))==None) :
+                if (plot_expression_per_min_I(databases_choice, expression_choice, entity_choice)==None) :
                     st.write("No data available")
                 else:
-                    st.write(plot_expression_per_min_I(databases_choice, expression_choice, str.lower(entity_choice)))
+                    st.write(plot_expression_per_min_I(databases_choice, expression_choice, entity_choice))
             else:
                 st.write("No data available")
     def page1_3():

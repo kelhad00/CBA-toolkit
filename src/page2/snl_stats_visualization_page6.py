@@ -49,6 +49,8 @@ def plot_expression_per_min_I(folder, expression, intensity):
     Returns:
         Figure: Bar plot
     """
+    real_tier_lists , real_tiers = get_parameters_tag()
+
     fig=None
     try:
         lst=expression_per_min_I(folder, expression, intensity)
@@ -60,10 +62,14 @@ def plot_expression_per_min_I(folder, expression, intensity):
         if all(item == 0 for item in lst):
             fig = None
         else:
-            for i in range (len(tier_lists[expression])):
-                if intensity==tier_lists[expression][i]:
-                    fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
-                    title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
+            if real_tier_lists[expression]['Replace_Value'] != "" :
+                fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
+                title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
+            else :
+                for i in range (len(real_tier_lists[expression]['Intensities'])):
+                    if intensity==real_tier_lists[expression]['Intensities'][i]:
+                        fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
+                        title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
     except:
         fig=None
     return fig
