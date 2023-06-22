@@ -116,6 +116,12 @@ def main_page():
     st.title('Non Verbal Expressions Study')
     st.markdown('''This is an interactive web page where we are going to show some statistics based on a given database.''')
     
+    with open('base_data.json', 'r') as f:
+        data = json.load(f)
+    data = {}
+    with open('base_data;json', 'w') as f:
+        json.dump(data, f)
+
     folder = st.file_uploader('''Select the folder you want to import: ''', type='zip')
     if folder is not None:
         extract_zip(folder)

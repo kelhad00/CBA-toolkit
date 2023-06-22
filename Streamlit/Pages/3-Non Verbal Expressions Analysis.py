@@ -183,4 +183,8 @@ def page2():
     page2_names_to_funcs[selected_page]()
 
 subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
-page2()
+
+if os.path.isfile('base_data.json') and os.path.getsize('base_data.json') > 0:
+    st.error("You didn't choose tiers to anlayze. Go on Modify Tiers")
+else :
+    page2()
