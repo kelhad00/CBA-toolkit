@@ -34,17 +34,30 @@ def page1():
             columns_names=["Filename", "Duration"]+list(real_tier_lists.keys())
             df=pd.DataFrame(data, columns=columns_names)
             st.table(df)
+
+            # Export CSV
+            csv = df.to_csv(index=False)
+            st.download_button(label='Download CSV', data=csv, file_name=f'{databases_choice}_information.csv', mime='text/csv')
         else:
             if real_tier_lists[tiers_choice]['Replace_Value'] != "":
                 data=display_specific_informations(databases_choice, tiers_choice, [real_tier_lists[tiers_choice]['Replace_Value'], str("No_" + real_tier_lists[tiers_choice]['Replace_Value'])], 'Replace_Value')
                 columns_names=["Filename", "Min duration", "Max duration"]+[real_tier_lists[tiers_choice]['Replace_Value'], str("No_" + real_tier_lists[tiers_choice]['Replace_Value'])]
                 df=pd.DataFrame(data, columns=columns_names)
                 st.write(df)
+
+                # Export CSV
+                csv = df.to_csv(index=False)
+                st.download_button(label='Download CSV', data=csv, file_name=f'{databases_choice}_information.csv', mime='text/csv')
             else:
                 data=display_specific_informations(databases_choice, tiers_choice, real_tier_lists[tiers_choice]['Intensities'], 'Intensities')
                 columns_names=["Filename", "Min duration", "Max duration"]+real_tier_lists[tiers_choice]['Intensities']
                 df=pd.DataFrame(data, columns=columns_names)
                 st.write(df)
+
+                # Export CSV
+                csv = df.to_csv(index=False)
+                st.download_button(label='Download CSV', data=csv, file_name=f'{databases_choice}_information.csv', mime='text/csv')
+
     def page1_2():
         st.sidebar.markdown("Expression Per Minute")
         # # #Barplots ______________________________________________________
@@ -207,7 +220,6 @@ def page1():
 
 if os.path.isfile('base_data.json') and os.path.getsize('base_data.json') > 26:
     subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
-    print("Sah : ", os.path.getsize('base_data.json'))
     page1()
 else :
     st.error("You didn't choose tiers to anlayze. Go on Modify Tiers")
