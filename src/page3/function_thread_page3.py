@@ -20,9 +20,9 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
         database_single (str): dataset name choice
         expression_choice (str): expression choice
     Returns:
-        list: list of plot
+        list: list of plot + dataframe
     """
-    dg=get_db_from_func_no_pair(DIR, get_intra_tiers_absolute_duration_folder, database, expression_choice) 
+    dg=get_db_from_func_no_pair(DIR, get_intra_tiers_absolute_duration_folder, database, expression_choice)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
     databases_=[value for value in databases_pair_paths.values()]
     for i in range(len(name_databases)):
@@ -36,6 +36,7 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
         if dg['database'][i] == database_single.lower() :
             temp=dg['subject'][i]
             dg['subject'][i]=split_elements[int(temp)-1][-1]
+    print(dg)
     scatter_fig_tiers=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='sum_time', color='label'#,text='time'
     , orientation='v', title=f'{expression_choice} Absolute Duration - Intra , Database : '+database_single, labels={"sum_time": "Absolute Duration",
     "label": "Entity"})
@@ -44,7 +45,9 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
     orientation='v', title=f'{expression_choice} Absolute Duration - Intra , Database : '+database_single, labels={"sum_time": "Absolute Duration",
     "label": "Entity"})
     line_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
-    L=[scatter_fig_tiers, line_fig_tiers]
+    dg = dg.drop('time', axis=1)
+    dg = dg.rename(columns={'sum_time': 'duration (ms)', 'label': 'entity', 'subject': 'files name'})
+    L=[scatter_fig_tiers, line_fig_tiers, dg]
     queue.put(L)
 
 def create_intra_relative_plot(database, queue, database_single, expression_choice) :
@@ -56,7 +59,7 @@ def create_intra_relative_plot(database, queue, database_single, expression_choi
         database_single (str): dataset name choice
         expression_choice (str): expression choice
     Returns:
-        list: list of plot
+        list: list of plot + dataframe
     """
     dg=get_db_from_func_no_pair(DIR, get_intra_tiers_relative_duration_folder, database, expression_choice)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
@@ -78,7 +81,8 @@ def create_intra_relative_plot(database, queue, database_single, expression_choi
     line_fig_tiers=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='percentage', color='label', symbol='label',
     orientation='v', title=f'{expression_choice} Relative Duration - Intra , Database : '+database_single, labels={"label": "Entity"})
     line_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
-    L=[scatter_fig_tiers, line_fig_tiers]
+    dg = dg.rename(columns={'percentage': 'percentage (%)', 'label': 'entity', 'subject': 'files name', 'duration': 'duration of the file (ms)', 'sum_time': 'duration of the entity (ms)'})
+    L=[scatter_fig_tiers, line_fig_tiers, dg]
     queue.put(L)
 
 def create_inter_absolute_plot(database, queue, database_single, expression_choice) :
@@ -90,7 +94,7 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
         database_single (str): dataset name choice
         expression_choice (str): expression choice
     Returns:
-        list: list of plot
+        list: list of plot + dataframe
     """
     real_tier_lists , real_tiers = get_parameters_tag()
     
@@ -118,7 +122,9 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
     , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv": "Pairs files",
     "duration": "Time difference","label": "Entity"})
     fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
-    L=[fig1, fig1_1]
+    dg = dg.drop('time', axis=1)
+    dg = dg.rename(columns={'duration': 'duration (ms)', 'label': 'entity', 'conv': 'files pairs'})
+    L=[fig1, fig1_1, dg]
     queue.put(L)
 
 def create_inter_relative_plot(database, queue, database_single, expression_choice) :
@@ -130,7 +136,7 @@ def create_inter_relative_plot(database, queue, database_single, expression_choi
         database_single (str): dataset name choice
         expression_choice (str): expression choice
     Returns:
-        list: list of plot
+        list: list of plot + dataframe
     """
     
     real_tier_lists , real_tiers = get_parameters_tag()
@@ -158,6 +164,7 @@ def create_inter_relative_plot(database, queue, database_single, expression_choi
     , orientation='v', title=f'{expression_choice} Relative Duration per interaction',labels={"conv": "Pairs files",
     "percentage": "Percentage difference","label": "Entity"})
     fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
-    L=[fig1, fig1_1]
+    dg = dg.rename(columns={'percentage': 'percentage (%)', 'label': 'entity', 'conv': 'files name'})
+    L=[fig1, fig1_1, dg]
     queue.put(L)       
         

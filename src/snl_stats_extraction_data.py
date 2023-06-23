@@ -1421,7 +1421,7 @@ def get_rd_stats(df):
         list of tuple and a description of what is inside the tuple: (list of tuple, ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']))
     """
     dg1=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=(dg1['diff_time']/dg1['duration'])*100
     dg1=dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
     dg=dg1.loc[:,['database', 'label', 'percentage']]
@@ -1465,7 +1465,7 @@ def get_rd_stats_byrole(df):
         list of tuple and a description of what is inside the tuple: (list of tuple, ['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p'])
     """
     dg1=df.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=(dg1['diff_time']/dg1['duration'])*100
     dg1=dg1.drop(['subject', 'duration', 'diff_time'], axis=1)
     dg=dg1.loc[:,['database', 'label', 'percentage']]
@@ -1514,7 +1514,7 @@ def get_intra_smiles_absolute_duration_folder(listpaths, string):
     df1=list_to_df(get_smiles_dict_folder(listpaths, string)[0], get_smiles_dict_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -1533,7 +1533,7 @@ def get_intra_laughs_absolute_duration_folder(listpaths, string):
     df2=list_to_df(get_laughs_dict_folder(listpaths, string)[0], get_laughs_dict_folder(listpaths, string)[1])
     dg2=df2.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg2['label'] = dg2['label'].str.replace(' ', '')
-    dg2=dg2.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg2=dg2.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg2['time']=seconds_to_hmsms_list(dg2['diff_time'])
     dg2.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg2)
@@ -1553,7 +1553,7 @@ def get_intra_tiers_absolute_duration_folder(listpaths, string, expression_choic
     df3=list_to_df(get_tier_dict_folder(listpaths, string, expression_choice)[0], get_tier_dict_folder(listpaths, string, expression_choice)[1])
     dg3=df3.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg3['label'] = dg3['label'].str.replace(' ', '')
-    dg3=dg3.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg3=dg3.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg3['time']=seconds_to_hmsms_list(dg3.groupby('database')['diff_time'].transform('sum'))
     dg3.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg3)
@@ -1572,7 +1572,7 @@ def get_intra_smiles_relative_duration_folder(listpaths, string):
     df1=list_to_df(get_smiles_dict_folder(listpaths, string)[0], get_smiles_dict_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     lst=df_to_list(dg1)
@@ -1592,7 +1592,7 @@ def get_intra_laughs_relative_duration_folder(listpaths, string):
     df2=list_to_df(df2[0], df2[1])
     dg2=df2.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg2['label'] = dg2['label'].str.replace(' ', '')
-    dg2=dg2.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg2=dg2.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg2['percentage']=round(((dg2['diff_time']/dg2['duration'])*100),2)
     dg2.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     lst=df_to_list(dg2)
@@ -1613,7 +1613,7 @@ def get_intra_tiers_relative_duration_folder(listpaths, string, expression_choic
     df3=list_to_df(df3[0], df3[1])
     dg3=df3.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg3['label'] = dg3['label'].str.replace(' ', '')
-    dg3=dg3.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg3=dg3.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg3['percentage']=round(((dg3['diff_time']/dg3.groupby('database')['diff_time'].transform('sum'))*100),2)
     dg3.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     lst=df_to_list(dg3)
@@ -1633,7 +1633,7 @@ def get_intra_smiles_ad_from_lsn_folder(listpaths, string):
     df1=list_to_df(get_smiles_from_lsn_folder(listpaths, string)[0], get_smiles_from_lsn_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -1652,7 +1652,7 @@ def get_intra_smiles_rd_from_lsn_folder(listpaths,string):
     df1=list_to_df(get_smiles_from_lsn_folder(listpaths, string)[0], get_smiles_from_lsn_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
@@ -1672,7 +1672,7 @@ def get_intra_smiles_ad_from_spk_folder(listpaths, string):
     df1=list_to_df(get_smiles_from_spk_folder(listpaths, string)[0], get_smiles_from_spk_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -1691,7 +1691,7 @@ def get_intra_smiles_rd_from_spk_folder(listpaths, string):
     df1=list_to_df(get_smiles_from_spk_folder(listpaths, string)[0], get_smiles_from_spk_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
@@ -1711,7 +1711,7 @@ def get_intra_laughs_ad_from_lsn_folder(listpaths, string):
     df1=list_to_df(get_laughs_from_lsn_folder(listpaths, string)[0], get_laughs_from_lsn_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -1730,7 +1730,7 @@ def get_intra_laughs_rd_from_lsn_folder(listpaths, string):
     df1=list_to_df(get_laughs_from_lsn_folder(listpaths, string)[0], get_laughs_from_lsn_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
@@ -1750,7 +1750,7 @@ def get_intra_laughs_ad_from_spk_folder(listpaths, string):
     df1=list_to_df(get_laughs_from_spk_folder(listpaths, string)[0], get_laughs_from_spk_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -1769,7 +1769,7 @@ def get_intra_laughs_rd_from_spk_folder(listpaths, string):
     df1=list_to_df(get_laughs_from_spk_folder(listpaths, string)[0], get_laughs_from_spk_folder(listpaths, string)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[3, 4]], axis=1, inplace=True)
@@ -1793,7 +1793,7 @@ def get_intra_tier_ad_from_tier_folder(listpaths, string, tier1, tier2, entity):
     df1=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     #dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1['time']=seconds_to_hmsms_list(dg1.groupby('database')['diff_time'].transform('sum'))
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
@@ -1816,7 +1816,7 @@ def get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity):
     df1=list_to_df(get_tier_from_tier(listpaths, string, tier1, tier2, entity)[0], get_tier_from_tier(listpaths, string, tier1, tier2, entity)[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     # dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1['percentage'] = round(((dg1['diff_time'] / dg1.groupby('database')['diff_time'].transform('sum')) * 100), 2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
@@ -1840,7 +1840,7 @@ def get_inter_smiles_absolute_duration_folder(listpaths, string):
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
@@ -1932,7 +1932,7 @@ def get_inter_smiles_relative_duration_folder(listpaths, string):
     df1=list_to_df(df1[0], df1[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     c=1
@@ -2022,7 +2022,7 @@ def get_inter_laughs_absolute_duration_folder(listpaths, string):
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     c=1
@@ -2114,7 +2114,7 @@ def get_inter_laughs_relative_duration_folder(listpaths, string):
     df1=list_to_df(df1[0], df1[1])
     dg1=df1.loc[:,['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     c=1
@@ -2204,7 +2204,7 @@ def get_inter_tier_absolute_duration_folder(listpaths, string, tier, label):
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:, ['subject', 'database', 'label', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1.groupby('database')['diff_time'].transform('sum'))
     dg1.columns=['subject', 'database', 'label', 'sum_time', 'time']
     c=1
@@ -2300,7 +2300,7 @@ def get_inter_tier_relative_duration_folder(listpaths, string, tier, label):
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:, ['subject', 'database', 'label', 'duration', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum().reset_index()
+    dg1=dg1.groupby(['subject', 'database', 'label', 'duration']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1.groupby('database')['diff_time'].transform('sum'))*100),2)
     dg1.columns=['subject', 'database', 'label', 'duration', 'sum_time', 'percentage']
     c=1
@@ -2393,7 +2393,7 @@ def get_inter_smiles_ad_spk_vs_lsn_folder(listpaths, string):
     df=get_smiles_from_spk_vs_lsn_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'conv', 'role', 'label', 'diff_time']]
-    dg1=dg1.groupby(['database', 'conv', 'role', 'label']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'conv', 'role', 'label']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['database', 'conv', 'role', 'label', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -2412,7 +2412,7 @@ def get_inter_smiles_rd_spk_vs_lsn_folder(listpaths, string):
     df=get_smiles_from_spk_vs_lsn_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'duration', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['database', 'label', 'duration', 'conv', 'role', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[2, 5]], axis=1, inplace=True)
@@ -2433,7 +2433,7 @@ def get_inter_smiles_ad_lsn_vs_spk_folder(listpaths, string):
     df=get_smiles_from_lsn_vs_spk_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['database', 'label', 'conv', 'role', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -2452,7 +2452,7 @@ def get_inter_smiles_rd_lsn_vs_spk_folder(listpaths, string):
     df=get_smiles_from_lsn_vs_spk_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'duration', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['database', 'label', 'duration', 'conv', 'role', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[2, 5]], axis=1, inplace=True)
@@ -2474,7 +2474,7 @@ def get_inter_laughs_ad_spk_vs_lsn_folder(listpaths, string):
     df=get_laughs_from_spk_vs_lsn_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum(numeric_only=True).reset_index()
     dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1.columns=['database', 'label', 'conv', 'role', 'sum_time', 'time']
     lst=df_to_list(dg1)
@@ -2493,7 +2493,7 @@ def get_inter_laughs_rd_spk_vs_lsn_folder(listpaths, string):
     df=get_laughs_from_spk_vs_lsn_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'duration', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['database', 'label', 'duration', 'conv', 'role', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[2, 5]], axis=1, inplace=True)
@@ -2514,7 +2514,7 @@ def get_inter_laughs_ad_lsn_vs_spk_folder(listpaths, string):
     df=get_laughs_from_lsn_vs_spk_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum(numeric_only=True).reset_index()
     #dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1['time'] = seconds_to_hmsms_list(dg1.groupby('database')['diff_time'].transform('sum'))
     dg1.columns=['database', 'label', 'conv', 'role', 'sum_time', 'time']
@@ -2534,7 +2534,7 @@ def get_inter_laughs_rd_lsn_vs_spk_folder(listpaths, string):
     df=get_laughs_from_lsn_vs_spk_folder(listpaths, string)
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'duration', 'conv', 'role', 'diff_time']]
-    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum(numeric_only=True).reset_index()
     dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1.columns=['database', 'label', 'duration', 'conv', 'role', 'sum_time', 'percentage']
     dg1.drop(dg1.columns[[2, 5]], axis=1, inplace=True)
@@ -2560,7 +2560,7 @@ def get_inter_tier_ad_entity1_vs_entity2_folder(listpaths, string, tier1, tier2,
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'conv', 'role', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'conv', 'role']).sum(numeric_only=True).reset_index()
     #dg1['time']=seconds_to_hmsms_list(dg1['diff_time'])
     dg1['time'] = seconds_to_hmsms_list(dg1.groupby('database')['diff_time'].transform('sum'))
     dg1.columns=['database', 'label', 'conv', 'role', 'sum_time', 'time']
@@ -2585,7 +2585,7 @@ def get_inter_tier_rd_entity1_vs_entity2_folder(listpaths, string, tier1, tier2,
     df=list_to_df(df[0], df[1])
     dg1=df.loc[:,['database', 'label', 'duration', 'conv', 'role', 'diff_time']]
     dg1['label'] = dg1['label'].str.replace(' ', '')
-    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum().reset_index()
+    dg1=dg1.groupby(['database', 'label', 'duration', 'conv', 'role']).sum(numeric_only=True).reset_index()
     # dg1['percentage']=round(((dg1['diff_time']/dg1['duration'])*100),2)
     dg1['percentage'] = round(((dg1['diff_time'] / dg1.groupby('database')['diff_time'].transform('sum')) * 100), 2)
     dg1.columns=['database', 'label', 'duration', 'conv', 'role', 'sum_time', 'percentage']
@@ -2785,7 +2785,7 @@ def expression_track(check, track, dir, databases_name):
     #Previous expression's track    
     df_g=df.groupby(['Trackp', 'Database']).size().reset_index()
     df_g.columns=['Trackp', 'Database', 'Countp']
-    df_t=df_g.groupby(['Database'])['Countp'].sum().reset_index()
+    df_t=df_g.groupby(['Database'])['Countp'].sum(numeric_only=True).reset_index()
     tot=[]
     for _ in list(df_g["Database"]):
         for i in list(df_t['Database']):
@@ -2797,7 +2797,7 @@ def expression_track(check, track, dir, databases_name):
     #Following expression's track 
     df1_g=df.groupby(['Trackf', 'Database']).size().reset_index()
     df1_g.columns=['Trackf', 'Database', 'Countf']
-    df_t1=df1_g.groupby(['Database'])['Countf'].sum().reset_index()
+    df_t1=df1_g.groupby(['Database'])['Countf'].sum(numeric_only=True).reset_index()
     tot=[]
     for _ in list(df1_g["Database"]):
         for i in list(df_t1['Database']):
@@ -2849,7 +2849,7 @@ def expression_track_byI(check, track, DIR, databases_name, tier_lists):
     #Previous expression
     df_g=df.groupby(['Intensityp', 'Database', 'Current_level_'+track]).size().reset_index()
     df_g.columns = ['Intensityp', 'Database', 'Current_level_'+track, 'Count']
-    df_t=df_g.groupby(['Database', 'Current_level_'+track])['Count'].sum().reset_index()
+    df_t=df_g.groupby(['Database', 'Current_level_'+track])['Count'].sum(numeric_only=True).reset_index()
     tot=[]
     for _, j in zip(list(df_g["Database"]), list(df_g['Current_level_'+track])):
         for i, k in zip(list(df_t['Database']), list(df_t['Current_level_'+track])):
@@ -2861,7 +2861,7 @@ def expression_track_byI(check, track, DIR, databases_name, tier_lists):
     #Following expression
     df1_g=df.groupby(['Intensityf', 'Database', 'Current_level_'+track]).size().reset_index()
     df1_g.columns=['Intensityf', 'Database', 'Current_level_'+track, 'Count']
-    df_t1=df1_g.groupby(['Database', 'Current_level_'+track])['Count'].sum().reset_index()
+    df_t1=df1_g.groupby(['Database', 'Current_level_'+track])['Count'].sum(numeric_only=True).reset_index()
     tot=[]
     for _, j in zip(list(df1_g["Database"]), list(df1_g['Current_level_'+track ])):
         for i, k in zip(list(df_t1['Database']), list(df_t1['Current_level_'+track ])):

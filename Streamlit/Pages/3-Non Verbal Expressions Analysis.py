@@ -42,11 +42,17 @@ def page2():
             list1=plot_intra_absolute_duration(options, expression_choice)
             for i in range(len(list1)):
                 for d in range(len(list1[i])):
-                    if figs_ad==lst_ad[d]:
-                        if list1[i][d]!=None:
-                            st.write(list1[i][d])
-                        else:
-                            st.write("No Data available")
+                    if isinstance(list1[i][d], pd.DataFrame):
+                        if not list1[i][d].empty:
+                            # Export csv 
+                            csv_exp = list1[i][d].to_csv(index=False)
+                            st.download_button(label="Download CSV file", data=csv_exp, file_name=f"{expression_choice.lower()}_intra_absolute_duration.csv", mime="text/csv")
+                    else:    
+                        if figs_ad==lst_ad[d]:
+                            if list1[i][d]!=None:
+                                st.write(list1[i][d])
+                            else:
+                                st.write("No Data available")
         else:
             st.write("No data available")
         figs_rd=st.selectbox("Relative Duration Figures: ", lst_ad) 
@@ -56,11 +62,17 @@ def page2():
             list2=plot_intra_relative_duration(options2, expression_choice)
             for k in range(len(list2)):
                 for l in range(len(list2[k])):
-                    if figs_rd==lst_rd[l]:
-                        if list2[k][l]!=None:
-                            st.write(list2[k][l])
-                        else:
-                            st.write("No Data available")
+                    if isinstance(list2[k][l], pd.DataFrame):
+                        if not list2[k][l].empty:
+                            # Export csv 
+                            csv_exp = list2[k][l].to_csv(index=False)
+                            st.download_button(label="Download CSV file", data=csv_exp, file_name=f"{expression_choice.lower()}_intra_relative_duration.csv", mime="text/csv")
+                    else:
+                        if figs_rd==lst_rd[l]:
+                            if list2[k][l]!=None:
+                                st.write(list2[k][l])
+                            else:
+                                st.write("No Data available")
         else:
             st.write("No data available")
         st.markdown(''' ''')
@@ -120,11 +132,17 @@ def page2():
             lst_1=plot_inter_absolute_duration(options3, expression_choice1)
             for i in range(len(lst_1)):
                 for d in range(len(lst_1[i])):
-                    if figs_ab==lst_ab[d]:
-                        if lst_1[i][d]!=None : 
-                            st.write(lst_1[i][d])
-                        else:
-                            st.write("No Data available")
+                    if isinstance(lst_1[i][d], pd.DataFrame):
+                        if not lst_1[i][d].empty:
+                            # Export csv 
+                            csv_exp = lst_1[i][d].to_csv(index=False)
+                            st.download_button(label="Download CSV file", data=csv_exp, file_name=f"{expression_choice1.lower()}_inter_absolute_duration.csv", mime="text/csv")
+                    else:
+                        if figs_ab==lst_ab[d]:
+                            if lst_1[i][d]!=None : 
+                                st.write(lst_1[i][d])
+                            else:
+                                st.write("No Data available")
         else:
             st.write("No data available")
         figs_rd=st.selectbox("Relative Duration Figures: ", lst_rd) 
@@ -133,11 +151,17 @@ def page2():
             lst_2=plot_inter_relative_duration(options4, expression_choice1)
             for k in range(len(lst_2)):
                 for l in range(len(lst_2[k])):
-                    if figs_rd == lst_rd[l]:
-                        if lst_2[k][l]!=None:
-                            st.write(lst_2[k][l])
-                        else:
-                            st.write("No Data available")
+                    if isinstance(lst_2[k][l], pd.DataFrame):
+                        if not lst_2[k][l].empty:
+                            # Export csv 
+                            csv_exp = lst_2[k][l].to_csv(index=False)
+                            st.download_button(label="Download CSV file", data=csv_exp, file_name=f"{expression_choice1.lower()}_inter_relative_duration.csv", mime="text/csv")
+                    else:
+                        if figs_rd == lst_rd[l]:
+                            if lst_2[k][l]!=None:
+                                st.write(lst_2[k][l])
+                            else:
+                                st.write("No Data available")
         else:
             st.write("No data available")
         st.markdown(''' ''')
