@@ -115,7 +115,10 @@ def main_page():
     st.sidebar.markdown("Main page")
     st.title('Non Verbal Expressions Study')
     st.markdown('''This is an interactive web page where we are going to show some statistics based on a given database.''')
-
+    
+    folder = st.file_uploader('''Select the folder you want to import: ''', type='zip')
+    if folder is not None:
+        extract_zip(folder)
     st.markdown('''Each dataset of your database has files containing a list of tiers/expressions expressed during interactions between two people to be studied. 
     \nWe explored these tiers and we tried to know which kind of effects they could have on a person or during an interaction.
     \n\nNow look at each page of the web page!
