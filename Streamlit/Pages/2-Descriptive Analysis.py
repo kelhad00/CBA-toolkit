@@ -28,63 +28,79 @@ def page1():
         tiers_choice=st.selectbox("Expression choice:", name_tiers, index=name_tiers.index("GENERAL"))
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
+                database=databases_choice
                 databases_choice=databases_[i]
         if tiers_choice=='GENERAL':
             data=display_general_informations_files(databases_choice)
             columns_names=["Filename", "Duration"]+list(real_tier_lists.keys())
             df=pd.DataFrame(data, columns=columns_names)
-            st.table(df)
-
-            # Export CSV
-            csv = df.to_csv(index=False)
-            st.download_button(label='Download CSV', data=csv, file_name=f'{databases_choice}_information.csv', mime='text/csv')
+            if df is not None:
+                st.table(df)
+                # Export CSV
+                csv = df.to_csv(index=False)
+                st.download_button(label='Download CSV', data=csv, file_name=f'{database}_information.csv', mime='text/csv')
+            else:
+                st.write("No data available")
         else:
             if real_tier_lists[tiers_choice]['Replace_Value'] != "":
                 data=display_specific_informations(databases_choice, tiers_choice, [real_tier_lists[tiers_choice]['Replace_Value'], str("No_" + real_tier_lists[tiers_choice]['Replace_Value'])], 'Replace_Value')
                 columns_names=["Filename", "Min duration", "Max duration"]+[real_tier_lists[tiers_choice]['Replace_Value'], str("No_" + real_tier_lists[tiers_choice]['Replace_Value'])]
-                df=pd.DataFrame(data, columns=columns_names)
-                st.write(df)
-
-                # Export CSV
-                csv = df.to_csv(index=False)
-                st.download_button(label='Download CSV', data=csv, file_name=f'{databases_choice}_information.csv', mime='text/csv')
+                df1=pd.DataFrame(data, columns=columns_names)
+                if df1 is not None:
+                    st.write(df1)
+                    # Export CSV
+                    csv = df1.to_csv(index=False)
+                    st.download_button(label='Download CSV', data=csv, file_name=f'{database}_information_{tiers_choice.lower()}.csv', mime='text/csv')
+                else:
+                    st.write("No data available")
             else:
                 data=display_specific_informations(databases_choice, tiers_choice, real_tier_lists[tiers_choice]['Intensities'], 'Intensities')
                 columns_names=["Filename", "Min duration", "Max duration"]+real_tier_lists[tiers_choice]['Intensities']
-                df=pd.DataFrame(data, columns=columns_names)
-                st.write(df)
-
-                # Export CSV
-                csv = df.to_csv(index=False)
-                st.download_button(label='Download CSV', data=csv, file_name=f'{databases_choice}_information.csv', mime='text/csv')
-
+                df2=pd.DataFrame(data, columns=columns_names)
+                if df2 is not None:
+                    st.write(df2)
+                    # Export CSV
+                    csv = df2.to_csv(index=False)
+                    st.download_button(label='Download CSV', data=csv, file_name=f'{database}_information_{tiers_choice.lower()}.csv', mime='text/csv')
+                else:
+                    st.write("No data available")
     def page1_2():
         st.sidebar.markdown("Expression Per Minute")
         # # #Barplots ______________________________________________________
         st.header('Expression Per Minute')
-        st.markdown("We count the number of expressions/tiers we have in one minute in each dataset.")
+        st.markdown('''We count the number of expressions/tiers we have in one minute in each dataset.''')
+        st.write("<style>body { font-size: 18px; }</style><i>Reminder : </i>", unsafe_allow_html=True)
+        st.write("<style>body { font-size: 14px; }</style><i>- Intra (per file/individual) : we count the number of expressions/tiers we have in one minute in each file/individual.</i>", unsafe_allow_html=True)
+        st.write("<style>body { font-size: 14px; }</style><i>- Inter (per interaction) : we count the number of expressions/tiers we have in one minute in each interaction.</i>", unsafe_allow_html=True)
         st.markdown(''' ''')
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Dataset choice: ", name_databases)
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
+                database=databases_choice
                 databases_choice=databases_[i]
         if st.checkbox("All entities"):
             expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E1")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             expression_choice=expression_choice
-            choices_case=["Intra (per file/individual)","Inter (per interaction)"]
+            choices_case=["Intra","Inter"]
             case_choice=st.radio("Choice: ", choices_case)
             case_list=[None, 2]
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             for _ in range(len(case_list)):
                 if case_choice==choices_case[_]:
+                    case=case_choice
                     case_choice=case_list[_]
             if (plot_expression_per_min(databases_choice, expression_choice, case_choice)==None):
                 st.write("No data available")
             else:
-                st.plotly_chart(plot_expression_per_min(databases_choice, expression_choice, case_choice))
+                fig, df3 = plot_expression_per_min(databases_choice, expression_choice, case_choice)
+                st.plotly_chart(fig)
+                if df3 is not None:
+                    # Export CSV
+                    csv = df3.to_csv(index=False)
+                    st.download_button(label='Download CSV', data=csv, file_name=f'{database}_{expression_choice.lower()}_per_min_{case.lower()}.csv', mime='text/csv')
         if st.checkbox("By entity"):
             expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E2")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -96,7 +112,12 @@ def page1():
                 if (plot_expression_per_min_I(databases_choice, expression_choice, entity_choice)==None) :
                     st.write("No data available")
                 else:
-                    st.write(plot_expression_per_min_I(databases_choice, expression_choice, entity_choice))
+                    fig, df4 = plot_expression_per_min_I(databases_choice, expression_choice, entity_choice)
+                    st.write(fig)
+                    if df4 is not None:
+                        # Export CSV
+                        csv = df4.to_csv(index=False)
+                        st.download_button(label='Download CSV', data=csv, file_name=f'{database}_{entity_choice.lower()}_{expression_choice.lower()}_per_min.csv', mime='text/csv')
             else:
                 st.write("No data available")
     def page1_3():
@@ -121,9 +142,13 @@ def page1():
         if expression_choice!='all':
             if real_tier_lists[expression_choice]:
                 if figs=='Absolute duration':
-                    fig1_0=plot_absolute_duration(expression_choice, choice, name_databases)
+                    fig1_0, df1_0=plot_absolute_duration(expression_choice, choice, name_databases)
                     if fig1_0!=None:    
                         st.write(fig1_0)
+                        # Export CSV
+                        if not df1_0.empty:
+                            csv = df1_0.to_csv(index=False)
+                            st.download_button(label='Download CSV', data=csv, file_name=f'{expression_choice.lower()}_{choice.lower()}_abs.csv', mime='text/csv')
                     else:
                         st.write(f"No Data available for {expression_choice}")
                 else:

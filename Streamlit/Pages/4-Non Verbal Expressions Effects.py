@@ -73,8 +73,8 @@ def page3():
 
         st.subheader("Mimicry")
         st.markdown('''We look at the capacity of someone to mimic someone else expression in an interaction. 
-                    /nA / B -> person B mimic person A.
-                    /nB / A -> person A mimic person B.''')
+                    \nA / B -> person B mimic person A.
+                    \n\nB / A -> person A mimic person B.''')
         mimic_choices=['A/B', 'B/A']
         mimic_choice=st.radio("Do you want to study all B files mimicking A files or the opposite ? ", mimic_choices)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)

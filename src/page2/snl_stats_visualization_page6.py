@@ -20,9 +20,9 @@ def plot_expression_per_min(folder, expression, case=None):
         expression (str): tiers we search
         case (int, optional): express if you want to look into conversations ; for that, you put 2. Defaults to None.
     Returns:
-        Figure: Bar plot
+        fig: Bar plot
+        df: Dataframe
     """
-    #print("La case : ", case)
     a=expression_per_min(folder, expression, case)
     split_elements=[]
     for i in range(len(folder)):
@@ -37,7 +37,13 @@ def plot_expression_per_min(folder, expression, case=None):
         labels={'x': 'Pairs files', 'y': 'Count'})
     if (np.count_nonzero(fig.data[0]['y'])==0):
         return None
-    return fig
+    data = {'Filename': [],'Count': a[0]}
+    if case is None:
+        data['Filename'] = [split_elements[i][-1] for i in range(len(split_elements))]
+    else:
+        data['Filename'] = [split_elements[j][-1]+' & '+split_elements[j+1][-1] if (j+1) < len(split_elements) else None for j in range(0, len(split_elements), 2)]
+    df = pd.DataFrame(data, columns=['Filename', 'Count'])
+    return fig, df
 
 def plot_expression_per_min_I(folder, expression, intensity):
     """ This function shows the count of expression we have per minute for an expression by entity.
@@ -47,11 +53,12 @@ def plot_expression_per_min_I(folder, expression, intensity):
         expression (str): tiers we search
         intensity (str): this is the entity we search
     Returns:
-        Figure: Bar plot
+        fig: Bar plot
     """
     real_tier_lists , real_tiers = get_parameters_tag()
 
     fig=None
+    df=None
     try:
         lst=expression_per_min_I(folder, expression, intensity)
         color_lst=['orange', 'gray', 'white', 'yellow', 'black', 'blue', 'red', 'green', 'purple']
@@ -70,6 +77,9 @@ def plot_expression_per_min_I(folder, expression, intensity):
                     if intensity==real_tier_lists[expression]['Intensities'][i]:
                         fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
                         title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
+        if fig is not None:
+            data = {'Filename': [split_elements[i][-1] for i in range(len(split_elements))], 'Count': lst}
+            df = pd.DataFrame(data, columns=['Filename', 'Count'])
     except:
         fig=None
-    return fig
+    return fig, df

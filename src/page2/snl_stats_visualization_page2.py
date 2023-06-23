@@ -24,9 +24,9 @@ def plot_absolute_duration(expression, choice, name_databases):
         name_databases (list): the list of the datasets to plot
     Returns: 
         fig (plotly.graph_objects.Figure): plot of the choice for the expression
+        df (pandas.core.frame.DataFrame): dataframe of the choice for the expression
     """
     real_tier_lists , real_tiers = get_parameters_tag()
-
     if expression!='all':
         try :
             if real_tier_lists[expression]['Replace_Value'] != "" :
@@ -37,28 +37,42 @@ def plot_absolute_duration(expression, choice, name_databases):
             dg=get_db_from_func_no_pair(DIR, eval("get_tier_dict_folder"), name_databases, expression)
             if not dg.empty:
                 fig=pg.Figure()
-                for database in (dg['database'].unique()):
-                    df_plot=dg[dg['database']==database]
-                    df_plot=df_plot[df_plot['label'].isin(labels)]
-                    if choice=='Mean':
-                        df_mean=df_plot.groupby('label').mean(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
-                    elif choice=='Median': 
-                        df_median=df_plot.groupby('label').median(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
-                    elif choice=='Standard deviation':
-                        df_std=df_plot.groupby('label').std(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
-                    elif choice=='Min':
-                        df_std=df_plot.groupby('label').min(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
-                    elif choice=='Max':
-                        df_std=df_plot.groupby('label').max(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                df = pd.DataFrame()  # Initialize an empty DataFrame
+                traces = []  # List to store traces for each database
+                for database in dg['database'].unique():
+                    df_plot = dg[dg['database'] == database]
+                    df_plot = df_plot[df_plot['label'].isin(labels)]
+                    if choice == 'Mean':
+                        df_mean = df_plot.groupby('label').mean(numeric_only=True).reset_index()
+                        df_mean.insert(0, 'database', database)
+                        df = pd.concat([df, df_mean], ignore_index=True)  # Append df_mean to df
+                        traces.append(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
+                    elif choice == 'Median': 
+                        df_median = df_plot.groupby('label').median(numeric_only=True).reset_index()
+                        df_median.insert(0, 'database', database)
+                        df = pd.concat([df, df_median], ignore_index=True)  # Append df_median to df
+                        traces.append(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
+                    elif choice == 'Standard deviation':
+                        df_std = df_plot.groupby('label').std(numeric_only=True).reset_index()
+                        df_std.insert(0, 'database', database)
+                        df = pd.concat([df, df_std], ignore_index=True)  # Append df_std to df
+                        traces.append(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    elif choice == 'Min':
+                        df_min = df_plot.groupby('label').min(numeric_only=True).reset_index()
+                        df_min.insert(0, 'database', database)
+                        df = pd.concat([df, df_min], ignore_index=True)  # Append df_min to df
+                        traces.append(pg.Bar(x=df_min.label, y=df_min.diff_time, name=database))
+                    elif choice == 'Max':
+                        df_max = df_plot.groupby('label').max(numeric_only=True).reset_index()
+                        df_max.insert(0, 'database', database)
+                        df = pd.concat([df, df_max], ignore_index=True)  # Append df_max to df
+                        traces.append(pg.Bar(x=df_max.label, y=df_max.diff_time, name=database))
                     else:
-                        fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                        traces.append(pg.Box(x=df_plot.label, y=df_plot.diff_time,
                                             notched=True, boxmean='sd',
                                             name='database='+database))
+                for trace in traces:
+                    fig.add_trace(trace)
                 fig.update_layout(boxmode='group', xaxis_tickangle=0)
                 fig.update_layout(title_text=f'{choice} on {expression} - Absolute Duration', title_x=0.5, 
                 xaxis_title="Entity",
@@ -75,7 +89,7 @@ def plot_absolute_duration(expression, choice, name_databases):
                 fig=None
         except :
             fig = None
-        return fig 
+        return fig, df
     else:   
         Tiers=list(real_tier_lists.keys())
         Threads=[]
@@ -113,10 +127,13 @@ def plot_relative_duration(expression, choice, name_databases):
                 else :
                     labels = real_tier_lists[expression]['Intensities']
                 fig=pg.Figure()
+                df = pd.DataFrame()  # Initialize an empty DataFrame
+                traces = []  # List to store traces for each database
                 for database in (dg['database'].unique()):
                     df_plot=dg[dg['database']==database]
                     df_plot=df_plot[df_plot['label'].isin(labels)]
                     if choice=='Mean':
+                        print(df_plot.mean_p)
                         fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
                     elif choice=='Median': 
                         fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
