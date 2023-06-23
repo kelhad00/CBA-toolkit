@@ -89,6 +89,8 @@ def plot_absolute_duration(expression, choice, name_databases):
                 fig=None
         except :
             fig = None
+        df = df.drop('subject', axis=1)
+        df = df.rename(columns={'diff_time': 'diff_time (ms)', 'startime': 'start_time (ms)', 'endtime': 'end_time (ms)', 'duration': 'duration (ms)', 'label': 'entity'})
         return fig, df
     else:   
         Tiers=list(real_tier_lists.keys())
@@ -133,22 +135,29 @@ def plot_relative_duration(expression, choice, name_databases):
                     df_plot=dg[dg['database']==database]
                     df_plot=df_plot[df_plot['label'].isin(labels)]
                     if choice=='Mean':
-                        print(df_plot.mean_p)
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
+                        df = pd.concat([df, df_plot[['database', 'label', 'mean_p']]], ignore_index=True)
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
                     elif choice=='Median': 
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
+                        df = pd.concat([df, df_plot[['database', 'label', 'median_p']]], ignore_index=True)
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
                     elif choice=='Standard deviation':
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
+                        df = pd.concat([df, df_plot[['database', 'label', 'std_p']]], ignore_index=True)
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
                     elif choice=='Min':
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
+                        df = pd.concat([df, df_plot[['database', 'label', 'min_p']]], ignore_index=True)
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
                     elif choice=='Max':
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
+                        df = pd.concat([df, df_plot[['database', 'label', 'max_p']]], ignore_index=True)
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
                     else:
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
-                        fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+                        df = pd.concat([df, df_plot[['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']]], ignore_index=True)
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
+                        traces.append(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+                for trace in traces:
+                    fig.add_trace(trace)
                 fig.update_layout(boxmode='group', xaxis_tickangle=0)
                 fig.update_layout(title_text=f'{choice} on {expression} - Relative Duration', title_x=0.5, 
                 xaxis_title="Entity",
@@ -165,7 +174,20 @@ def plot_relative_duration(expression, choice, name_databases):
                 fig=None
         except : 
             fig=None
-        return fig
+        df = df.rename(columns={'label': 'entity'})
+        if choice == 'Mean':
+            df = df.rename(columns={'mean_p': 'Mean (%)'})
+        elif choice == 'Median':
+            df = df.rename(columns={'median_p': 'Median (%)'})
+        elif choice == 'Standard deviation':
+            df = df.rename(columns={'std_p': 'Standard deviation (%)'})
+        elif choice == 'Min':
+            df = df.rename(columns={'min_p': 'Min (%)'})
+        elif choice == 'Max':
+            df = df.rename(columns={'max_p': 'Max (%)'})
+        else:
+            df = df.rename(columns={'mean_p': 'Mean (%)', 'median_p': 'Median (%)', 'std_p': 'Standard deviation (%)', 'min_p': 'Min (%)', 'max_p': 'Max (%)'})
+        return fig, df
     else:
         Tiers=list(real_tier_lists.keys())
         Threads=[]
@@ -464,6 +486,7 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
         name_databases (list): the list of the datasets to plot
     Returns:
         fig (plotly.graph_objects.Figure): plot of the choice for the entity
+        df (pandas.DataFrame): dataframe of the choice for the entity
     """
     if tier2!='all':
         try :
@@ -474,28 +497,42 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
                 labels = real_tier_lists[tier2]['Intensities']
             if not dg.empty:
                 fig=pg.Figure()
-                for database in (dg['database'].unique()):
-                    df_plot=dg[dg['database']==database]
-                    df_plot=df_plot[df_plot['label'].isin(labels)]
-                    if choice=='Mean':
-                        df_mean=df_plot.groupby('label').mean(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
-                    elif choice=='Median': 
-                        df_median=df_plot.groupby('label').median(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
-                    elif choice=='Standard deviation':
-                        df_std=df_plot.groupby('label').std(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
-                    elif choice=='Min':
-                        df_std=df_plot.groupby('label').min(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
-                    elif choice=='Max':
-                        df_std=df_plot.groupby('label').max(numeric_only=True).reset_index()
-                        fig.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                df = pd.DataFrame()  # Initialize an empty DataFrame
+                traces = []  # List to store traces for each database
+                for database in dg['database'].unique():
+                    df_plot = dg[dg['database'] == database]
+                    df_plot = df_plot[df_plot['label'].isin(labels)]
+                    if choice == 'Mean':
+                        df_mean = df_plot.groupby('label').mean(numeric_only=True).reset_index()
+                        df_mean.insert(0, 'database', database)
+                        df = pd.concat([df, df_mean], ignore_index=True)  # Append df_mean to df
+                        traces.append(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
+                    elif choice == 'Median': 
+                        df_median = df_plot.groupby('label').median(numeric_only=True).reset_index()
+                        df_median.insert(0, 'database', database)
+                        df = pd.concat([df, df_median], ignore_index=True)  # Append df_median to df
+                        traces.append(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
+                    elif choice == 'Standard deviation':
+                        df_std = df_plot.groupby('label').std(numeric_only=True).reset_index()
+                        df_std.insert(0, 'database', database)
+                        df = pd.concat([df, df_std], ignore_index=True)  # Append df_std to df
+                        traces.append(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    elif choice == 'Min':
+                        df_min = df_plot.groupby('label').min(numeric_only=True).reset_index()
+                        df_min.insert(0, 'database', database)
+                        df = pd.concat([df, df_min], ignore_index=True)  # Append df_min to df
+                        traces.append(pg.Bar(x=df_min.label, y=df_min.diff_time, name=database))
+                    elif choice == 'Max':
+                        df_max = df_plot.groupby('label').max(numeric_only=True).reset_index()
+                        df_max.insert(0, 'database', database)
+                        df = pd.concat([df, df_max], ignore_index=True)  # Append df_max to df
+                        traces.append(pg.Bar(x=df_max.label, y=df_max.diff_time, name=database))
                     else:
-                        fig.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                        traces.append(pg.Box(x=df_plot.label, y=df_plot.diff_time,
                                             notched=True, boxmean='sd',
                                             name='database='+database))
+                for trace in traces:
+                    fig.add_trace(trace)
                 fig.update_layout(boxmode='group', xaxis_tickangle=0)
                 fig.update_layout(title_text=f'{choice} for {entity} {tier1} on {tier2} - Absolute duration', title_x=0.5, 
                 xaxis_title="Entity",
@@ -512,7 +549,9 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
                 fig=None
         except :
             fig = None 
-        return fig
+        df = df.drop('subject', axis=1)
+        df = df.rename(columns={'diff_time': 'diff_time (ms)', 'startime': 'start_time (ms)', 'endtime': 'end_time (ms)', 'duration': 'duration (ms)', 'label': 'entity'})
+        return fig, df
     else:
         Threads=[]
         D=[]
@@ -539,6 +578,7 @@ def plot_relative_duration_from_tier(tier1, entity, tier2, choice, name_database
         name_databases (list): the list of the datasets to plot
     Returns:
         fig (plotly.graph_objects.Figure): plot of the choice for the entity
+        df (pandas.DataFrame): dataframe of the choice for the entity
     """
     if tier2!='all':
         if real_tier_lists[tier2]['Replace_Value'] != "" :
@@ -551,25 +591,35 @@ def plot_relative_duration_from_tier(tier1, entity, tier2, choice, name_database
             dg=get_rd_stats_byrole(df)
             dg=list_to_df(dg[0], dg[1])
             fig=pg.Figure()
+            df = pd.DataFrame()  # Initialize an empty DataFrame
+            traces = []  # List to store traces for each database
             for database in (dg['database'].unique()):
                 df_plot=dg[dg['database']==database]
                 df_plot=df_plot[df_plot['label'].isin(labels)]
                 if choice=='Mean':
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
+                    df = pd.concat([df, df_plot[['database', 'label', 'mean_p']]], ignore_index=True)
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
                 elif choice=='Median': 
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
+                    df = pd.concat([df, df_plot[['database', 'label', 'median_p']]], ignore_index=True)
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
                 elif choice=='Standard deviation':
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
+                    df = pd.concat([df, df_plot[['database', 'label', 'std_p']]], ignore_index=True)
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
                 elif choice=='Min':
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
+                    df = pd.concat([df, df_plot[['database', 'label', 'min_p']]], ignore_index=True)
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
                 elif choice=='Max':
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
+                    df = pd.concat([df, df_plot[['database', 'label', 'max_p']]], ignore_index=True)
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
                 else:
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
-                    fig.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+                    df = pd.concat([df, df_plot[['database', 'label', 'mean_p', 'median_p', 'std_p', 'min_p', 'max_p']]], ignore_index=True)
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
+                    traces.append(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+            for trace in traces:
+                fig.add_trace(trace)
             fig.update_layout(boxmode='group', xaxis_tickangle=0)
             fig.update_layout(title_text=f'{choice} for {entity} {tier1} on {tier2} - Relative duration', title_x=0.5, 
             xaxis_title="Entity",
@@ -584,7 +634,20 @@ def plot_relative_duration_from_tier(tier1, entity, tier2, choice, name_database
             ))
         else:
             fig=None
-        return fig
+        df = df.rename(columns={'label': 'entity'})
+        if choice == 'Mean':
+            df = df.rename(columns={'mean_p': 'Mean (%)'})
+        elif choice == 'Median':
+            df = df.rename(columns={'median_p': 'Median (%)'})
+        elif choice == 'Standard deviation':
+            df = df.rename(columns={'std_p': 'Standard deviation (%)'})
+        elif choice == 'Min':
+            df = df.rename(columns={'min_p': 'Min (%)'})
+        elif choice == 'Max':
+            df = df.rename(columns={'max_p': 'Max (%)'})
+        else:
+            df = df.rename(columns={'mean_p': 'Mean (%)', 'median_p': 'Median (%)', 'std_p': 'Standard deviation (%)', 'min_p': 'Min (%)', 'max_p': 'Max (%)'})
+        return fig, df
     else:
         Tiers=list(real_tier_lists.keys())
         Tiers.remove(tier1)

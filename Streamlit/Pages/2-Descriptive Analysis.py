@@ -152,9 +152,13 @@ def page1():
                     else:
                         st.write(f"No Data available for {expression_choice}")
                 else:
-                    fig2_0=plot_relative_duration(expression_choice, choice, name_databases)
+                    fig2_0, df2_0=plot_relative_duration(expression_choice, choice, name_databases)
                     if fig2_0!=None:
                         st.write(fig2_0)
+                        # Export CSV
+                        if not df2_0.empty:
+                            csv = df2_0.to_csv(index=False)
+                            st.download_button(label='Download CSV', data=csv, file_name=f'{expression_choice.lower()}_{choice.lower()}_rel.csv', mime='text/csv')
                     else:
                         st.write(f"No Data available for {expression_choice}")
             else:
@@ -200,17 +204,25 @@ def page1():
                     if "Absolute" in figs1:
                         count+=1
                         for entity in expression_values:
-                            fig1_temp=plot_absolute_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
+                            fig1_temp, df1_temp=plot_absolute_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
                             if fig1_temp!=None:
-                                st.write(fig1_temp)    
+                                st.write(fig1_temp)   
+                                # Export CSV
+                                if not df1_temp.empty:
+                                    csv = df1_temp.to_csv(index=False)
+                                    st.download_button(label='Download CSV', data=csv, file_name=f'{expression_choice_copy.lower()}_vs_{entity}_{expression_choice_1.lower()}_{choice1.lower()}_abs.csv', mime='text/csv') 
                             else:
                                 st.write(f"No data available for: {entity} {expression_choice_1}")
                     elif "Relative" in figs1:
                         count+=1
                         for entity in expression_values:
-                            fig1_temp=plot_relative_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
+                            fig1_temp, df1_temp=plot_relative_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
                             if fig1_temp!=None:
                                 st.write(fig1_temp)
+                                # Export CSV
+                                if not df1_temp.empty:
+                                    csv = df1_temp.to_csv(index=False)
+                                    st.download_button(label='Download CSV', data=csv, file_name=f'{expression_choice_copy.lower()}_vs_{entity}{expression_choice_1.lower()}_{choice1.lower()}_rel.csv', mime='text/csv')
                             else: 
                                 st.write(f"No data available for: {entity} {expression_choice_1}")
                 else:
