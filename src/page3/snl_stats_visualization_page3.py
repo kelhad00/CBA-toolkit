@@ -108,7 +108,7 @@ def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
         tier2 (str): the second tier used for the plot
         entity (str): the entity to extract data from tier1
     Returns:
-        L (list): list of the plots
+        L (list): list of the plots + the dataframe
     """
     dg1=get_intra_tier_ad_from_tier_folder(listpaths, string, tier1, tier2, entity)
     dg1=list_to_df(dg1[0], dg1[1])
@@ -122,7 +122,9 @@ def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     fig1=px.scatter(dg1, x='subject', y='sum_time', color='label',
     title=f"{tier2} absolute duration for {string} database - For {entity} {tier1}")
     fig1.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
-    L=[fig1]
+    dg1 = dg1.drop('time', axis=1)
+    dg1 = dg1.rename(columns={'sum_time': 'duration (ms)', 'label': 'entity', 'subject': 'files name'})
+    L=[fig1, dg1]
     return L
 
 def plot_relative_duration_from_lsn_folder(listpaths, string):
@@ -175,7 +177,7 @@ def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
         tier2 (str): the second tier used for the plot
         entity (str): the entity to extract data from tier1
     Returns:
-        L (list): list of the plots
+        L (list): list of the plots + the dataframe
     """
     dg1=get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity)
     dg1=list_to_df(dg1[0], dg1[1])
@@ -189,7 +191,8 @@ def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
     title=f"{tier2} relative duration for {string} database - For {entity} {tier1}")
     fig1.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
-    L=[fig1]
+    dg1 = dg1.rename(columns={'percentage': 'percentage (%)', 'label': 'entity', 'subject': 'files name'})
+    L=[fig1, dg1]
     return L
 
 #Scatter plots - Inter _______________________________________________
@@ -321,7 +324,7 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
         entity1 (str): first entity to filter the data from tier2
         entity2 (str): second entity to filter the data from tier2
     Returns:
-        D (list): list of the plots
+        D (list): list of the plots + the dataframe
     """
     df=get_db_from_func_pair_tier(DIR, get_inter_tier_ad_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
@@ -342,7 +345,9 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     , orientation='v', title=f'{tier2} Absolute Duration - {entity1} vs {entity2} {tier1}',labels={"conv": "Pairs files",
     "sum_time": "Absolute Duration","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
     fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
-    return [fig1]
+    df.drop('time', axis=1)
+    df = df.rename(columns={"conv": "files name", "sum_time": "duration (ms)", "label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
+    return [fig1, df]
 
 def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
     """ Plot the relative duration of the tiers for each dataset filter by 2 entities extract from an other tier.
@@ -375,4 +380,5 @@ def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     , orientation='v', title=f'{tier2} Relative Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
     "percentage": "Percentage (%)","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
     fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
-    return [fig1]
+    df = df.rename(columns={'percentage': 'percentage (%)', 'label': f'entity of {tier2}', 'role': f'entity of {tier1}','conv': 'files name'})
+    return [fig1, df]

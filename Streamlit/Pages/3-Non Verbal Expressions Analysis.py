@@ -101,12 +101,28 @@ def page2():
                 for entity in expression_values:
                     try : 
                         lst_=plot_absolute_duration_from_tier_folder(database_list_choice, database_choice, expression_choice_copy, expression_choice_2, entity) + plot_relative_duration_from_tier_folder(database_list_choice, database_choice, expression_choice_copy, expression_choice_2, entity)
-                        for i in range(len(lst_by_tier)):
-                            if figs_==lst_by_tier[i]:
-                                if lst_[i]!=None:
-                                    st.write(lst_[i])
-                                else:
-                                    st.write("No Data available")
+                        if figs_==f"Absolute Duration {expression_choice_2.lower()}":
+                            file_name = f"{expression_choice_2.lower()}_vs_{entity.lower()}_{expression_choice_copy.lower()}_intra_absolute_duration.csv"
+                            if lst_[0] is not None:
+                                st.write(lst_[0])
+                            else:
+                                st.write("No Data available")
+                            if isinstance(lst_[1], pd.DataFrame):
+                                if not lst_[1].empty:
+                                    # Export csv 
+                                    csv_exp = lst_[1].to_csv(index=False)
+                                    st.download_button(label="Download CSV file", data=csv_exp, file_name=file_name, mime="text/csv")
+                        elif figs_==f"Relative Duration {expression_choice_2.lower()}":
+                            file_name = f"{expression_choice_2.lower()}_vs_{entity.lower()}_{expression_choice_copy.lower()}_intra_relative_duration.csv"
+                            if lst_[2] is not None:
+                                st.write(lst_[i])
+                            else:
+                                st.write("No Data available")
+                            if isinstance(lst_[3], pd.DataFrame):
+                                if not lst_[3].empty:
+                                    # Export csv 
+                                    csv_exp = lst_[3].to_csv(index=False)
+                                    st.download_button(label="Download CSV file", data=csv_exp, file_name=file_name, mime="text/csv")
                     except:
                         st.write(f"No data available for: {entity} {expression_choice_copy}")
             else:
@@ -168,6 +184,7 @@ def page2():
         st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
         st.markdown(''' ''')
         st.subheader('Statistics divided by expressions for a specific dataset')
+        st.markdown("We are looking at the stats of a specific expression to analyse compare to another one during an interaction. Each graph will be divided to compare the entities of first expression vs 2 entity of the other expression. The first expression will be the one you choose in the second radio button. The second expression will be the one you choose in the first radio button. ")
         expression_choices_copy1=expression_choices1.copy()
         expression_choice_copy1=st.radio("Divided by expression: ", expression_choices_copy1)
         if real_tier_lists[expression_choice_copy1]['Replace_Value'] != "" :
@@ -191,11 +208,30 @@ def page2():
                         try: 
                             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                             lst_tiers=plot_inter_ad_entity1_vs_entity2_tier(database_choice, expression_choice_copy1, expression_choice2, entity1, entity2)+plot_inter_rd_entity1_vs_entity2_tier(database_choice, expression_choice_copy1, expression_choice2, entity1, entity2)
-                            for i in range(len(lst_by_tier)):
-                                if figs_roles==lst_by_tier[i]:
-                                    st.write(lst_tiers[i])
+                            if figs_roles == f"Absolute duration {expression_choice2.lower()}":
+                                file_name = f"{expression_choice2.lower()}_during_{entity1.lower()}_vs_{entity2.lower()}_{expression_choice_copy1.lower()}_inter_absolute_duration.csv"
+                                if lst_tiers[0] is not None:
+                                    st.write(lst_tiers[0])
+                                else:
+                                    st.write("No Data available")
+                                if isinstance(lst_tiers[1], pd.DataFrame):
+                                    if not lst_tiers[1].empty:
+                                        # Export csv 
+                                        csv_exp = lst_tiers[1].to_csv(index=False)
+                                        st.download_button(label="Download CSV file", data=csv_exp, file_name=file_name, mime="text/csv")
+                            elif figs_roles == f"Relative duration {expression_choice2.lower()}":
+                                file_name = f"{expression_choice2.lower()}_during_{entity1.lower()}_vs_{entity2.lower()}_{expression_choice_copy1.lower()}_inter_relative_duration.csv"
+                                if lst_tiers[2] is not None:
+                                    st.write(lst_tiers[2])
+                                else:
+                                    st.write("No Data available")
+                                if isinstance(lst_tiers[3], pd.DataFrame):
+                                    if not lst_tiers[3].empty:
+                                        # Export csv 
+                                        csv_exp = lst_tiers[3].to_csv(index=False)
+                                        st.download_button(label="Download CSV file", data=csv_exp, file_name=file_name, mime="text/csv")
                         except:
-                            st.write(f"No data available for: {expression_choice2.lower()} during {entity1} versus {entity2} {expression_choice_copy1}")
+                            st.write(f"No data available for: {expression_choice2.lower()} during {entity1} {expression_choice_copy1} versus {entity2} {expression_choice_copy1}")
         else:
             st.write("No data available")
 
