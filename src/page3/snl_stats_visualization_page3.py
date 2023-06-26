@@ -123,7 +123,7 @@ def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     title=f"{tier2} absolute duration for {string} database - For {entity} {tier1}")
     fig1.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
     dg1 = dg1.drop('time', axis=1)
-    dg1 = dg1.rename(columns={'sum_time': 'duration (ms)', 'label': 'entity', 'subject': 'files name'})
+    dg1 = dg1.rename(columns={'sum_time': 'Duration (ms)', 'label': f'Entity of {tier1.lower()}', 'subject': 'Files name'})
     L=[fig1, dg1]
     return L
 
@@ -191,7 +191,7 @@ def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, ent
     fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
     title=f"{tier2} relative duration for {string} database - For {entity} {tier1}")
     fig1.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
-    dg1 = dg1.rename(columns={'percentage': 'percentage (%)', 'label': 'entity', 'subject': 'files name'})
+    dg1 = dg1.rename(columns={'percentage': 'Percentage (%)', 'label': f'Entity of {tier1.lower()}', 'subject': 'Files name'})
     L=[fig1, dg1]
     return L
 
@@ -346,7 +346,7 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     "sum_time": "Absolute Duration","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
     fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
     df.drop('time', axis=1)
-    df = df.rename(columns={"conv": "files name", "sum_time": "duration (ms)", "label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
+    df = df.rename(columns={"conv": "Files name", "sum_time": "Duration (ms)", "label": f"Entity of {tier2.lower()}", "role": f"Entity of {tier1.lower()}"})
     return [fig1, df]
 
 def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
@@ -380,5 +380,5 @@ def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     , orientation='v', title=f'{tier2} Relative Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
     "percentage": "Percentage (%)","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
     fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
-    df = df.rename(columns={'percentage': 'percentage (%)', 'label': f'entity of {tier2}', 'role': f'entity of {tier1}','conv': 'files name'})
+    df = df.rename(columns={'percentage': 'Percentage (%)', 'label': f'Entity of {tier2.lower()}', 'role': f'Entity of {tier1.lower()}','conv': 'Files name'})
     return [fig1, df]

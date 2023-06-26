@@ -90,7 +90,7 @@ def plot_absolute_duration(expression, choice, name_databases):
         except :
             fig = None
         df = df.drop('subject', axis=1)
-        df = df.rename(columns={'diff_time': 'diff_time (ms)', 'startime': 'start_time (ms)', 'endtime': 'end_time (ms)', 'duration': 'duration (ms)', 'label': 'entity'})
+        df = df.rename(columns={'diff_time': 'Difference of time (ms)', 'startime': 'Start time (ms)', 'endtime': 'End time (ms)', 'duration': 'Duration (ms)', 'label': 'Entity'})
         return fig, df
     else:   
         Tiers=list(real_tier_lists.keys())
@@ -174,7 +174,7 @@ def plot_relative_duration(expression, choice, name_databases):
                 fig=None
         except : 
             fig=None
-        df = df.rename(columns={'label': 'entity'})
+        df = df.rename(columns={'label': 'Entity'})
         if choice == 'Mean':
             df = df.rename(columns={'mean_p': 'Mean (%)'})
         elif choice == 'Median':
@@ -550,7 +550,7 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
         except :
             fig = None 
         df = df.drop('subject', axis=1)
-        df = df.rename(columns={'diff_time': 'diff_time (ms)', 'startime': 'start_time (ms)', 'endtime': 'end_time (ms)', 'duration': 'duration (ms)', 'label': 'entity'})
+        df = df.rename(columns={'diff_time': 'Difference of time (ms)', 'startime': 'Start time (ms)', 'endtime': 'End time (ms)', 'duration': 'Duration (ms)', 'label': 'Entity'})
         return fig, df
     else:
         Threads=[]
@@ -634,7 +634,7 @@ def plot_relative_duration_from_tier(tier1, entity, tier2, choice, name_database
             ))
         else:
             fig=None
-        df = df.rename(columns={'label': 'entity'})
+        df = df.rename(columns={'label': 'Entity'})
         if choice == 'Mean':
             df = df.rename(columns={'mean_p': 'Mean (%)'})
         elif choice == 'Median':

@@ -46,7 +46,7 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
     "label": "Entity"})
     line_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
     dg = dg.drop('time', axis=1)
-    dg = dg.rename(columns={'sum_time': 'duration (ms)', 'label': 'entity', 'subject': 'files name'})
+    dg = dg.rename(columns={'sum_time': 'Duration (ms)', 'label': 'Entity', 'subject': 'Files name'})
     L=[scatter_fig_tiers, line_fig_tiers, dg]
     queue.put(L)
 
@@ -81,7 +81,7 @@ def create_intra_relative_plot(database, queue, database_single, expression_choi
     line_fig_tiers=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='percentage', color='label', symbol='label',
     orientation='v', title=f'{expression_choice} Relative Duration - Intra , Database : '+database_single, labels={"label": "Entity"})
     line_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
-    dg = dg.rename(columns={'percentage': 'percentage (%)', 'label': 'entity', 'subject': 'files name', 'duration': 'duration of the file (ms)', 'sum_time': 'duration of the entity (ms)'})
+    dg = dg.rename(columns={'percentage': 'Percentage (%)', 'label': 'Entity', 'subject': 'Files name', 'duration': 'Duration of the file (ms)', 'sum_time': 'Duration of the entity (ms)'})
     L=[scatter_fig_tiers, line_fig_tiers, dg]
     queue.put(L)
 
@@ -123,7 +123,7 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
     "duration": "Time difference","label": "Entity"})
     fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
     dg = dg.drop('time', axis=1)
-    dg = dg.rename(columns={'duration': 'duration (ms)', 'label': 'entity', 'conv': 'files pairs'})
+    dg = dg.rename(columns={'duration': 'Duration (ms)', 'label': 'Entity', 'conv': 'Files name'})
     L=[fig1, fig1_1, dg]
     queue.put(L)
 
@@ -164,7 +164,7 @@ def create_inter_relative_plot(database, queue, database_single, expression_choi
     , orientation='v', title=f'{expression_choice} Relative Duration per interaction',labels={"conv": "Pairs files",
     "percentage": "Percentage difference","label": "Entity"})
     fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
-    dg = dg.rename(columns={'percentage': 'percentage (%)', 'label': 'entity', 'conv': 'files name'})
+    dg = dg.rename(columns={'percentage': 'Percentage (%)', 'label': 'Entity', 'conv': 'Files name'})
     L=[fig1, fig1_1, dg]
     queue.put(L)       
         

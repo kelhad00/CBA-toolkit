@@ -25,6 +25,7 @@ def plot_track_previous_expression(dg, track_choice):
         track_choice (str): track choice
     Returns:
         fig: plot
+        dg (dataframe): dataframe of previous expression track
     """
     if not dg.empty:
         fig=px.bar(dg, x='Trackp', y=['Countp'], color='Databasep', barmode='group',
@@ -34,7 +35,9 @@ def plot_track_previous_expression(dg, track_choice):
         fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
     else:
         fig=None
-    return fig
+    dg.drop(['Databasef', 'Trackf', 'Countf', 'Percentagef'], axis=1)
+    dg = dg.rename(columns={'Trackp': f'Track previous expression: {track_choice}', 'Countp': f'Count previous expression: {track_choice}', 'Databasep': 'Dataset', 'Percentagep': 'Percentage (%)', 'tot': 'Nb of expression'})
+    return fig, dg
 
 def plot_track_following_expression(dg, track_choice):
     """ Plot the following expression track.
@@ -44,6 +47,7 @@ def plot_track_following_expression(dg, track_choice):
         track_choice (str): track choice
     Returns:
         fig: plot
+        dg (dataframe): dataframe of following expression track
     """
     if not dg.empty:
         fig=px.bar(dg, x='Trackf', y=['Countf'], color='Databasef', barmode='group',
@@ -53,7 +57,9 @@ def plot_track_following_expression(dg, track_choice):
         fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
     else:
         fig=None
-    return fig
+    dg.drop(['Databasep', 'Trackp', 'Countp', 'Percentagep'], axis=1)
+    dg = dg.rename(columns={'Trackf': f'Track following expression: {track_choice}', 'Countf': f'Count following expression: {track_choice}', 'Databasef': 'Dataset', 'Percentagef': 'Percentage (%)', 'tot': 'Nb of expression'})
+    return fig, dg
 
 #By Entity
 def plot_track_previous_expression_byI(dg, track_choice, check_choice):
@@ -64,6 +70,7 @@ def plot_track_previous_expression_byI(dg, track_choice, check_choice):
         check_choice (str): check choice
     Returns:
         fig: plot
+        dg (dataframe): dataframe of previous expression track by entity
     """
     if not dg.empty:
         fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
@@ -75,7 +82,8 @@ def plot_track_previous_expression_byI(dg, track_choice, check_choice):
         fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
     else: 
         fig=None
-    return fig
+    dg = dg.rename(columns={'Intensityp': 'Entity of previous expression', 'Countp': 'Count previous expression', 'Databasep': 'Dataset', 'Percentagep': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{check_choice}p': f'Current level of {check_choice}'})
+    return fig, dg
 
 def plot_track_following_expression_byI(dg, track_choice, check_choice):
     """ Plot the following expression track by entity.
@@ -86,6 +94,7 @@ def plot_track_following_expression_byI(dg, track_choice, check_choice):
         check_choice (str): check choice
     Returns:
         fig: plot
+        dg (dataframe): dataframe of following expression track by entity
     """
     if not dg.empty:    
         fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
@@ -97,21 +106,22 @@ def plot_track_following_expression_byI(dg, track_choice, check_choice):
         fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
     else:
         fig=None
-    return fig
+    dg = dg.rename(columns={'Intensityf': f'Entity of following expression: {track_choice}', 'Countf': f'Count following expression: {track_choice}', 'Databasef': 'Dataset', 'Percentagef': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{check_choice}f': f'Current level of {check_choice}'})
+    return fig, dg
 
 #Mimicry______________________________________________________________
 def plot_mimicry(L):
     """ Plot probabilities and count mimicry per interaction.
-    L come from give_mimicry, or give_mimicry_folder1 or give_mimicry_folder2 or give_mimicry_folder3.
+    L come from give_mimicry, or give_mimicry_folder1 or give_mimicry_folder2 or give_mimicry_folder3 or give_mimicry_folder4.
     
     Args:
         L (list): List of tuple (count, probability, database)
     Return : 
-        Scatter (with line) plot figure
+        Figure: Scatter (with line) plot figure
+        Dataframe: Dataframe of mimicry
     """
     name_databases=[key.replace('_paths','') for key in databases.keys()]
     databases_=[value for value in databases_pair_paths.values()]
-    # print(L[0][2])
     for i in range(len(name_databases)):
         if L[0][2]==name_databases[i]:
             data_path=databases_[i]
@@ -140,7 +150,8 @@ def plot_mimicry(L):
         fig.update_xaxes(title='Pairs files')
     else:
         fig=None
-    return fig
+    M[0] = M[0].rename(columns={'count': 'Count', 'probability': 'Probability', 'database': 'Dataset', 'interaction': 'Interaction (pair of files)'})
+    return fig, M[0]
 
 #Correlation__________________________________________________________
 def plot_correlation(L, folder):
@@ -150,7 +161,8 @@ def plot_correlation(L, folder):
         L (list): The list containing the correlation for each pair of two series
         folder (list): The list containing the path of the files
     Returns:
-        Figure : Scatter plot
+        Figure: Scatter plot
+        Dataframe: Dataframe of correlation
     """
     split_elements=[]
     Pair_Files=[]
@@ -167,5 +179,7 @@ def plot_correlation(L, folder):
         fig.update_yaxes(title='Correlation')
     else:
         fig=None
-    return fig
+    # Create DataFrame with "Files pairs" and "Correlation" columns
+    df = pd.DataFrame({'Files pairs': Pair_Files, 'Correlation': L})
+    return fig, df
     

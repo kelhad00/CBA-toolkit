@@ -184,7 +184,9 @@ def page2():
         st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
         st.markdown(''' ''')
         st.subheader('Statistics divided by expressions for a specific dataset')
-        st.markdown("We are looking at the stats of a specific expression to analyse compare to another one during an interaction. Each graph will be divided to compare the entities of first expression vs 2 entity of the other expression. The first expression will be the one you choose in the second radio button. The second expression will be the one you choose in the first radio button. ")
+        st.markdown('''We are looking at the stats of a specific expression to analyse compare to another one during an interaction. 
+                    \nEach graph will be divided to compare the entities of first expression vs 2 entity of the other expression. 
+                    \n\nThe first expression will be the one you choose in the second radio button. ''')
         expression_choices_copy1=expression_choices1.copy()
         expression_choice_copy1=st.radio("Divided by expression: ", expression_choices_copy1)
         if real_tier_lists[expression_choice_copy1]['Replace_Value'] != "" :

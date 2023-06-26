@@ -36,14 +36,24 @@ def page3():
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         check_choice=st.radio("Check choice: ", expression_choices_2, key='C1')
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        fig1=plot_track_previous_expression(expression_track(check_choice, track_choice, DIR, databases_name), track_choice)
-        fig2=plot_track_following_expression(expression_track(check_choice, track_choice, DIR, databases_name), track_choice)
+        fig1, df1=plot_track_previous_expression(expression_track(check_choice, track_choice, DIR, databases_name), track_choice)
+        fig2, df2=plot_track_following_expression(expression_track(check_choice, track_choice, DIR, databases_name), track_choice)
         if fig1!=None:
             st.plotly_chart(fig1)
+            # Export csv
+            if isinstance(df1, pd.DataFrame):
+                if not df1.empty:
+                    csv_exp1 = df1.to_csv(index=False)
+                    st.download_button(label="Download CSV", data=csv_exp1, file_name=f'track_previous_{track_choice.lower()}_vs_{check_choice.lower()}.csv', mime='text/csv')
         else:
             st.write("No data to display")
         if fig2!=None: 
             st.plotly_chart(fig2)
+            # Export csv
+            if isinstance(df2, pd.DataFrame):
+                if not df2.empty:
+                    csv_exp2 = df2.to_csv(index=False)
+                    st.download_button(label="Download CSV", data=csv_exp2, file_name=f'track_following_{track_choice.lower()}_vs_{check_choice.lower()}.csv', mime='text/csv')
         else:
             st.write("No data to display")
         st.markdown(''' ''')
@@ -57,14 +67,24 @@ def page3():
         expression_choices2=list(real_tier_lists.keys())
         check_choice=st.radio("Check choice: ", expression_choices2, key='C2')
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        fig1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, real_tier_lists)[0], track_choice, check_choice)
-        fig2= plot_track_following_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, real_tier_lists)[1], track_choice, check_choice)
+        fig1, dg1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, real_tier_lists)[0], track_choice, check_choice)
+        fig2, dg2= plot_track_following_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, real_tier_lists)[1], track_choice, check_choice)
         if fig1!=None:
             st.plotly_chart(fig1)
+            # Export csv
+            if isinstance(dg1, pd.DataFrame):
+                if not dg1.empty:
+                    csv_exp3 = dg1.to_csv(index=False)
+                    st.download_button(label="Download CSV", data=csv_exp3, file_name=f'track_previous_{track_choice.lower()}_vs_{check_choice.lower()}_by_entity.csv', mime='text/csv')
         else:
             st.write("No data to display")
         if fig2!=None:
             st.plotly_chart(fig2) 
+            # Export csv
+            if isinstance(dg2, pd.DataFrame):
+                if not dg2.empty:
+                    csv_exp4 = dg2.to_csv(index=False)
+                    st.download_button(label="Download CSV", data=csv_exp4, file_name=f'track_following_{track_choice.lower()}_vs_{check_choice.lower()}_by_entity.csv', mime='text/csv')
         else:
             st.write("No data to display")
 
@@ -76,7 +96,7 @@ def page3():
                     \nA / B -> person B mimic person A.
                     \n\nB / A -> person A mimic person B.''')
         mimic_choices=['A/B', 'B/A']
-        mimic_choice=st.radio("Do you want to study all B files mimicking A files or the opposite ? ", mimic_choices)
+        mimic_choice=st.radio("Do you want to study all B files mimicking A files or the opposite? ", mimic_choices)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         name_database=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[key for key in databases_pairs.keys()]
@@ -100,9 +120,14 @@ def page3():
                     st.error(f"The delta time exceeds the duration of the EAF files, please choose a lower value (max: {max_duration} ms)")
                 else:
                     try:
-                        fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta, mimic_choice=mimic_choice))
+                        fig, df=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta, mimic_choice=mimic_choice))
                         if fig!=None:
                             st.plotly_chart(fig)
+                            # Export csv
+                            if isinstance(df, pd.DataFrame):
+                                if not df.empty:
+                                    csv_exp5 = df.to_csv(index=False)
+                                    st.download_button(label="Download CSV", data=csv_exp5, file_name=f'mimicry_{expression_choiceA.lower()}_vs_{expression_choiceB.lower()}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
                             st.text("Do you want to divide/filter by another expression?")
                             filter_choice1=st.radio(label="  Choice: ", options=["Yes", "No"], key=1)
                             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -121,10 +146,15 @@ def page3():
                                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                                     if entity1 and entity2:
                                         try:
-                                            fig=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, delta_t=delta, mimic_choice=mimic_choice))
+                                            fig, df=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, delta_t=delta, mimic_choice=mimic_choice))
                                             if fig!=None:
                                                 st.write(f"For {entity2} mimicking {entity1} - {i}: ")
                                                 st.plotly_chart(fig)
+                                                # Export csv
+                                                if isinstance(df, pd.DataFrame):
+                                                    if not df.empty:
+                                                        csv_exp5 = df.to_csv(index=False)
+                                                        st.download_button(label="Download CSV", data=csv_exp5, file_name=f'mimicry_{expression_choiceA.lower()}_vs_{expression_choiceB.lower()}_{entity2.lower()}_mimicking_{entity1.lower()}_{i}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
                                             else:
                                                 st.write("No data to display")
                                         except:
@@ -159,10 +189,15 @@ def page3():
                     else:   
                         try:
                             st.write(entities_B, f" {expression_choiceB} mimic ", entities_A, f" {expression_choiceA}: " )
-                            fig=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
+                            fig, df=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
                                                 [entities_A, entities_B], delta_t=delta, mimic_choice=mimic_choice))
                             if fig!=None:
                                 st.plotly_chart(fig)
+                                # Export csv
+                                if isinstance(df, pd.DataFrame):
+                                    if not df.empty:
+                                        csv_exp6 = df.to_csv(index=False)
+                                        st.download_button(label="Download CSV", data=csv_exp6, file_name=f'mimicry_{entities_A.lower()}_{expression_choiceA.lower()}_vs_{entities_B.lower()}_{expression_choiceB.lower()}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
                                 st.text("Do you want to divide/filter by another expression? ")
                                 filter_choice2=st.radio(label="  Choice: ", options=["Yes", "No"] , key=2)
                                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -180,10 +215,15 @@ def page3():
                                         entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
                                         if entity1 and entity2:
                                             try:
-                                                fig=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, filter='Intensity', label=[str.lower(entities_A), str.lower(entities_B)], delta_t=delta, mimic_choice=mimic_choice))
+                                                fig, df=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, filter='Intensity', label=[str.lower(entities_A), str.lower(entities_B)], delta_t=delta, mimic_choice=mimic_choice))
                                                 if fig!=None:
                                                     st.write(f"For {entity2} mimicking {entity1} - {i}: ")
                                                     st.plotly_chart(fig)
+                                                    # Export csv
+                                                    if isinstance(df, pd.DataFrame):
+                                                        if not df.empty:
+                                                            csv_exp7 = df.to_csv(index=False)
+                                                            st.download_button(label="Download CSV", data=csv_exp7, file_name=f'mimicry_{entities_A.lower()}_{expression_choiceA.lower()}_vs_{entities_B.lower()}_{expression_choiceB.lower()}_{entity2.lower()}_mimicking_{entity1.lower()}_{i}_for_{delta}_delta_{mimic_choice}.csv', mime='text/csv')
                                                 else:
                                                     st.write("No data to display")
                                             except:
@@ -225,9 +265,14 @@ def page3():
             if real_tier_lists[A_choice]:
                 width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W1') 
                 shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S1') 
-                fig=plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift), databases_list)
+                fig, df=plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift), databases_list)
                 if fig!=None:
                     st.plotly_chart(fig)
+                    # Export csv
+                    if isinstance(df, pd.DataFrame):
+                        if not df.empty:
+                            csv_exp8 = df.to_csv(index=False)
+                            st.download_button(label="Download CSV", data=csv_exp8, file_name=f'correlation_{A_choice.lower()}_for_{width}_width_and_{shift}_shift.csv', mime='text/csv')
                 else:
                     st.write("No data to display")
             else:
@@ -242,9 +287,14 @@ def page3():
             if real_tier_lists[A_choice] and real_tier_lists[B_choice]:     
                 width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W2') 
                 shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S2') 
-                fig=plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice), databases_list)
+                fig, df=plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice), databases_list)
                 if fig!=None:
                     st.plotly_chart(fig)
+                    # Export csv
+                    if isinstance(df, pd.DataFrame):
+                        if not df.empty:
+                            csv_exp9 = df.to_csv(index=False)
+                            st.download_button(label="Download CSV", data=csv_exp9, file_name=f'correlation_{A_choice.lower()}_vs_{B_choice.lower()}_for_{width}_width_and_{shift}_shift.csv', mime='text/csv')
                 else:
                     st.write("No data to display")
             else:
@@ -291,9 +341,14 @@ def page3():
                         shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S4')
                         entity1=st.radio("Entity of person A: ", entity_levelA, key='CE5')
                         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                        fig=plot_correlation(get_correlation_by_entity(A_choice, entity1, databases_list1, width, shift, B_choice), databases_list1)
+                        fig, df=plot_correlation(get_correlation_by_entity(A_choice, entity1, databases_list1, width, shift, B_choice), databases_list1)
                         if fig!=None:
                             st.plotly_chart(fig)
+                            # Export csv
+                            if isinstance(df, pd.DataFrame):
+                                if not df.empty:
+                                    csv_exp10 = df.to_csv(index=False)
+                                    st.download_button(label="Download CSV", data=csv_exp10, file_name=f'correlation_{entity1.lower()}_{A_choice.lower()}_vs_{B_choice.lower()}_for_{width}_width_and_{shift}_shift.csv', mime='text/csv')
                         else:
                             st.write("No data to display")
                     else:
@@ -311,9 +366,14 @@ def page3():
                         shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S5')
                         entity1=st.radio("Entity of person B: ", entity_levelB, key='CE6')
                         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                        fig=plot_correlation(get_correlation_by_entity(B_choice, entity1, databases_list1, width, shift, A_choice), databases_list1)
+                        fig, df=plot_correlation(get_correlation_by_entity(B_choice, entity1, databases_list1, width, shift, A_choice), databases_list1)
                         if fig!=None:
                             st.plotly_chart(fig)
+                            # Export csv
+                            if isinstance(df, pd.DataFrame):
+                                if not df.empty:
+                                    csv_exp11 = df.to_csv(index=False)
+                                    st.download_button(label="Download CSV", data=csv_exp11, file_name=f'correlation_{A_choice.lower()}_vs_{entity1.lower()}_{B_choice.lower()}_for_{width}_width_and_{shift}_shift.csv', mime='text/csv')
                         else:
                             st.write("No data to display")
                     else:
@@ -335,9 +395,14 @@ def page3():
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                     entity2=st.radio("Entity of person B: ", entity_levelB, key='CE6')
                     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                    fig=plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2), databases_list1)
+                    fig, df=plot_correlation(get_correlation_byI(A_choice, entity1, databases_list1, width, shift, B_choice, entity2), databases_list1)
                     if fig!=None:
                         st.plotly_chart(fig)
+                        # Export csv
+                        if isinstance(df, pd.DataFrame):
+                            if not df.empty:
+                                csv_exp10 = df.to_csv(index=False)
+                                st.download_button(label="Download CSV", data=csv_exp10, file_name=f'correlation_{entity1.lower()}_{A_choice.lower()}_vs_{entity2.lower()}_{B_choice.lower()}_for_{width}_width_and_{shift}_shift.csv', mime='text/csv')
                     else:
                         st.write("No data to display")
                 else:
