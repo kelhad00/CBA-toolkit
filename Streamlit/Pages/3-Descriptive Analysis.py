@@ -8,9 +8,9 @@ script_path=os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
 sys.path.append("..")
 
-from src.page2.snl_stats_visualization_page2 import *
-from src.page2.snl_stats_visualization_page6 import *
-from src.page2.snl_stats_visualization_database import *
+from src.page3.snl_stats_visualization_page3 import *
+from src.page3.snl_stats_visualization_page3_express import *
+from src.page3.snl_stats_visualization_database import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
 real_tier_lists , real_tiers = get_parameters_tag()
 
@@ -204,14 +204,17 @@ def page1():
                     if "Absolute" in figs1:
                         count+=1
                         for entity in expression_values:
-                            fig1_temp, df1_temp=plot_absolute_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
-                            if fig1_temp!=None:
-                                st.write(fig1_temp)   
-                                # Export CSV
-                                if not df1_temp.empty:
-                                    csv = df1_temp.to_csv(index=False)
-                                    st.download_button(label='Download CSV', data=csv, file_name=f'{expression_choice_copy.lower()}_vs_{entity}_{expression_choice_1.lower()}_{choice1.lower()}_abs.csv', mime='text/csv') 
-                            else:
+                            try :
+                                fig1_temp, df1_temp=plot_absolute_duration_from_tier(expression_choice_1, entity, expression_choice_copy, choice1, name_databases)
+                                if fig1_temp!=None:
+                                    st.write(fig1_temp)   
+                                    # Export CSV
+                                    if not df1_temp.empty:
+                                        csv = df1_temp.to_csv(index=False)
+                                        st.download_button(label='Download CSV', data=csv, file_name=f'{expression_choice_copy.lower()}_vs_{entity}_{expression_choice_1.lower()}_{choice1.lower()}_abs.csv', mime='text/csv') 
+                                else:
+                                    st.write(f"No data available for: {entity} {expression_choice_1}")
+                            except :
                                 st.write(f"No data available for: {entity} {expression_choice_1}")
                     elif "Relative" in figs1:
                         count+=1

@@ -9,7 +9,7 @@ os.chdir(script_path)
 sys.path.append("..")
 
 
-from src.page3.snl_stats_visualization_page3 import *
+from src.page4.snl_stats_visualization_page4 import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
 real_tier_lists , real_tiers = get_parameters_tag()
 

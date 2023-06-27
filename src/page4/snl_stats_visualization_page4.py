@@ -4,182 +4,381 @@ script_path=os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 
-result_thread=""
 import plotly.express as px
-import plotly.graph_objects as pg
-from plotly.subplots import make_subplots
 from src.snl_stats_extraction_data import *
 from IBPY.extract_data import *
 from IBPY.visualization import *
-import numpy as np
-DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
+import threading
+from .function_thread_page4 import *
+from multiprocessing import Queue
 
-#Until #Mimicry, all the functions below are plotting exactly what its written just after "plot_" in their names.
-
-#Expression track - Intra __________________________________________________
-def plot_track_previous_expression(dg, track_choice):
-    """ Plot the previous expression track.
+#Scatter plots - Intra _______________________________________________
+def plot_intra_absolute_duration(database, expression_choice):
+    """ Plot the absolute duration of the tiers for each dataset. 
     
     Args:
-        dg (dataframe): dataframe come from expression_track function
-        track_choice (str): track choice
+        database (str): datasets names
+        expression_choice (str): the expression to extract data from
     Returns:
-        fig: plot
-        dg (dataframe): dataframe of previous expression track
+        D (list): list of the plots
     """
-    if not dg.empty:
-        fig=px.bar(dg, x='Trackp', y=['Countp'], color='Databasep', barmode='group',
-        text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Trackp": f"Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}"},
-                    title=f"Tracking Previous {track_choice.capitalize()}")
-        fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
-    else:
-        fig=None
-    dg.drop(['Databasef', 'Trackf', 'Countf', 'Percentagef'], axis=1)
-    dg = dg.rename(columns={'Trackp': f'Track previous expression: {track_choice}', 'Countp': f'Count previous expression: {track_choice}', 'Databasep': 'Dataset', 'Percentagep': 'Percentage (%)', 'tot': 'Nb of expression'})
-    return fig, dg
+    if database!=None :
+        D=[]
+        Threads=[]
+        queue=Queue()
+        for database_single in database:
+            Threads.append(threading.Thread(target=create_intra_absolute_plot(database, queue, database_single, expression_choice)))
+        for thread in Threads:
+            thread.start()
+        for thread in Threads:
+            thread.join()
+            D.append(queue.get())
+        return D
 
-def plot_track_following_expression(dg, track_choice):
-    """ Plot the following expression track.
+def plot_intra_relative_duration(database, expression_choice):
+    """ Plot the relative duration of the tiers for each dataset.
     
     Args:
-        dg (dataframe): dataframe come from expression_track function
-        track_choice (str): track choice
+        database (str): datasets names
+        expression_choice (str): the expression to extract data from
     Returns:
-        fig: plot
-        dg (dataframe): dataframe of following expression track
+        D (list): list of the plots
     """
-    if not dg.empty:
-        fig=px.bar(dg, x='Trackf', y=['Countf'], color='Databasef', barmode='group',
-        text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Trackf": f"Next {track_choice}", "Countf": f"Count Of Next {track_choice}"},
-                    title=f"Tracking Next {track_choice.capitalize()}")
-        fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
-    else:
-        fig=None
-    dg.drop(['Databasep', 'Trackp', 'Countp', 'Percentagep'], axis=1)
-    dg = dg.rename(columns={'Trackf': f'Track following expression: {track_choice}', 'Countf': f'Count following expression: {track_choice}', 'Databasef': 'Dataset', 'Percentagef': 'Percentage (%)', 'tot': 'Nb of expression'})
-    return fig, dg
+    if database!=None :
+        D=[]
+        Threads=[]
+        queue=Queue()
+        for database_single in database:
+            Threads.append(threading.Thread(target=create_intra_relative_plot, args=(database, queue, database_single, expression_choice)))
+        for thread in Threads:
+            thread.start()
+        for thread in Threads:
+            thread.join()
+            D.append(queue.get())   
+    return D
 
-#By Entity
-def plot_track_previous_expression_byI(dg, track_choice, check_choice):
-    """ Plot the previous expression track by entity.
-    Args : 
-        dg (dataframe): dataframe come from expression_track_byI function
-        track_choice (str): track choice
-        check_choice (str): check choice
-    Returns:
-        fig: plot
-        dg (dataframe): dataframe of previous expression track by entity
-    """
-    if not dg.empty:
-        fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
-        facet_col=dg.iloc[:,2].name,
-        text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityp": f"Entity Of Previous {check_choice}", "Countp": f"Count Of Previous {track_choice}"},
-                    title=f"Tracking Previous {track_choice}")
-        fig.for_each_xaxis(lambda axis: axis.update(title=f"Previous {track_choice}"))
-        fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
-    else: 
-        fig=None
-    dg = dg.rename(columns={'Intensityp': 'Entity of previous expression', 'Countp': 'Count previous expression', 'Databasep': 'Dataset', 'Percentagep': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{check_choice}p': f'Current level of {check_choice}'})
-    return fig, dg
-
-def plot_track_following_expression_byI(dg, track_choice, check_choice):
-    """ Plot the following expression track by entity.
-    
-    Args :
-        dg (dataframe): dataframe come from expression_track_byI function
-        track_choice (str): track choice
-        check_choice (str): check choice
-    Returns:
-        fig: plot
-        dg (dataframe): dataframe of following expression track by entity
-    """
-    if not dg.empty:    
-        fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
-        facet_col=dg.iloc[:,2].name,
-        text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityf": f"Entity Of Next {check_choice}", "Countf": f"Count Of Next {track_choice}"},
-                    title=f"Tracking Next {track_choice}")
-        fig.for_each_xaxis(lambda axis: axis.update(title=f"Next {track_choice}"))
-        fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
-    else:
-        fig=None
-    dg = dg.rename(columns={'Intensityf': f'Entity of following expression: {track_choice}', 'Countf': f'Count following expression: {track_choice}', 'Databasef': 'Dataset', 'Percentagef': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{check_choice}f': f'Current level of {check_choice}'})
-    return fig, dg
-
-#Mimicry______________________________________________________________
-def plot_mimicry(L):
-    """ Plot probabilities and count mimicry per interaction.
-    L come from give_mimicry, or give_mimicry_folder1 or give_mimicry_folder2 or give_mimicry_folder3 or give_mimicry_folder4.
+#Filter by tier
+def plot_absolute_duration_from_lsn_folder(listpaths, string):
+    """ Plot the absolute duration of the tiers for each dataset for listeners.
     
     Args:
-        L (list): List of tuple (count, probability, database)
-    Return : 
-        Figure: Scatter (with line) plot figure
-        Dataframe: Dataframe of mimicry
+        listpaths (list): list of files paths to extract data from
+        string (str): the dataset to extract data from
+    Returns:
+        L (list): list of the plots
     """
-    name_databases=[key.replace('_paths','') for key in databases.keys()]
+    dg1=get_intra_smiles_ad_from_lsn_folder(listpaths, string)
+    dg2=get_intra_laughs_ad_from_lsn_folder(listpaths, string)
+    dg1=list_to_df(dg1[0], dg1[1])
+    dg2=list_to_df(dg2[0], dg2[1])
+    fig1=px.scatter(dg1, x='subject', y='sum_time', color='label',
+    title=f"Smiles absolute duration for {string} database - For listeners")
+    fig2=px.scatter(dg2, x='subject', y='sum_time', color='label',
+    title=f"Laughs absolute duration for {string} database - For listeners")
+    L=[fig1, fig2]
+    return L
+
+def plot_absolute_duration_from_spk_folder(listpaths, string):
+    """ Plot the absolute duration of the tiers for each dataset for speakers.
+    
+    Args:
+        listpaths (list): list of files paths to extract data from
+        string (str): the dataset to extract data from
+    Returns:
+        L (list): list of the plots
+    """
+    dg1=get_intra_smiles_ad_from_spk_folder(listpaths, string)
+    dg2=get_intra_laughs_ad_from_spk_folder(listpaths, string)
+    dg1=list_to_df(dg1[0], dg1[1])
+    dg2=list_to_df(dg2[0], dg2[1])
+    fig1=px.scatter(dg1, x='subject', y='sum_time', color='label',
+    title=f"Smiles absolute duration for {string} database - For speakers")
+    fig2=px.scatter(dg2, x='subject', y='sum_time', color='label',
+    title=f"Laughs absolute duration for {string} database - For speakers")
+    L=[fig1, fig2]
+    return L
+
+def plot_absolute_duration_from_tier_folder(listpaths, string, tier1, tier2, entity):
+    """ Plot the absolute duration of the tiers for each dataset filter by a specific tier and entity.
+    
+    Args:
+        listpaths (list): list of files paths to extract data from
+        string (str): the dataset to extract data from
+        tier1 (str): the first tier to extract data from
+        tier2 (str): the second tier used for the plot
+        entity (str): the entity to extract data from tier1
+    Returns:
+        L (list): list of the plots + the dataframe
+    """
+    dg1=get_intra_tier_ad_from_tier_folder(listpaths, string, tier1, tier2, entity)
+    dg1=list_to_df(dg1[0], dg1[1])
+    split_elements=[]
+    for i in range(len(listpaths)):
+        element=listpaths[i]
+        split_elements.append(os.path.split(element))
+    for i in range(len(dg1['subject'])):
+        temp=dg1['subject'][i]
+        dg1['subject'][i]=split_elements[int(temp)-1][-1]
+    fig1=px.scatter(dg1, x='subject', y='sum_time', color='label',
+    title=f"{tier2} absolute duration for {string} database - For {entity} {tier1}")
+    fig1.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
+    dg1 = dg1.drop('time', axis=1)
+    dg1 = dg1.rename(columns={'sum_time': 'Duration (ms)', 'label': f'Entity of {tier1.lower()}', 'subject': 'Files name'})
+    L=[fig1, dg1]
+    return L
+
+def plot_relative_duration_from_lsn_folder(listpaths, string):
+    """ Plot the relative duration of the tiers for each dataset for listeners.
+    
+    Args:
+        listpaths (list): list of files paths to extract data from
+        string (str): the dataset to extract data from
+    Returns:
+        L (list): list of the plots
+    """
+    dg1=get_intra_smiles_rd_from_lsn_folder(listpaths, string)
+    dg2=get_intra_laughs_rd_from_lsn_folder(listpaths, string)
+    dg1=list_to_df(dg1[0], dg1[1])
+    dg2=list_to_df(dg2[0], dg2[1])
+    fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
+    title=f"Smiles relative duration for {string} database - For listeners")
+    fig2=px.scatter(dg2, x='subject', y='percentage', color='label', 
+    title=f"Laughs relative duration for {string} database - For listeners")
+    L=[fig1, fig2]
+    return L
+
+def plot_relative_duration_from_spk_folder(listpaths, string):
+    """ Plot the relative duration of the tiers for each dataset for speakers.
+    
+    Args:
+        listpaths (list): list of files paths to extract data from
+        string (str): the dataset to extract data from
+    Returns:
+        L (list): list of the plots
+    """
+    dg1=get_intra_smiles_rd_from_spk_folder(listpaths, string)
+    dg2=get_intra_laughs_rd_from_spk_folder(listpaths, string)
+    dg1=list_to_df(dg1[0], dg1[1])
+    dg2=list_to_df(dg2[0], dg2[1])
+    fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
+    title=f"Smiles relative duration for {string} database - For speakers")
+    fig2=px.scatter(dg2, x='subject', y='percentage', color='label', 
+    title=f"Laughs relative duration for {string} database - For speakers")
+    L=[fig1, fig2]
+    return L
+
+def plot_relative_duration_from_tier_folder(listpaths, string, tier1, tier2, entity):
+    """ Plot the relative duration of the tiers for each dataset filter by a specific tier and entity.
+
+    Args:
+        listpaths (list): list of files paths to extract data from
+        string (str): the dataset to extract data from
+        tier1 (str): the first tier to extract data from
+        tier2 (str): the second tier used for the plot
+        entity (str): the entity to extract data from tier1
+    Returns:
+        L (list): list of the plots + the dataframe
+    """
+    dg1=get_intra_tier_rd_from_tier_folder(listpaths, string, tier1, tier2, entity)
+    dg1=list_to_df(dg1[0], dg1[1])
+    split_elements=[]
+    for i in range(len(listpaths)):
+        element=listpaths[i]
+        split_elements.append(os.path.split(element))
+    for i in range(len(dg1['subject'])):
+        temp=dg1['subject'][i]
+        dg1['subject'][i]=split_elements[int(temp)-1][-1]
+    fig1=px.scatter(dg1, x='subject', y='percentage', color='label', 
+    title=f"{tier2} relative duration for {string} database - For {entity} {tier1}")
+    fig1.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
+    dg1 = dg1.rename(columns={'percentage': 'Percentage (%)', 'label': f'Entity of {tier1.lower()}', 'subject': 'Files name'})
+    L=[fig1, dg1]
+    return L
+
+#Scatter plots - Inter _______________________________________________
+def plot_inter_absolute_duration(database, expression_choice):
+    """ Plot the absolute duration of the tiers for each dataset.
+    
+    Args:
+        database (str): name of the datasets of the database to extract data from
+        expression_choice (str): the expression to extract data from
+    Returns:
+        D (list): list of the plots
+    """
+    if database!=None :
+        D=[]
+        Thread=[]
+        queue=Queue()
+        for database_single in database: 
+            Thread.append(threading.Thread(target=create_inter_absolute_plot, args=(database, queue, database_single, expression_choice)))
+        for thread in Thread:
+            thread.start()
+        for thread in Thread:    
+            thread.join()
+            D.append(queue.get())
+        return D
+
+def plot_inter_relative_duration(database, expression_choice):
+    """ Plot the relative duration of the tiers for each dataset.
+    
+    Args:
+        database (str): name of the datasets of the database to extract data from
+        expression_choice (str): the expression to extract data from
+    Returns:
+        D (list): list of the plots
+    """
+    if database!=None:
+        D=[]
+        Thread=[]
+        queue=Queue()
+        for database_single in database:     
+            Thread.append(threading.Thread(target=create_inter_relative_plot, args=(database, queue, database_single, expression_choice)))    
+        for thread in Thread:
+            thread.start()
+        for thread in Thread: 
+            thread.join()
+            D.append(queue.get())
+        return D
+            
+#Filter by Roles
+def plot_inter_ad_spk_vs_lsn(database):
+    """ Plot the absolute duration of the tiers for one dataset filter by roles speaker vs listener.
+    
+    Args:
+        database (str): name of the dataset
+    Returns:
+        D (list): list of the plots
+    """
+    df=get_db_from_func_pair(DIR, get_inter_smiles_ad_spk_vs_lsn_folder)
+    fig1=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='sum_time', color='label', symbol='role'
+    , orientation='v', title='Smiles Absolute Duration - Speaker vs Listner',labels={"conv":"Interaction",
+    "sum_time": "Absolute Duration","label": "Entity"})
+    dg=get_db_from_func_pair(DIR, get_inter_laughs_ad_spk_vs_lsn_folder)
+    fig2=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='sum_time', color='label', symbol='role'
+    , orientation='v', title='Laughs Absolute Duration - Speaker vs Listner',labels={"conv":"Interaction",
+    "sum_time": "Absolute Duration","label": "Entity"})
+    return [fig1, fig2]
+
+def plot_inter_rd_spk_vs_lsn(database):
+    """ Plot the relative duration of the tiers for one dataset filter by roles speaker vs listener.
+    
+    Args:
+        database (str): name of the dataset
+    Returns:
+        D (list): list of the plots
+    """
+    df=get_db_from_func_pair(DIR, get_inter_smiles_rd_spk_vs_lsn_folder)
+    fig1=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='percentage', color='label',symbol='role'
+    , orientation='v', title='Smiles Relative Duration - Speaker vs Listner',labels={"conv":"Interaction",
+    "percentage": "Percentage (%)","label": "Entity"})
+    dg=get_db_from_func_pair(DIR, get_inter_laughs_rd_spk_vs_lsn_folder)
+    fig2=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='percentage', color='label', symbol='role'
+    , orientation='v', title='Laughs Relative Duration - Speaker vs Listner',labels={"conv":"Interaction",
+    "percentage": "Percentage (%)","label": "Entity"})
+    return [fig1, fig2]
+
+def plot_inter_ad_lsn_vs_spk(database):
+    """ Plot the absolute duration of the tiers for one dataset filter by roles listener vs speaker.
+    
+    Args:
+        database (str): name of the dataset
+    Returns:
+        D (list): list of the plots
+    """
+    df=get_db_from_func_pair(DIR, get_inter_smiles_ad_lsn_vs_spk_folder)
+    fig1=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='sum_time', color='label', symbol='role'
+    , orientation='v', title='Smiles Absolute Duration - Listner vs Speaker',labels={"conv":"Interaction",
+    "sum_time": "Absolute Duration","label": "Entity"})
+    dg=get_db_from_func_pair(DIR, get_inter_laughs_ad_lsn_vs_spk_folder)
+    fig2=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='sum_time', color='label', symbol='role'
+    , orientation='v', title='Laughs Absolute Duration - Listner vs Speaker',labels={"conv":"Interaction",
+    "sum_time": "Absolute Duration","label": "Entity"})
+    return [fig1, fig2]
+
+def plot_inter_rd_lsn_vs_spk(database):
+    """ Plot the relative duration of the tiers for one dataset filter by roles listener vs speaker.
+    
+    Args:
+        database (str): name of the dataset
+    Returns:
+        D (list): list of the plots
+    """
+    df=get_db_from_func_pair(DIR, get_inter_smiles_rd_lsn_vs_spk_folder)    
+    fig1=px.scatter(df[df.database.eq(f'{database}')], x='conv', y='percentage', color='label', symbol='role'
+    , orientation='v', title='Smiles Relative Duration - Listner vs Speaker',labels={"conv":"Interaction",
+    "percentage": "Percentage (%)","label": "Entity"})
+    dg=get_db_from_func_pair(DIR, get_inter_laughs_rd_lsn_vs_spk_folder)    
+    fig2=px.scatter(dg[dg.database.eq(f'{database}')], x='conv', y='percentage', color='label', symbol='role'
+    , orientation='v', title='Laughs Relative Duration - Listner vs Speaker',labels={"conv":"Interaction",
+    "percentage": "Percentage (%)","label": "Entity"})
+    return [fig1, fig2]
+
+#Filter by Tiers
+def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
+    """ Plot the absolute duration of the tiers for one dataset filter by 2 entities extract from an other tier.
+    
+    Args:
+        database (str): name of the dataset
+        tier1 (str): tier to extract the data from
+        tier2 (str): tier used to filter the data
+        entity1 (str): first entity to filter the data from tier2
+        entity2 (str): second entity to filter the data from tier2
+    Returns:
+        D (list): list of the plots + the dataframe
+    """
+    df=get_db_from_func_pair_tier(DIR, get_inter_tier_ad_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
+    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
     databases_=[value for value in databases_pair_paths.values()]
     for i in range(len(name_databases)):
-        if L[0][2]==name_databases[i]:
+        if database==name_databases[i]:
             data_path=databases_[i]
     split_elements=[]
-    Pair_files=[]
     for i in range(len(data_path)):
         element=data_path[i]
         split_elements.append(os.path.split(element))
-    for i in range(0,len(split_elements), 2): 
-        Pair_files.append(split_elements[i][-1]+' & '+split_elements[i+1][-1])
-    M=[]
-    df=list_to_df(L,['count', 'probability', 'database'])
-    if not df.empty:
-        df['interaction']=[i+1 for i in range(len(df['count']))]
-        lst=list(np.unique(list(df.database)))
-        colors=['royalblue', 'green', 'red', 'orange']  # Specify colors for each line
-        for i in lst:
-            M.append(df[df.database.eq(i)])
-        fig=make_subplots(1, len(lst))
-        for i, j in zip([i for i in range(1,len(lst)+1)], M):
-            for k in range(len(j['interaction'])):
-                j['interaction'][k]=Pair_files[(int(j['interaction'][k])-1)]
-            fig.add_trace(pg.Scatter(x=j['interaction'], y=j.probability, marker_color=colors[0], name=f'Propbabilities {lst[i-1]}'),1,i)
-            fig.add_trace(pg.Scatter(x=j['interaction'], y=j['count'], marker_color=colors[1], name=f'Count {lst[i-1]}'), 1,i) 
-        fig.update_layout(title=f'Count and probabilities per interaction')
-        fig.update_xaxes(title='Pairs files')
-    else:
-        fig=None
-    M[0] = M[0].rename(columns={'count': 'Count', 'probability': 'Probability', 'database': 'Dataset', 'interaction': 'Interaction (pair of files)'})
-    return fig, M[0]
+    for i in range(len(df['conv'])):
+        df['conv'][i]=df['conv'][i]-1
+    for i in range(len(df['conv'])):
+        temp=df['conv'][i]
+        df['conv'][i]=split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
+    fig1=px.scatter(df[df.database.eq(f'{database.lower()}')], x='conv', y='sum_time', color='label', symbol='role'
+    , orientation='v', title=f'{tier2} Absolute Duration - {entity1} vs {entity2} {tier1}',labels={"conv": "Pairs files",
+    "sum_time": "Absolute Duration","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
+    fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
+    df.drop('time', axis=1)
+    df = df.rename(columns={"conv": "Files name", "sum_time": "Duration (ms)", "label": f"Entity of {tier2.lower()}", "role": f"Entity of {tier1.lower()}"})
+    return [fig1, df]
 
-#Correlation__________________________________________________________
-def plot_correlation(L, folder):
-    """ This function plots the correlation between two series.
+def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):
+    """ Plot the relative duration of the tiers for each dataset filter by 2 entities extract from an other tier.
     
     Args:
-        L (list): The list containing the correlation for each pair of two series
-        folder (list): The list containing the path of the files
+        database (str): name of the dataset
+        tier1 (str): tier to extract the data from
+        tier2 (str): tier used to filter the data
+        entity1 (str): first entity to filter the data from tier2
+        entity2 (str): second entity to filter the data from tier2
     Returns:
-        Figure: Scatter plot
-        Dataframe: Dataframe of correlation
+        D (list): list of the plots
     """
+    df=get_db_from_func_pair_tier(DIR, get_inter_tier_rd_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
+    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
+    databases_=[value for value in databases_pair_paths.values()]
+    for i in range(len(name_databases)):
+        if database==name_databases[i]:
+            data_path=databases_[i]
     split_elements=[]
-    Pair_Files=[]
-    for i in range(len(folder)):
-        element=folder[i]
+    for i in range(len(data_path)):
+        element=data_path[i]
         split_elements.append(os.path.split(element))
-    for i in range(0,len(split_elements), 2): 
-        Pair_Files.append(split_elements[i][-1]+' & '+split_elements[i+1][-1])
-    if L:  
-        fig=make_subplots(1, 1)
-        fig.add_trace(pg.Scatter(x=[Pair_Files[i] for i in range(len(Pair_Files))], y=L, marker_color='royalblue', name='Correlation'))
-        fig.update_layout(title=f'Correlation per interaction')
-        fig.update_xaxes(title='Interaction')
-        fig.update_yaxes(title='Correlation')
-    else:
-        fig=None
-    # Create DataFrame with "Files pairs" and "Correlation" columns
-    df = pd.DataFrame({'Files pairs': Pair_Files, 'Correlation': L})
-    return fig, df
-    
+    for i in range(len(df['conv'])):
+        df['conv'][i]=df['conv'][i]-1
+    for i in range(len(df['conv'])):
+        temp=df['conv'][i]
+        df['conv'][i]=split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
+    fig1=px.scatter(df[df.database.eq(f'{database.lower()}')], x='conv', y='percentage', color='label', symbol='role'
+    , orientation='v', title=f'{tier2} Relative Duration - {entity1} vs {entity2} {tier1}',labels={"conv":"Pairs files",
+    "percentage": "Percentage (%)","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
+    fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
+    df = df.rename(columns={'percentage': 'Percentage (%)', 'label': f'Entity of {tier2.lower()}', 'role': f'Entity of {tier1.lower()}','conv': 'Files name'})
+    return [fig1, df]

@@ -8,7 +8,7 @@ script_path=os.path.realpath(os.path.dirname("src"))
 os.chdir(script_path)
 sys.path.append("..")
 
-from src.page4.snl_stats_visualization_page4 import *
+from src.page5.snl_stats_visualization_page5 import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
 
 real_tier_lists , real_tiers = get_parameters_tag()

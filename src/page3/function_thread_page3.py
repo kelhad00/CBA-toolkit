@@ -4,167 +4,474 @@ script_path=os.path.realpath(os.path.dirname("IBPY"))
 os.chdir(script_path)
 sys.path.append("..")
 
-result_thread=""
-import plotly.express as px
+import plotly.graph_objects as pg
 from src.snl_stats_extraction_data import *
 from IBPY.extract_data import *
 from IBPY.visualization import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
+real_tier_lists , real_tiers = get_parameters_tag()
 
-def create_intra_absolute_plot(database, queue, database_single, expression_choice):
-    """ Create intra absolute plot for a given dataset and expression choice.
-    
-    Args:
-        database (str): datasets name
-        queue (queue): queue to store the plot
-        database_single (str): dataset name choice
-        expression_choice (str): expression choice
-    Returns:
-        list: list of plot + dataframe
-    """
-    dg=get_db_from_func_no_pair(DIR, get_intra_tiers_absolute_duration_folder, database, expression_choice)
-    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
-    for i in range(len(name_databases)):
-        if database_single==name_databases[i]:
-            data_path=databases_[i]
-    split_elements=[]
-    for i in range(len(data_path)):
-        element=data_path[i]
-        split_elements.append(os.path.split(element))
-    for i in range(len(dg['subject'])):
-        if dg['database'][i] == database_single.lower() :
-            temp=dg['subject'][i]
-            dg['subject'][i]=split_elements[int(temp)-1][-1]
-    print(dg)
-    scatter_fig_tiers=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='sum_time', color='label'#,text='time'
-    , orientation='v', title=f'{expression_choice} Absolute Duration - Intra , Database : '+database_single, labels={"sum_time": "Absolute Duration",
-    "label": "Entity"})
-    scatter_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
-    line_fig_tiers=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='sum_time', color='label', symbol='label',
-    orientation='v', title=f'{expression_choice} Absolute Duration - Intra , Database : '+database_single, labels={"sum_time": "Absolute Duration",
-    "label": "Entity"})
-    line_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Time (ms)")
-    dg = dg.drop('time', axis=1)
-    dg = dg.rename(columns={'sum_time': 'Duration (ms)', 'label': 'Entity', 'subject': 'Files name'})
-    L=[scatter_fig_tiers, line_fig_tiers, dg]
-    queue.put(L)
+def create_plot_absolute_duration_thread(Tiers, choice, queue, name_databases) :
 
-def create_intra_relative_plot(database, queue, database_single, expression_choice) :
-    """ Create intra relative plot for a given dataset and expression choice.
-    
-    Args:
-        database (str): datasets name
-        queue (queue): queue to store the plot
-        database_single (str): dataset name choice
-        expression_choice (str): expression choice
-    Returns:
-        list: list of plot + dataframe
-    """
-    dg=get_db_from_func_no_pair(DIR, get_intra_tiers_relative_duration_folder, database, expression_choice)
-    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
-    for i in range(len(name_databases)):
-        if database_single==name_databases[i]:
-            data_path=databases_[i]
-    split_elements=[]
-    for i in range(len(data_path)):
-        element=data_path[i]
-        split_elements.append(os.path.split(element))
-    for i in range(len(dg['subject'])):
-        if dg['database'][i] == database_single.lower() :
-            temp=dg['subject'][i]
-            dg['subject'][i]=split_elements[int(temp)-1][-1]
-    scatter_fig_tiers=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='percentage', color='label',
-    orientation='v', title=f'{expression_choice} Relative Duration - Intra , Database : '+database_single, labels={"label": "Entity"})
-    scatter_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
-    line_fig_tiers=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='percentage', color='label', symbol='label',
-    orientation='v', title=f'{expression_choice} Relative Duration - Intra , Database : '+database_single, labels={"label": "Entity"})
-    line_fig_tiers.update_layout(xaxis_title="Files name", yaxis_title="Percentage (%)")
-    dg = dg.rename(columns={'percentage': 'Percentage (%)', 'label': 'Entity', 'subject': 'Files name', 'duration': 'Duration of the file (ms)', 'sum_time': 'Duration of the entity (ms)'})
-    L=[scatter_fig_tiers, line_fig_tiers, dg]
-    queue.put(L)
-
-def create_inter_absolute_plot(database, queue, database_single, expression_choice) :
-    """ Create inter absolute plot for a given dataset and expression choice.
-    
-    Args:
-        database (str): datasets name
-        queue (queue): queue to store the plot
-        database_single (str): dataset name choice
-        expression_choice (str): expression choice
-    Returns:
-        list: list of plot + dataframe
-    """
     real_tier_lists , real_tiers = get_parameters_tag()
-    
-    dg=get_db_from_func_pair(DIR, get_inter_tier_absolute_duration_folder, database, expression_choice, real_tier_lists)
-    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
-    for i in range(len(name_databases)):
-        if database_single==name_databases[i]:
-            data_path=databases_[i]
-    split_elements=[]
-    for i in range(len(data_path)):
-        element=data_path[i]
-        split_elements.append(os.path.split(element))
-    for i in range(len(dg['conv'])):
-        dg['conv'][i]=dg['conv'][i]-1
-    for i in range(len(dg['conv'])):
-        if dg['database'][i] == database_single.lower() :
-            temp=dg['conv'][i]
-            dg['conv'][i]=split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
-    fig1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label'
-    , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv": "Interaction",
-    "duration": "Time difference","label": "Entity"})
-    fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
-    fig1_1=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label', symbol='label'
-    , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv": "Pairs files",
-    "duration": "Time difference","label": "Entity"})
-    fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
-    dg = dg.drop('time', axis=1)
-    dg = dg.rename(columns={'duration': 'Duration (ms)', 'label': 'Entity', 'conv': 'Files name'})
-    L=[fig1, fig1_1, dg]
-    queue.put(L)
-
-def create_inter_relative_plot(database, queue, database_single, expression_choice) :
-    """ Create inter relative plot for a given dataset and expression choice.
+    ''' Create a plot of the absolute duration of the tiers in the dataset.
     
     Args:
-        database (str): datasets name
-        queue (queue): queue to store the plot
-        database_single (str): dataset name choice
-        expression_choice (str): expression choice
+        Tiers (str): The tier to plot
+        choice (str): The choice of the user between Mean, Median and Standard deviation, Min, Max
+        queue (Queue): The queue to send the plot
+        name_databases (list): The list of the datasets
     Returns:
-        list: list of plot + dataframe
-    """
-    
+        A plot of the absolute duration of the tiers in the dataset
+    '''
+    try :
+        dg1=get_db_from_func_no_pair(DIR, eval("get_tier_dict_folder"), name_databases, Tiers)
+        fig1=pg.Figure()
+        if not dg1.empty:
+            if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], "No_"+real_tier_lists[Tiers]['Replace_Value']]
+            else :
+                labels = real_tier_lists[Tiers]['Intensities']
+            for database in (dg1['database'].unique()):
+                df_plot=dg1[dg1['database']==database]
+                df_plot=df_plot[df_plot['label'].isin(labels)]
+                if not df_plot.empty:
+                    if choice=='Mean':
+                        df_mean=df_plot.groupby('label').mean(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
+                    elif choice=='Median': 
+                        df_median = df_plot.groupby('label').median(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
+                    elif choice=='Standard deviation':
+                        df_std=df_plot.groupby('label').std(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    elif choice=='Min':
+                        df_std=df_plot.groupby('label').min(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    elif choice=='Max':
+                        df_std=df_plot.groupby('label').max(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    else:
+                        fig1.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                                            notched=True, boxmean='sd',
+                                            name='database='+database))
+            fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+            fig1.update_layout(title_text=f'{choice} on {Tiers} - Absolute Duration', title_x=0.5, 
+            xaxis_title="Entity",
+            yaxis_title="Time (ms)",
+            legend_title="Datasets",
+            xaxis=dict(
+                categoryarray=labels,
+                categoryorder='array',
+                tickmode='array',
+                tickvals=labels,
+                ticktext=labels
+            ))
+        else:
+            fig1=None
+    except:
+        fig1=None
+    queue.put(fig1)
+
+def create_plot_relative_duration_thread(Tiers, choice, queue, database_names) :
+    ''' Create a plot of the relative duration of the tiers in the dataset.
+
+    Args:
+        Tiers (str): The tier to plot
+        choice (str): The choice of the user between Mean, Median and Standard deviation, Min, Max
+        queue (Queue): The queue to send the plot
+        database_names (list): The list of the datasets
+    Returns:
+        A plot of the relative duration of the tiers in the dataset
+    '''
     real_tier_lists , real_tiers = get_parameters_tag()
-    dg=get_db_from_func_pair(DIR, get_inter_tier_relative_duration_folder, database, expression_choice, real_tier_lists)
-    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
-    for i in range(len(name_databases)):
-        if database_single==name_databases[i]:
-            data_path=databases_[i]
-    split_elements=[]
-    for i in range(len(data_path)):
-        element=data_path[i]
-        split_elements.append(os.path.split(element))
-    for i in range(len(dg['conv'])):
-        dg['conv'][i]=dg['conv'][i]-1
-    for i in range(len(dg['conv'])):
-        if dg['database'][i] == database_single.lower() :
-            temp=dg['conv'][i]
-            dg['conv'][i]=split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
-    fig1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='percentage', color='label'
-    , orientation='v', title=f'{expression_choice} Relative Duration per interaction', labels={"conv": "Interaction",
-    "percentage": "Percentage difference","label": "Entity"})
-    fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
-    fig1_1=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='percentage', color='label', symbol='label'
-    , orientation='v', title=f'{expression_choice} Relative Duration per interaction',labels={"conv": "Pairs files",
-    "percentage": "Percentage difference","label": "Entity"})
-    fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Percentage (%)")
-    dg = dg.rename(columns={'percentage': 'Percentage (%)', 'label': 'Entity', 'conv': 'Files name'})
-    L=[fig1, fig1_1, dg]
-    queue.put(L)       
+
+    try :
+        df1=get_db_from_func_no_pair(DIR, eval("get_tier_dict_folder"), database_names, Tiers)
+        if not df1.empty:
+            dg1=get_rd_stats(df1)
+            dg1=list_to_df(dg1[0], dg1[1])
+            if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], "No_"+real_tier_lists[Tiers]['Replace_Value']]
+            else :
+                labels = real_tier_lists[Tiers]['Intensities']    
+            fig1=pg.Figure()
+            for database in (dg1['database'].unique()):
+                df_plot=dg1[dg1['database']==database]
+                df_plot=df_plot[df_plot['label'].isin(labels)]
+                if choice=='Mean':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
+                elif choice=='Median': 
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
+                elif choice=='Standard deviation':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
+                elif choice=='Min':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
+                elif choice=='Max':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
+                else:
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+            fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+            fig1.update_layout(title_text=f'{choice} on {Tiers} - Relative Duration', title_x=0.5, 
+            xaxis_title="Entity",
+            yaxis_title="Percentage (%)",
+            legend_title="Datasets",
+            xaxis=dict(
+                categoryarray=labels,
+                categoryorder='array',
+                tickmode='array',
+                tickvals=labels,
+                ticktext=labels,
+            ))
+        else:
+            fig1=None
+    except:
+        fig1=None
+    queue.put(fig1)
+    
+#Filter by role   
+def create_absolute_duration_from_spk_thread(Tiers, choice, queue, name_databases) :
+    ''' Create a plot of the absolute duration of the tiers in the dataset filtered by role of the speaker.
+    
+    Args:
+        Tiers (str): The tier to plot
+        choice (str): The choice of the user between Mean, Median and Standard deviation, Min, Max
+        queue (Queue): The queue to send the plot
+        name_databases (list): The list of the datasets
+    Returns:
+        A plot of the absolute duration of the tiers in the dataset filtered by role of the speaker
+    '''
+    labels=real_tier_lists[Tiers]['Intensities']   
+    dg1=get_db_from_func_no_pair(DIR,eval("get_tier_from_spk_folder"), name_databases, Tiers)
+    fig1=pg.Figure()
+    if not dg1.empty:
+        for database in (dg1['database'].unique()):
+            df_plot=dg1[dg1['database']==database]
+            df_plot=df_plot[df_plot['label'].isin(labels)]
+            if not df_plot.empty:
+                if choice=='Mean':
+                    df_mean=df_plot.groupby('label').mean().reset_index()
+                    fig1.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
+                elif choice=='Median': 
+                    df_median=df_plot.groupby('label').median().reset_index()
+                    fig1.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
+                elif choice=='Standard deviation':
+                    df_std=df_plot.groupby('label').std().reset_index()
+                    fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                elif choice=='Min':
+                    df_std=df_plot.groupby('label').min().reset_index()
+                    fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                elif choice=='Max':
+                    df_std=df_plot.groupby('label').max().reset_index()
+                    fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                else:
+                    fig1.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                                        notched=True, boxmean='sd',
+                                        name='database='+database))
+        fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+        fig1.update_layout(title_text=f'{choice} for speakers on {Tiers} - Absolute duration', title_x=0.5, 
+        xaxis_title="Entity",
+        yaxis_title="Time (ms)",
+        legend_title="Datasets",
+        xaxis=dict(
+            categoryarray=labels,
+            categoryorder='array',
+            tickmode='array',
+            tickvals=labels,
+            ticktext=labels
+        ))
+    else:
+        fig1=None
+
+    queue.put(fig1)
+
+def create_relative_duration_from_spk_thread(Tiers, choice, queue, name_databases) :
+    ''' Create a plot of the relative duration of the tiers in the dataset filtered by role of the speaker.
+    
+    Args:
+        Tiers (str): The tier to plot
+        choice (str): The choice of the user between Mean, Median and Standard deviation, Min, Max
+        queue (Queue): The queue to send the plot
+        name_databases (list): The list of the datasets
+    Returns:
+        A plot of the relative duration of the tiers in the dataset filtered by role of the speaker
+    '''
+    labels=real_tier_lists[Tiers]['Intensities']    
+    df1=get_db_from_func_no_pair(DIR,eval("get_tier_from_spk_folder"), name_databases, Tiers)
+    if not df1.empty:
+        dg1=get_rd_stats_byrole(df1)
+        dg1=list_to_df(dg1[0], dg1[1])
+        fig1=pg.Figure()
+        for database in (dg1['database'].unique()):
+            df_plot=dg1[dg1['database']==database]
+            df_plot=df_plot[df_plot['label'].isin(labels)]
+            if choice=='Mean':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
+            elif choice=='Median': 
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
+            elif choice=='Standard deviation':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
+            elif choice=='Min':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
+            elif choice=='Max':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
+            else:
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+        fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+        fig1.update_layout(title_text=f'{choice} for speakers on {Tiers} - Relative duration', title_x=0.5, 
+        xaxis_title="Entity",
+        yaxis_title="Percentage (%)",
+        legend_title="Datasets",
+        xaxis=dict(
+            categoryarray=labels,
+            categoryorder='array',
+            tickmode='array',
+            tickvals=labels,
+            ticktext=labels
+        ))
+    else:
+        fig1=None
+
+    queue.put(fig1)
+
+def create_absolute_duration_from_lsn_thread(Tiers, choice, queue, name_databases) :
+    ''' Create a plot of the absolute duration of the tiers in the dataset filtered by role of the listener.
+
+    Args:
+        Tiers (str): The tier to plot
+        choice (str): The choice of the user between Mean, Median and Standard deviation, Min, Max
+        queue (Queue): The queue to send the plot
+        name_databases (list): The list of the datasets
+    Returns:
+        A plot of the absolute duration of the tiers in the dataset filtered by role of the listener
+    '''
+    labels=real_tier_lists[Tiers]['Intensities']   
+    dg1=get_db_from_func_no_pair(DIR,eval("get_tier_from_lsn_folder"), name_databases, Tiers)
+    fig1=pg.Figure()
+    if not dg1.empty:
+        for database in (dg1['database'].unique()):
+            df_plot=dg1[dg1['database']==database]
+            df_plot=df_plot[df_plot['label'].isin(labels)]
+            if not df_plot.empty:
+                if choice=='Mean':
+                    df_mean=df_plot.groupby('label').mean(numeric_only=True).reset_index()
+                    fig1.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
+                elif choice=='Median': 
+                    df_median=df_plot.groupby('label').median(numeric_only=True).reset_index()
+                    fig1.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
+                elif choice=='Standard deviation':
+                    df_std=df_plot.groupby('label').std(numeric_only=True).reset_index()
+                    fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                elif choice=='Min':
+                    df_std=df_plot.groupby('label').min(numeric_only=True).reset_index()
+                    fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                elif choice=='Max':
+                    df_std=df_plot.groupby('label').max(numeric_only=True).reset_index()
+                    fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                else:
+                    fig1.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                                        notched=True, boxmean='sd',
+                                        name='database='+database))
+        fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+        fig1.update_layout(title_text=f'{choice} for listeners on {Tiers} - Absolute duration', title_x=0.5, 
+        xaxis_title="Entity",
+        yaxis_title="Time (ms)",
+        legend_title="Datasets",
+        xaxis=dict(
+            categoryarray=labels,
+            categoryorder='array',
+            tickmode='array',
+            tickvals=labels,
+            ticktext=labels
+        ))
+    else:
+        fig1=None
+
+    queue.put(fig1)
+  
+def create_relative_duration_from_lsn_thread(Tiers, choice, queue, name_databases) :
+    ''' Create a plot of the relative duration of the tiers in the dataset filtered by role of the listener.
+    
+    Args:
+        Tiers (str): The tier to plot
+        choice (str): The choice of the user between Mean, Median and Standard deviation, Min, Max
+        queue (Queue): The queue to send the plot
+        name_databases (list): The list of the datasets
+    Returns:
+        A plot of the relative duration of the tiers in the dataset filtered by role of the listener
+    '''
+    labels=real_tier_lists[Tiers]['Intensities']    
+    df1=get_db_from_func_no_pair(DIR,eval("get_tier_from_lsn_folder"), name_databases, Tiers)
+    if not df1.empty:
+        dg1=get_rd_stats_byrole(df1)
+        dg1=list_to_df(dg1[0], dg1[1])
+        fig1=pg.Figure()
+        for database in (dg1['database'].unique()):
+            df_plot=dg1[dg1['database']==database]
+            df_plot=df_plot[df_plot['label'].isin(labels)]
+            if choice=='Mean':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
+            elif choice=='Median': 
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
+            elif choice=='Standard deviation':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
+            elif choice=='Min':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
+            elif choice=='Max':
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
+            else:
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
+                fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+        fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+        fig1.update_layout(title_text=f'{choice} for listeners on {Tiers} - Relative duration', title_x=0.5, 
+        xaxis_title="Entity",
+        yaxis_title="Percentage (%)",
+        legend_title="Datasets",
+        xaxis=dict(
+            categoryarray=labels,
+            categoryorder='array',
+            tickmode='array',
+            tickvals=labels,
+            ticktext=labels
+        ))   
+    else:
+       fig1=None
+
+    queue.put(fig1)
+
+#Filter by tier 
+def create_absolute_duration_from_tier_thread(Tiers, choice, queue, name_databases, tier1, entity) :
+    ''' Create a graph with the absolute duration of the entity in the tier filtered by another tier.
+    
+    Args:
+        Tiers (str): the tier to filter
+        choice (str): the choice of the user
+        queue (queue): the queue to put the graph
+        name_databases (list): the list of the datasets
+        tier1 (str): the tier used to filter
+        entity (str): the entity of the tier
+    Returns:
+        fig1 (plotly.graph_objects.Figure): the graph
+    '''
+    real_tier_lists , real_tiers = get_parameters_tag()
+
+    try :
+        if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], str("No_"+real_tier_lists[Tiers]['Replace_Value'])]
+        else :
+            labels = real_tier_lists[Tiers]['Intensities']    
+        dg1=get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, Tiers, entity)
+        fig1=pg.Figure()
+        if not dg1.empty:
+            for database in (dg1['database'].unique()):
+                df_plot=dg1[dg1['database']==database]
+                df_plot=df_plot[df_plot['label'].isin(labels)]
+                if not df_plot.empty:
+                    if choice=='Mean':
+                        df_mean=df_plot.groupby('label').mean(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_mean.label, y=df_mean.diff_time, name=database))
+                    elif choice=='Median': 
+                        df_median=df_plot.groupby('label').median(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_median.label, y=df_median.diff_time, name=database))
+                    elif choice=='Standard deviation':
+                        df_std = df_plot.groupby('label').std(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    elif choice=='Min':
+                        df_std=df_plot.groupby('label').min(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    elif choice=='Max':
+                        df_std=df_plot.groupby('label').max(numeric_only=True).reset_index()
+                        fig1.add_trace(pg.Bar(x=df_std.label, y=df_std.diff_time, name=database))
+                    else:
+                        fig1.add_trace(pg.Box(x=df_plot.label, y=df_plot.diff_time,
+                                            notched=True, boxmean='sd',
+                                            name='database='+database))
+            fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+            fig1.update_layout(title_text=f'{choice} for {entity} {tier1} on {Tiers} - Absolute duration', title_x=0.5, 
+            xaxis_title="Entity",
+            yaxis_title="Time (ms)",
+            legend_title="Datasets",
+            xaxis=dict(
+                categoryarray=labels,
+                categoryorder='array',
+                tickmode='array',
+                tickvals=labels,
+                ticktext=labels
+            ))
+        else:
+            fig1=None
+    except:
+        fig1=None
+    queue.put(fig1)
+
+def create_relative_duration_from_tier_thread(Tiers, choice, queue, name_databases, tier1, entity) :
+    ''' Create a graph with the relative duration of the entity in the tier filtered by another tier.
+    
+    Args:
+        Tiers (str): the tier to filter
+        choice (str): the choice of the user
+        queue (queue): the queue to put the graph
+        name_databases (list): the list of the datasets
+        tier1 (str): the tier used to filter
+        entity (str): the entity of the tier
+    Returns:
+        fig1 (plotly.graph_objects.Figure): the graph
+    '''
+    try :
         
+        if real_tier_lists[Tiers]['Replace_Value'] != "" :
+                labels=[real_tier_lists[Tiers]['Replace_Value'], str("No_"+real_tier_lists[Tiers]['Replace_Value'])]
+        else :
+            labels = real_tier_lists[Tiers]['Intensities'] 
+        df1=get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, Tiers, entity)
+        if not df1.empty:
+            dg1=get_rd_stats_byrole(df1)
+            dg1=list_to_df(dg1[0], dg1[1])
+            fig1=pg.Figure()
+            for database in (dg1['database'].unique()):
+                df_plot=dg1[dg1['database']==database]
+                df_plot=df_plot[df_plot['label'].isin(labels)]
+                if choice=='Mean':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name=database))
+                elif choice=='Median': 
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name=database))
+                elif choice=='Standard deviation':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name=database))
+                elif choice=='Min':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name=database))
+                elif choice=='Max':
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name=database))
+                else:
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.mean_p, name='Mean '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.median_p, name='Median '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.std_p, name='Standard deviation '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.min_p, name='Min '+database))
+                    fig1.add_trace(pg.Bar(x=df_plot.label, y=df_plot.max_p, name='Max '+database))
+            fig1.update_layout(boxmode='group', xaxis_tickangle=0)
+            fig1.update_layout(title_text=f'{choice} for {entity} {tier1} on {Tiers} - Relative duration', title_x=0.5, 
+            xaxis_title="Entity",
+            yaxis_title="Percentage (%)",
+            legend_title="Datasets",
+            xaxis=dict(
+                categoryarray=labels,
+                categoryorder='array',
+                tickmode='array',
+                tickvals=labels,
+                ticktext=labels
+            ))   
+        else:
+            fig1=None
+    except:
+        fig1=None
+    queue.put(fig1)
