@@ -37,7 +37,14 @@ def page7():
         st.subheader("Replace Value")
 
     # Création des cases à cocher pour chaque label
-    st.set_option('deprecation.showfileUploaderEncoding', False)
+    input_key_Intensity = f"Max_Intensity"
+    st.markdown('''Select a maximum of intensity for a tier to be considered without Replace_Value''')
+    Number_input = checkbox_state.get(input_key_Intensity, 25)
+    Max_Intensity = st.number_input(label= "Select Value", value=Number_input, key=input_key_Intensity)
+    checkbox_state[input_key_Intensity] = Max_Intensity
+
+    update_query_params(checkbox_state)
+
     lst_choice = []
     replace_choice = []
     for label in tier_lists.keys():
@@ -47,7 +54,7 @@ def page7():
         with col2:
             checkbox_key = f"{label}_tag"
             checkbox_value = checkbox_state.get(checkbox_key, False)
-            checkbox_value = st.checkbox("Option 1 - ", value=checkbox_value, key=checkbox_key)
+            checkbox_value = st.checkbox("Validate", value=checkbox_value, key=checkbox_key)
             checkbox_state[checkbox_key] = checkbox_value
         i += 1
 
@@ -60,8 +67,7 @@ def page7():
 
     update_query_params(checkbox_state)
 
-    for label in checkbox_state.keys():
-        
+    for label in checkbox_state.keys(): 
         option1_checked = checkbox_state[label]
         if option1_checked == True:
             lst_choice.append(label.replace('_tag',''))
@@ -98,14 +104,22 @@ def page7():
                         'Intensities': [],
                         'Replace_Value': ''
                     }
-                dct['TIER_LISTS'][key]['Intensities'] = data['TIER_LISTS'][key]
+                if len(data['TIER_LISTS'][key]) > Max_Intensity :
+                    dct['TIER_LISTS'][key]['Intensities'] = None
+                else :
+                    dct['TIER_LISTS'][key]['Intensities'] = data['TIER_LISTS'][key]
             except:
+
                 if not dct['TIER_LISTS'].get(key):
                     dct['TIER_LISTS'][key] = {
                         'Intensities': [],
                         'Replace_Value': ''
                     }
-                dct['TIER_LISTS'][key]['Intensities'] = data['TIER_LISTS'][key]
+
+                if len(data['TIER_LISTS'][key]) > Max_Intensity :
+                    dct['TIER_LISTS'][key]['Intensities'] = None
+                else :
+                    dct['TIER_LISTS'][key]['Intensities'] = data['TIER_LISTS'][key]
         
             with open('base_data.json', 'w') as json_file:
                 json.dump(dct, json_file, indent=4)
@@ -138,6 +152,9 @@ def page7():
                         'Replace_Value': ''
                     }
                 value = checkbox_state[f"{key}_replace"]
+
+                if len(data['TIER_LISTS'][key]) > Max_Intensity :
+                    dct['TIER_LISTS'][key]['Intensities'] = None
                 dct['TIER_LISTS'][key]['Replace_Value'] = value
             except:
                 0

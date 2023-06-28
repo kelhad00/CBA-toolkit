@@ -36,7 +36,6 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
         if dg['database'][i] == database_single.lower() :
             temp=dg['subject'][i]
             dg['subject'][i]=split_elements[int(temp)-1][-1]
-    print(dg)
     scatter_fig_tiers=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='subject', y='sum_time', color='label'#,text='time'
     , orientation='v', title=f'{expression_choice} Absolute Duration - Intra , Database : '+database_single, labels={"sum_time": "Absolute Duration",
     "label": "Entity"})

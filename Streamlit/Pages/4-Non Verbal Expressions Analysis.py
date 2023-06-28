@@ -30,7 +30,11 @@ def page2():
         st.markdown("It's an analysis based on each individual. We look here at the sequence of expressions of each individual in each eaf file of the datasets.")
 
         st.subheader('Statistics by dataset')
-        expression_choices=list(real_tier_lists.keys())
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choices=lst_tiers_choice
         expression_choice=st.radio("Expression choice:", expression_choices)
         lst_ad=[f"Scatter Plot {expression_choice}", f"Line Plot {expression_choice}"]
         lst_rd=lst_ad
@@ -136,7 +140,11 @@ def page2():
         st.markdown("It's an analysis based on each interaction between two persons. All figures are based on the duration of the expressions of each interaction (so two files) in the datasets.")
 
         st.subheader('Statistics by dataset')
-        expression_choices1=list(real_tier_lists.keys())
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choices1=list(lst_tiers_choice)
         expression_choice1=st.radio("Expression choice:", expression_choices1)
         lst_ab=[f"Scatter Plot {expression_choice1}", f"Line Plot {expression_choice1}"]
         lst_rd=[f"Scatter Plot {expression_choice1}", f"Line Plot {expression_choice1}"]

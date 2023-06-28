@@ -24,7 +24,11 @@ def page1():
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Dataset choice: ", name_databases)
-        name_tiers=list(real_tier_lists.keys())+["GENERAL"]
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        name_tiers=lst_tiers_choice+["GENERAL"]
         tiers_choice=st.selectbox("Expression choice:", name_tiers, index=name_tiers.index("GENERAL"))
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
@@ -81,7 +85,11 @@ def page1():
                 database=databases_choice
                 databases_choice=databases_[i]
         if st.checkbox("All entities"):
-            expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E1")
+            lst_tiers_choice = []
+            for tier in real_tier_lists.keys() :
+                if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                    lst_tiers_choice.append(tier)
+            expression_choice=st.radio("Expression to see: ", lst_tiers_choice, key="E1")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             expression_choice=expression_choice
             choices_case=["Intra","Inter"]
@@ -102,7 +110,11 @@ def page1():
                     csv = df3.to_csv(index=False)
                     st.download_button(label='Download CSV', data=csv, file_name=f'{database}_{expression_choice.lower()}_per_min_{case.lower()}.csv', mime='text/csv')
         if st.checkbox("By entity"):
-            expression_choice=st.radio("Expression to see: ", list(real_tier_lists.keys()), key="E2")
+            lst_tiers_choice = []
+            for tier in real_tier_lists.keys() :
+                if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                    lst_tiers_choice.append(tier)
+            expression_choice=st.radio("Expression to see: ", lst_tiers_choice, key="E2")
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             if real_tier_lists[expression_choice]['Replace_Value'] != "" :
                  entity_choice=st.radio("Entity of the chosen expression: ", [real_tier_lists[expression_choice]['Replace_Value'], str("No_" + real_tier_lists[expression_choice]['Replace_Value'])])
@@ -131,7 +143,11 @@ def page1():
         st.markdown(''' ''')
         st.subheader('Statistics by dataset')
         name_list=["Absolute duration", "Relative duration"]
-        expression_choices=list(real_tier_lists.keys())
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choices=lst_tiers_choice
         expression_choices.append('all')
         expression_choice=st.radio("Expression choice:", expression_choices)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)

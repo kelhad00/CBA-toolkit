@@ -30,8 +30,12 @@ def page3():
         st.write("<style>body { font-size: 14px; }</style><i>Check choice --> Expression before and after the track choice.</i>", unsafe_allow_html=True)
         st.markdown(''' ''')
         databases_name=[key.replace('_paths','').upper() for key in databases.keys()]
-        expression_choices=list(real_tier_lists.keys())
-        expression_choices_2=list(real_tier_lists.keys())
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choices=lst_tiers_choice
+        expression_choices_2=lst_tiers_choice
         track_choice=st.radio("Track choice: ", expression_choices, key='T1')
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         check_choice=st.radio("Check choice: ", expression_choices_2, key='C1')
@@ -61,10 +65,14 @@ def page3():
         st.markdown(''' ''')
         st.subheader('Expressions Track By Entity')
         st.markdown("We do the same action as before but taking into account the entities of the expressions.")
-        expression_choices1=list(real_tier_lists.keys())
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choices1=lst_tiers_choice
         track_choice=st.radio("Track choice: ", expression_choices1, key='T2')
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        expression_choices2=list(real_tier_lists.keys())
+        expression_choices2=lst_tiers_choice
         check_choice=st.radio("Check choice: ", expression_choices2, key='C2')
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         fig1, dg1= plot_track_previous_expression_byI(expression_track_byI(check_choice, track_choice, DIR, databases_name, real_tier_lists)[0], track_choice, check_choice)
@@ -104,8 +112,12 @@ def page3():
         for i in range(len(databases_)):
             if databases_choice==databases_[i].replace('_pairs','').upper():
                 databases_list=databases_pair_paths[databases_[i]]
-        expression_choicesA=list(real_tier_lists.keys())
-        expression_choicesB=list(real_tier_lists.keys())
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choicesA=lst_tiers_choice
+        expression_choicesB=lst_tiers_choice
         expression_choiceA=st.radio("Expression of person A:", expression_choicesA)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         expression_choiceB=st.radio("Mimicked expression by person B:", expression_choicesB)
@@ -132,7 +144,11 @@ def page3():
                             filter_choice1=st.radio(label="  Choice: ", options=["Yes", "No"], key=1)
                             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                             if filter_choice1=="Yes":
-                                expression_filter=list(tier_lists.keys())
+                                lst_tiers_choice = []
+                                for tier in real_tier_lists.keys() :
+                                    if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                                        lst_tiers_choice.append(tier)
+                                expression_filter=lst_tiers_choice
                                 expression_filter.remove(expression_choiceA)
                                 if expression_choiceA!=expression_choiceB:
                                     expression_filter.remove(expression_choiceB)
@@ -202,7 +218,11 @@ def page3():
                                 filter_choice2=st.radio(label="  Choice: ", options=["Yes", "No"] , key=2)
                                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
                                 if filter_choice2=="Yes":
-                                    expression_filter2=list(tier_lists.keys())
+                                    lst_tiers_choice = []
+                                    for tier in real_tier_lists.keys() :
+                                        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                                            lst_tiers_choice.append(tier)
+                                    expression_filter2=lst_tiers_choice
                                     expression_filter2.remove(expression_choiceA)
                                     if expression_choiceA!=expression_choiceB:
                                         expression_filter2.remove(expression_choiceB)
@@ -256,8 +276,14 @@ def page3():
         case_=st.radio("Choose whether you want to analyse the correlation between the same expression or two different ones for the two people in the interactions: ", [1, 2], key=key)
         key += 1
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        expression_choicesA=list(real_tier_lists.keys())
-        expression_choicesB=list(real_tier_lists.keys())
+
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+
+        expression_choicesA=lst_tiers_choice
+        expression_choicesB=lst_tiers_choice
         if case_==1: 
             A_choice=st.radio("Expression to analyse:", expression_choicesA, key=key)
             key += 1
@@ -315,8 +341,12 @@ def page3():
         st.markdown("Explanation:")
         st.markdown(" ")
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        expression_choicesA=list(real_tier_lists.keys())
-        expression_choicesB=list(real_tier_lists.keys()) 
+        lst_tiers_choice = []
+        for tier in real_tier_lists.keys() :
+            if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                lst_tiers_choice.append(tier)
+        expression_choicesA=lst_tiers_choice
+        expression_choicesB=lst_tiers_choice 
         A_choice=st.radio("Expression of person A to analyse:", expression_choicesA, key= key)
         key += 1
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
