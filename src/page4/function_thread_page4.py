@@ -24,7 +24,7 @@ def create_intra_absolute_plot(database, queue, database_single, expression_choi
     """
     dg=get_db_from_func_no_pair(DIR, get_intra_tiers_absolute_duration_folder, database, expression_choice)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
+    databases_=[value for value in databases_paths.values()]
     for i in range(len(name_databases)):
         if database_single==name_databases[i]:
             data_path=databases_[i]
@@ -62,7 +62,7 @@ def create_intra_relative_plot(database, queue, database_single, expression_choi
     """
     dg=get_db_from_func_no_pair(DIR, get_intra_tiers_relative_duration_folder, database, expression_choice)
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
+    databases_=[value for value in databases_paths.values()]
     for i in range(len(name_databases)):
         if database_single==name_databases[i]:
             data_path=databases_[i]

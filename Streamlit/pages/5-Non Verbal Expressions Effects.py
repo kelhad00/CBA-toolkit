@@ -132,51 +132,51 @@ def page3():
                     st.error(f"The delta time exceeds the duration of the EAF files, please choose a lower value (max: {max_duration} ms)")
                 else:
                     try:
-                        fig, df=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta, mimic_choice=mimic_choice))
-                        if fig!=None:
-                            st.plotly_chart(fig)
+                        fig_count, fig_proba, df=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, delta_t=delta, mimic_choice=mimic_choice))
+                        if fig_count!=None and fig_proba!=None:
+                            st.plotly_chart(fig_count)
+                            st.plotly_chart(fig_proba)
                             # Export csv
                             if isinstance(df, pd.DataFrame):
                                 if not df.empty:
                                     csv_exp5 = df.to_csv(index=False)
                                     st.download_button(label="Download CSV", data=csv_exp5, file_name=f'mimicry_{expression_choiceA.lower()}_vs_{expression_choiceB.lower()}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
-                            st.text("Do you want to divide/filter by another expression?")
-                            filter_choice1=st.radio(label="  Choice: ", options=["Yes", "No"], key=1)
-                            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                            if filter_choice1=="Yes":
-                                lst_tiers_choice = []
-                                for tier in real_tier_lists.keys() :
-                                    if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
-                                        lst_tiers_choice.append(tier)
-                                expression_filter=lst_tiers_choice
-                                expression_filter.remove(expression_choiceA)
-                                if expression_choiceA!=expression_choiceB:
-                                    expression_filter.remove(expression_choiceB)
-                                filter=st.multiselect("  Filter: ", expression_filter)
-                                for i in filter:
-                                    entities1 = tier_lists[i]
-                                    entities2 = tier_lists[i]
-                                    entity1 = st.radio(f"  Entity of {i} for person A:", entities1)
-                                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                                    entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
-                                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                                    if entity1 and entity2:
-                                        try:
-                                            fig, df=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, delta_t=delta, mimic_choice=mimic_choice))
-                                            if fig!=None:
-                                                st.write(f"For {entity2} mimicking {entity1} - {i}: ")
-                                                st.plotly_chart(fig)
-                                                # Export csv
-                                                if isinstance(df, pd.DataFrame):
-                                                    if not df.empty:
-                                                        csv_exp5 = df.to_csv(index=False)
-                                                        st.download_button(label="Download CSV", data=csv_exp5, file_name=f'mimicry_{expression_choiceA.lower()}_vs_{expression_choiceB.lower()}_{entity2.lower()}_mimicking_{entity1.lower()}_{i}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
-                                            else:
-                                                st.write("No data to display")
-                                        except:
-                                            st.write(f"No data to display for {entity2} mimicking {entity1} - {i}")
-                            else:
-                                pass
+                            st.markdown(''' ''')
+                            st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
+                            st.markdown(''' ''')
+                            st.markdown("Statistics divided by expressions")
+                            lst_tiers_choice = []
+                            for tier in real_tier_lists.keys() :
+                                if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                                    lst_tiers_choice.append(tier)
+                            expression_filter=lst_tiers_choice
+                            expression_filter.remove(expression_choiceA)
+                            if expression_choiceA!=expression_choiceB:
+                                expression_filter.remove(expression_choiceB)
+                            filter=st.multiselect("  Filter: ", expression_filter)
+                            for i in filter:
+                                entities1 = tier_lists[i]
+                                entities2 = tier_lists[i]
+                                entity1 = st.radio(f"  Entity of {i} for person A:", entities1)
+                                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                                entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
+                                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                                if entity1 and entity2:
+                                    try:
+                                        fig_count, fig_proba, df=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, delta_t=delta, mimic_choice=mimic_choice))
+                                        if fig_count!=None and fig_proba!=None:
+                                            st.write(f"For {entity2} mimicking {entity1} - {i}: ")
+                                            st.plotly_chart(fig_count)
+                                            st.plotly_chart(fig_proba)
+                                            # Export csv
+                                            if isinstance(df, pd.DataFrame):
+                                                if not df.empty:
+                                                    csv_exp5 = df.to_csv(index=False)
+                                                    st.download_button(label="Download CSV", data=csv_exp5, file_name=f'mimicry_{expression_choiceA.lower()}_vs_{expression_choiceB.lower()}_{entity2.lower()}_mimicking_{entity1.lower()}_{i}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
+                                        else:
+                                            st.write("No data to display")
+                                    except:
+                                        st.write(f"No data to display for {entity2} mimicking {entity1} - {i}")
                         else: 
                             st.write("No data to display")
                     except:
@@ -205,51 +205,51 @@ def page3():
                     else:   
                         try:
                             st.write(entities_B, f" {expression_choiceB} mimic ", entities_A, f" {expression_choiceA}: " )
-                            fig, df=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
+                            fig_count, fig_proba, df=plot_mimicry(give_mimicry_folder2(databases_list, databases_choice.lower(), get_tier_dict_conv_folder, get_tier_dict_conv_folder, expression_choiceA, expression_choiceB, 'Intensity', 
                                                 [entities_A, entities_B], delta_t=delta, mimic_choice=mimic_choice))
-                            if fig!=None:
-                                st.plotly_chart(fig)
+                            if fig_count!=None and fig_proba!=None:
+                                st.plotly_chart(fig_count)
+                                st.plotly_chart(fig_proba)
                                 # Export csv
                                 if isinstance(df, pd.DataFrame):
                                     if not df.empty:
                                         csv_exp6 = df.to_csv(index=False)
                                         st.download_button(label="Download CSV", data=csv_exp6, file_name=f'mimicry_{entities_A.lower()}_{expression_choiceA.lower()}_vs_{entities_B.lower()}_{expression_choiceB.lower()}_for_{delta}_{mimic_choice}.csv', mime='text/csv')
-                                st.text("Do you want to divide/filter by another expression? ")
-                                filter_choice2=st.radio(label="  Choice: ", options=["Yes", "No"] , key=2)
-                                st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                                if filter_choice2=="Yes":
-                                    lst_tiers_choice = []
-                                    for tier in real_tier_lists.keys() :
-                                        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
-                                            lst_tiers_choice.append(tier)
-                                    expression_filter2=lst_tiers_choice
-                                    expression_filter2.remove(expression_choiceA)
-                                    if expression_choiceA!=expression_choiceB:
-                                        expression_filter2.remove(expression_choiceB)
-                                    filter=st.multiselect("  Filter: ", expression_filter2)
-                                    for i in filter:
-                                        entities1 = tier_lists[i]
-                                        entities2 = tier_lists[i]
-                                        entity1 = st.radio(f"  Entity of {i} for person A:", entities1)
-                                        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-                                        entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
-                                        if entity1 and entity2:
-                                            try:
-                                                fig, df=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, filter='Intensity', label=[str.lower(entities_A), str.lower(entities_B)], delta_t=delta, mimic_choice=mimic_choice))
-                                                if fig!=None:
-                                                    st.write(f"For {entity2} mimicking {entity1} - {i}: ")
-                                                    st.plotly_chart(fig)
-                                                    # Export csv
-                                                    if isinstance(df, pd.DataFrame):
-                                                        if not df.empty:
-                                                            csv_exp7 = df.to_csv(index=False)
-                                                            st.download_button(label="Download CSV", data=csv_exp7, file_name=f'mimicry_{entities_A.lower()}_{expression_choiceA.lower()}_vs_{entities_B.lower()}_{expression_choiceB.lower()}_{entity2.lower()}_mimicking_{entity1.lower()}_{i}_for_{delta}_delta_{mimic_choice}.csv', mime='text/csv')
-                                                else:
-                                                    st.write("No data to display")
-                                            except:
-                                                st.write(f"No data to display for {entity2} mimicking {entity1} - {i}")
-                                else:
-                                    pass
+                                st.markdown(''' ''')
+                                st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
+                                st.markdown(''' ''')
+                                st.markdown("Statistics divided by expressions")
+                                lst_tiers_choice = []
+                                for tier in real_tier_lists.keys() :
+                                    if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
+                                        lst_tiers_choice.append(tier)
+                                expression_filter2=lst_tiers_choice
+                                expression_filter2.remove(expression_choiceA)
+                                if expression_choiceA!=expression_choiceB:
+                                    expression_filter2.remove(expression_choiceB)
+                                filter=st.multiselect("  Filter: ", expression_filter2)
+                                for i in filter:
+                                    entities1 = tier_lists[i]
+                                    entities2 = tier_lists[i]
+                                    entity1 = st.radio(f"  Entity of {i} for person A:", entities1)
+                                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+                                    entity2 = st.radio(f"  Entity of {i} for person B:", entities2)
+                                    if entity1 and entity2:
+                                        try:
+                                            fig_count, fig_proba, df=plot_mimicry(give_mimicry_folder4(databases_list, databases_choice.lower(), get_tier_from_tier, get_tier_from_tier, expression_choiceA, expression_choiceB, tier_filter=i, entity1=entity1, entity2=entity2, filter='Intensity', label=[str.lower(entities_A), str.lower(entities_B)], delta_t=delta, mimic_choice=mimic_choice))
+                                            if fig_count!=None and fig_proba!=None:
+                                                st.write(f"For {entity2} mimicking {entity1} - {i}: ")
+                                                st.plotly_chart(fig_count)
+                                                st.plotly_chart(fig_proba)
+                                                # Export csv
+                                                if isinstance(df, pd.DataFrame):
+                                                    if not df.empty:
+                                                        csv_exp7 = df.to_csv(index=False)
+                                                        st.download_button(label="Download CSV", data=csv_exp7, file_name=f'mimicry_{entities_A.lower()}_{expression_choiceA.lower()}_vs_{entities_B.lower()}_{expression_choiceB.lower()}_{entity2.lower()}_mimicking_{entity1.lower()}_{i}_for_{delta}_delta_{mimic_choice}.csv', mime='text/csv')
+                                            else:
+                                                st.write("No data to display")
+                                        except:
+                                            st.write(f"No data to display for {entity2} mimicking {entity1} - {i}")
                             else:
                                 st.write("No data to display")
                         except:
