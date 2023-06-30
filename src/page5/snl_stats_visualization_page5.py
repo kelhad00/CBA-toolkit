@@ -30,7 +30,7 @@ def plot_track_previous_expression(dg, track_choice):
     if not dg.empty:
         fig=px.bar(dg, x='Trackp', y=['Countp'], color='Databasep', barmode='group',
         text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Trackp": f"Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}"},
+        labels={"Trackp": f"Previous {track_choice}", "Countp": f"Count Of Previous {track_choice}", "Databasep": "Dataset"},
                     title=f"Tracking Previous {track_choice.capitalize()}")
         fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
     else:
@@ -52,7 +52,7 @@ def plot_track_following_expression(dg, track_choice):
     if not dg.empty:
         fig=px.bar(dg, x='Trackf', y=['Countf'], color='Databasef', barmode='group',
         text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Trackf": f"Next {track_choice}", "Countf": f"Count Of Next {track_choice}"},
+        labels={"Trackf": f"Next {track_choice}", "Countf": f"Count Of Next {track_choice}", "Databasef": "Dataset"},
                     title=f"Tracking Next {track_choice.capitalize()}")
         fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
     else:
@@ -76,13 +76,17 @@ def plot_track_previous_expression_byI(dg, track_choice, check_choice):
         fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityp": f"Entity Of Previous {check_choice}", "Countp": f"Count Of Previous {track_choice}"},
-                    title=f"Tracking Previous {track_choice}")
-        fig.for_each_xaxis(lambda axis: axis.update(title=f"Previous {track_choice}"))
-        fig.update_layout(yaxis_title=f"Count Of Previous {track_choice}")
+        labels={"Intensityp": f"Entity Of {check_choice}", "Countp": f"Count Of Previous {track_choice} entities"},
+                    title=f"Tracking Previous {track_choice} entities")
+        fig.for_each_xaxis(lambda axis: axis.update(title=""))
+        fig.update_layout(yaxis_title="Count Of Previous Entitie(s)")
+
+        for annotation in fig.layout.annotations:
+            if annotation.text.startswith(f"Current_level_{track_choice}p"):
+                annotation.text = annotation.text.replace(f"Current_level_{track_choice}p=", "")
     else: 
         fig=None
-    dg = dg.rename(columns={'Intensityp': 'Entity of previous expression', 'Countp': 'Count previous expression', 'Databasep': 'Dataset', 'Percentagep': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{check_choice}p': f'Current level of {check_choice}'})
+    dg = dg.rename(columns={'Intensityp': 'Entity of previous expression', 'Countp': 'Count previous expression', 'Databasep': 'Dataset', 'Percentagep': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{track_choice}p': f'Current level of {track_choice}'})
     return fig, dg
 
 def plot_track_following_expression_byI(dg, track_choice, check_choice):
@@ -100,13 +104,17 @@ def plot_track_following_expression_byI(dg, track_choice, check_choice):
         fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityf": f"Entity Of Next {check_choice}", "Countf": f"Count Of Next {track_choice}"},
-                    title=f"Tracking Next {track_choice}")
-        fig.for_each_xaxis(lambda axis: axis.update(title=f"Next {track_choice}"))
-        fig.update_layout(yaxis_title=f"Count Of Next {track_choice}")
+        labels={"Intensityf": f"Entity Of {check_choice}", "Countf": f"Count Of Next {track_choice} entities"},
+                    title=f"Tracking Next {track_choice} entities")
+        fig.for_each_xaxis(lambda axis: axis.update(title=""))
+        fig.update_layout(yaxis_title="Count Of Next Entitie(s)")
+
+        for annotation in fig.layout.annotations:
+            if annotation.text.startswith(f"Current_level_{track_choice}f"):
+                annotation.text = annotation.text.replace(f"Current_level_{track_choice}f=", "")
     else:
         fig=None
-    dg = dg.rename(columns={'Intensityf': f'Entity of following expression: {track_choice}', 'Countf': f'Count following expression: {track_choice}', 'Databasef': 'Dataset', 'Percentagef': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{check_choice}f': f'Current level of {check_choice}'})
+    dg = dg.rename(columns={'Intensityf': f'Entity of following expression: {track_choice}', 'Countf': f'Count following expression: {track_choice}', 'Databasef': 'Dataset', 'Percentagef': 'Percentage (%)', 'tot': 'Nb of expression', f'Current_level_{track_choice}f': f'Current level of {track_choice}'})
     return fig, dg
 
 #Mimicry______________________________________________________________
