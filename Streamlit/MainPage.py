@@ -84,10 +84,10 @@ def delete_dataset_uploaded():
             lst_datasets.append(folder)
 
         
-        print("Liste dataset : ", lst_datasets)
+        # print("Liste dataset : ", lst_datasets)
         Datasets_choice = st.multiselect("Dataset choice: ", lst_datasets)
 
-        print("Dataset choice : ", Datasets_choice)
+        # print("Dataset choice : ", Datasets_choice)
 
         for dataset_to_delete in Datasets_choice :
             path_dataset_to_delete = os.path.join(path, dataset_to_delete)

@@ -10,15 +10,11 @@
         },
         "Smiles_0": {
             "Intensities": [
-                "subtle",
                 "low",
+                "high",
                 "medium",
-                "high"
+                "subtle"
             ],
-            "Replace_Value": ""
-        },
-        "S&L_0": {
-            "Intensities": [],
             "Replace_Value": ""
         },
         "Role": {

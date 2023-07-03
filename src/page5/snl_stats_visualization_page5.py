@@ -76,8 +76,8 @@ def plot_track_previous_expression_byI(dg, track_choice, check_choice):
         fig=px.bar(dg, x='Databasep', y=['Countp'], color='Intensityp', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagep'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countp'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityp": f"Entity Of {check_choice}", "Countp": f"Count Of Previous {track_choice} entities"},
-                    title=f"Tracking Previous {track_choice} entities")
+        labels={"Intensityp": f"Entity Of {check_choice} (Current expression)", "Countp": f"Count Of Previous {track_choice} entities"},
+                    title=f"Tracking Previous {track_choice} entities before {check_choice} entities")
         fig.for_each_xaxis(lambda axis: axis.update(title=""))
         fig.update_layout(yaxis_title="Count Of Previous Entitie(s)")
 
@@ -104,8 +104,8 @@ def plot_track_following_expression_byI(dg, track_choice, check_choice):
         fig=px.bar(dg, x='Databasef', y=['Countf'], color='Intensityf', barmode='group', 
         facet_col=dg.iloc[:,2].name,
         text=dg['Percentagef'].apply(lambda x: '{0:1.2f}%'.format(x))+dg['Countf'].apply(lambda x:'  /  [Count = {0} ]'.format(x)),
-        labels={"Intensityf": f"Entity Of {check_choice}", "Countf": f"Count Of Next {track_choice} entities"},
-                    title=f"Tracking Next {track_choice} entities")
+        labels={"Intensityf": f"Entity Of {check_choice} (Current expression)", "Countf": f"Count Of Next {track_choice} entities"},
+                    title=f"Tracking Next {track_choice} entities after {check_choice} entities")
         fig.for_each_xaxis(lambda axis: axis.update(title=""))
         fig.update_layout(yaxis_title="Count Of Next Entitie(s)")
 
