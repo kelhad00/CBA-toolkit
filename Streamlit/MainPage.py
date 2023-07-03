@@ -71,6 +71,32 @@ def extract_zip(file):
         add_form_pairs_function(dataset_name)
     st.success("Valid directory!")
 
+def delete_dataset_uploaded():
+
+    try :
+        relative_path = os.path.join("..", "data")
+        path = os.path.abspath(relative_path)
+
+        subfolder = next(os.walk(path))[1]
+
+        lst_datasets = []
+        for folder in subfolder:
+            lst_datasets.append(folder)
+
+        
+        print("Liste dataset : ", lst_datasets)
+        Datasets_choice = st.multiselect("Dataset choice: ", lst_datasets)
+
+        print("Dataset choice : ", Datasets_choice)
+
+        for dataset_to_delete in Datasets_choice :
+            path_dataset_to_delete = os.path.join(path, dataset_to_delete)
+            print(path_dataset_to_delete)
+            shutil.rmtree(path_dataset_to_delete)
+            
+    except :
+        print("No database uploaded")
+
 def add_form_pairs_function(dataset_name):
     relative_path = os.path.join("..", "IBPY")
     db_py_path = os.path.join(relative_path, "db.py")
@@ -115,7 +141,6 @@ def main_page():
     st.sidebar.markdown("Main page")
     st.title('Non Verbal Expressions Study')
     st.markdown('''This is an interactive web page where we are going to show some statistics based on a given database.''')
-    
     folder = st.file_uploader('''Select the folder you want to import: ''', type='zip')
     if folder is not None:
         extract_zip(folder)
@@ -123,6 +148,14 @@ def main_page():
     \nWe explored these tiers and we tried to know which kind of effects they could have on a person or during an interaction.
     \n\nNow look at each page of the web page!
     ''')
+    st.markdown(''' ''')
+    st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
+    st.markdown(''' ''')
+    st.markdown('''Here, you can delete the datasets, you have previously uploaded :
+    ''')
+    st.markdown('''\n Select the datasets to delete :
+    ''')
+    delete_dataset_uploaded()
     st.markdown(''' ''')
     st.markdown('''-----------------------------------------------------------------------------------------------------------------''')
     st.markdown(''' ''')
