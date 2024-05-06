@@ -17,7 +17,6 @@ from IBPY import db
 
 def create_json_from_directory():
     """ Creates a JSON file containing information about a directory of ELAN files.
-
     Args:
         None
     Returns:
@@ -26,6 +25,7 @@ def create_json_from_directory():
     script_dir=dirname(os.path.abspath(__file__))
     root=os.path.abspath(os.path.join(script_dir, '..', 'data'))
     delete_file_if_exists('data.json')
+    print('Creating JSON file from directory...')
     parent_path=abspath(os.path.join(script_dir, '..'))
     datasets=os.listdir(root)
     datasets_full=[join(root, d) for d in datasets]

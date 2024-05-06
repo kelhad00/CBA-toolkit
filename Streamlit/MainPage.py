@@ -40,31 +40,49 @@ def extract_zip(file):
         os.makedirs(path)
     with zipfile.ZipFile(file, "r") as zip_ref :
         files = zip_ref.namelist()
-        only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]	
-        subfolders = [f for f in files if os.path.isdir(f)]
+
+        only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]
+        subfolders = [f for f in files if zip_ref.getinfo(f).is_dir()]
         split_subfolders = []
         for folder in subfolders:
-            folder_path = os.path.normpath(folder) 
+            folder_path = os.path.normpath(folder)
             split_subfolders.append(os.path.split(folder_path)[-1])
         for folder in split_subfolders:
             os.makedirs(os.path.join(path, folder), exist_ok=True)
-        eaf_files = []  
+        eaf_files = []
         for file in only_files :
             if file.endswith(".eaf") :
                 eaf_files.append(file)
+
+        print(subfolders)
+        print(split_subfolders)
+
+        if 'IB' in split_subfolders:
+            split_subfolders.remove('IB')
+
+        # delete IB/.DS_Store in the zip file with os
+        if 'IB/.DS_Store' in only_files:
+            only_files.remove('IB/.DS_Store')
+
         if len(eaf_files) == 0 or len(eaf_files) != len(only_files):
             st.error("Invalid directory")
             return
+
         zip_ref.extractall(path)
         for folder in split_subfolders:
             doss = os.path.join(path, file_name)
+            print(doss)
             doss2 = os.path.join(doss, folder)
+            print(doss2)
             for file2 in os.listdir(doss2):
                 src_path = os.path.join(doss2, file2)
                 destination_path = os.path.join(os.path.join(path, folder), file2)
+
+                print(src_path)
+                print(destination_path)
                 # Verification if the file is a file (and not a subfolder)
                 if os.path.isfile(src_path):
-                    shutil.move(src_path, destination_path)           
+                    shutil.move(src_path, destination_path)
         if split_subfolders :
             shutil.rmtree(os.path.join(path, file_name))
         dataset_name = file_name
@@ -98,12 +116,13 @@ def delete_dataset_uploaded():
         print("No database uploaded")
 
 def add_form_pairs_function(dataset_name):
+    print('hello')
     relative_path = os.path.join("..", "IBPY")
     db_py_path = os.path.join(relative_path, "db.py")
     form_pairs_code = f'''
 def form_pairs_{dataset_name}(lst):
     """Return filename pairs [(), (), ...].
-
+        
     Args:
         lst (list): list of filenames without the path.
     Returns:
@@ -112,16 +131,20 @@ def form_pairs_{dataset_name}(lst):
     pairs = form_pairs_ab(lst)
     return pairs
 '''
+
     # Load contents of db.py file
     with open(db_py_path, "r") as file:
         content = file.read()
+
     # Analyze the source code of the file
     tree = ast.parse(content)
+
     # Check if function already exists
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef) and node.name == f"form_pairs_{dataset_name}":
-            #print("The function already exists.")
+            print("The function already exists.")
             return
+
     # Create AST for the new function
     new_tree = ast.parse(form_pairs_code)
     new_function_def = new_tree.body[0]
@@ -133,7 +156,7 @@ def form_pairs_{dataset_name}(lst):
     # Write the modified code back to db.py file
     with open(db_py_path, "w") as file:
         file.write(modified_code)
-    #print(f"The form_pairs_{dataset_name} function was successfully added.")
+    print(f"The form_pairs_{dataset_name} function was successfully added.")
 
 
 def main_page():

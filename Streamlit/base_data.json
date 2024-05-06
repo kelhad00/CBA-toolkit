@@ -1,28 +1,3 @@
 {
-    "TIER_LISTS": {
-        "Laughs_0": {
-            "Intensities": [
-                "medium",
-                "low",
-                "high"
-            ],
-            "Replace_Value": ""
-        },
-        "Smiles_0": {
-            "Intensities": [
-                "low",
-                "high",
-                "medium",
-                "subtle"
-            ],
-            "Replace_Value": ""
-        },
-        "Role": {
-            "Intensities": [
-                "lsn",
-                "spk"
-            ],
-            "Replace_Value": ""
-        }
-    }
+    "TIER_LISTS": {}
 }
