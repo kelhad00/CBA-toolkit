@@ -1,0 +1,16 @@
+{
+    "TIER_LISTS": {
+        "S&L_0": {
+            "Intensities": [],
+            "Replace_Value": ""
+        },
+        "Laughs_0": {
+            "Intensities": [
+                "low",
+                "medium",
+                "high"
+            ],
+            "Replace_Value": ""
+        }
+    }
+}
