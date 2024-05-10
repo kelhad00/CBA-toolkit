@@ -252,10 +252,10 @@ def page2():
     selected_page=st.sidebar.selectbox("Select a page", page2_names_to_funcs.keys())
     page2_names_to_funcs[selected_page]()
 
-subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
+subprocess.run(["python", "../src/snl_stats_extraction_data.py"])
 
 if os.path.isfile('base_data.json') and os.path.getsize('base_data.json') > 26:
-    subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
+    subprocess.run(["python", "../src/snl_stats_extraction_data.py"])
     page2()
 else :
     st.error("You didn't choose tiers to anlayze. Go on Modify Tiers")

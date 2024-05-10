@@ -10,3 +10,5 @@ seaborn
 streamlit-ace
 pyunpack
 fuzzywuzzy
+
+dash

@@ -98,5 +98,5 @@ def page4():
     else:
         st.text(update)
 
-subprocess.run(["python", "..\\src\\snl_stats_extraction_data.py"])
+subprocess.run(["python", "../src/snl_stats_extraction_data.py"])
 page4()
