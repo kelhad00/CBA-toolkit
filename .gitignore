@@ -6,8 +6,19 @@ __pycache__/
 
 # data folder
 data/
+# data folder and all children
+data/**
+data/**/*
+data/**/**/*
+
+*.eaf
+**/*.eaf
+
+
 
 .DS_Store
 
 .idea/
 .idea/workspace.xml
+/data
+*.eaf
