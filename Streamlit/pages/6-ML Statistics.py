@@ -39,7 +39,7 @@ def page4():
     update="Still in progress..."
     
     if update is None:
-        with open('..\\..\\CBA-toolkit\\snl_stats\\parameters.json', 'r') as f:
+        with open('../../CBA-toolkit/snl_stats/parameters.json', 'r') as f:
             parameters=json.load(f)
         PATH_IN=parameters[database_choice+"_IN_OUT"]['PATH_IN_'+database_choice]
         PATH_OUT=parameters[database_choice+"_IN_OUT"]['PATH_OUT_'+database_choice]

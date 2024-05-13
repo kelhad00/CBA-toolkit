@@ -5,7 +5,7 @@ import dash_mantine_components as dmc
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
-from Dash.pages.description_pages.information import display_general_informations
+# from Dash.pages.description_pages.information import display_general_informations
 
 from src.json_creation import create_json_from_directory
 
@@ -45,7 +45,8 @@ def update_url(value):
 )
 def display_page(pathname):
     if pathname == '/description/':
-        return display_general_informations("database")
+        return "Contenu de la page Database informations"
+        # return display_general_informations("database")
     elif pathname == '/description/per_minute':
         return "Contenu de la page Expression per minute"
     elif pathname == '/description/stats':
