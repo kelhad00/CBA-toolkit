@@ -6,7 +6,7 @@ external_scripts = [
     {'src': 'https://cdn.tailwindcss.com'}
 ]
 
-app = Dash(__name__, use_pages=True, external_scripts=external_scripts)
+app = Dash(__name__, use_pages=True, external_scripts=external_scripts, suppress_callback_exceptions=True)
 
 
 def nav_section(title, pages):
@@ -25,19 +25,19 @@ def nav_section(title, pages):
     Input('url', 'pathname')
 )
 def update_nav_section(pathname):
-    return html.Div(className="h-full flex gap-8", children=[
+    return html.Div(className="h-full py-8 flex gap-8", children=[
         html.Div(className="flex flex-col justify-between h-full w-52", children=[
             html.Div(className="nav", children=[
                 html.H1(children='CBA Toolkit', className="text-3xl font-bold"),
                 nav_section("Dashboard", [
                     {"name": "Home", "relative_path": "/", "active": "/" == pathname},
-                    {"name": "Description", "relative_path": "/description/", "active": "/description/" == pathname},
-                    {"name": "Durations", "relative_path": "/durations", "active": "/durations" == pathname},
-                    {"name": "Effects", "relative_path": "/effects", "active": "/effects" == pathname},
+                    {"name": "Description", "relative_path": "/description/", "active": "/description/" in pathname},
+                    {"name": "Durations", "relative_path": "/durations", "active": "/durations" in pathname},
+                    {"name": "Effects", "relative_path": "/effects", "active": "/effects" in pathname},
                 ]),
                 nav_section("Configuration", [
-                    {"name": "Datasets", "relative_path": "/datasets", "active": "/datasets" == pathname},
-                    {"name": "Tiers", "relative_path": "/tiers", "active": "/tiers" == pathname},
+                    {"name": "Datasets", "relative_path": "/datasets", "active": "/datasets" in pathname},
+                    {"name": "Tiers", "relative_path": "/tiers", "active": "/tiers" in pathname},
                 ]),
             ]),
         ]),
@@ -55,10 +55,10 @@ app.layout = dmc.MantineProvider(
         html.Div(children=[
             dcc.Location(id='url', refresh=False),
             html.Div(id='nav-section-container'),
-            html.Div(style={'width': '100%'}, children=[
+            html.Div(className="w-full h-full overflow-y-scroll p-8", children=[
                 dash.page_container
             ]),
-        ], className="""h-screen flex gap-8 p-8 """)
+        ], className="h-screen flex gap-8 px-8")
     ]
 )
 

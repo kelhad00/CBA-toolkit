@@ -24,12 +24,14 @@ def page1():
         name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
         databases_=[value for value in databases_pair_paths.values()]
         databases_choice=st.selectbox("Dataset choice: ", name_databases)
+
         lst_tiers_choice = []
         for tier in real_tier_lists.keys() :
             if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "" :
                 lst_tiers_choice.append(tier)
         name_tiers=lst_tiers_choice+["GENERAL"]
         tiers_choice=st.selectbox("Expression choice:", name_tiers, index=name_tiers.index("GENERAL"))
+
         for i in range(len(name_databases)):
             if databases_choice==name_databases[i]:
                 database=databases_choice

@@ -9,6 +9,7 @@ from IBPY.extract_data import *
 from IBPY.visualization import *
 DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers=get_parameters()
 
+
 def display_general_informations_files(database):
     """ This function shows the general informations of the files.
     

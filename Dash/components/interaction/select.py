@@ -1,13 +1,14 @@
 import dash_mantine_components as dmc
 
-def select(options, label,value,id):
+def select(options, label,id, allowDeselect=False, placeholder="Select an option", value=None):
     return dmc.Select(
             label=label,
             value=value,
             id=id,
-            allowDeselect=False,
+            allowDeselect=allowDeselect,
             data=options,
             radius="md",
+            placeholder=placeholder,
             classNames={
                 "dropdown": "rounded-xl p-1",
                 "label": "font-medium text-sm",
@@ -16,4 +17,4 @@ def select(options, label,value,id):
             },
             className="flex flex-col gap-2",
 
-        ),
+        )
