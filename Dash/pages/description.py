@@ -6,6 +6,7 @@ from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
 from Dash.pages.description_pages.information import display_general_informations
+from Dash.pages.description_pages.per_minute import display_per_minute_informations
 
 from src.json_creation import create_json_from_directory
 
@@ -13,6 +14,7 @@ from src.json_creation import create_json_from_directory
 dash.register_page(
     __name__,
     path="/description/",
+    path_template="/description/<page>",
 )
 
 options = [
@@ -42,7 +44,9 @@ layout = page_container("Description", [
     Input('page-select', 'value')
 )
 def update_url(value):
-    return value
+    print(value)
+    if value is not None:
+        return value
 
 
 
@@ -55,8 +59,9 @@ def display_page(pathname):
         # return "Contenu de la page Database informations"
         return display_general_informations("database")
     elif pathname == '/description/per_minute':
-        return "Contenu de la page Expression per minute"
+        return display_per_minute_informations("database")
     elif pathname == '/description/stats':
         return "Contenu de la page Statistics"
     else:
         return "Page non trouvée"
+
