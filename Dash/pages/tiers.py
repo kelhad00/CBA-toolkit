@@ -20,38 +20,41 @@ DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pai
 tiers = tier_lists
 real_tier_lists, real_tiers = get_parameters_tag()
 
-print(real_tiers, real_tier_lists)
 
 
 def display_table_line(tier, replace_value, real_tier_lists):
-    print(tier in real_tier_lists.keys())
     return table_line([
-        dcc.Checklist(options=[{
-            "label": "Selected",
-            "value": tier,
-        }], value=[tier] if tier in real_tier_lists.keys() else [], id=f'{tier}-checkbox',
-            labelStyle={"display": "flex"}, className="flex-1", labelClassName="flex gap-2 items-center"),
+        dcc.Checklist(
+            id=f'{tier}-checkbox',
+            options=[{"label": "Selected","value": tier,}],
+            value=[tier] if tier in real_tier_lists.keys() else [],
+            labelStyle={"display": "flex"},
+            className="flex-1",
+            labelClassName="flex gap-2 items-center"
+        ),
         table_cell("tier", tier),
-        table_cell("replace_value", dcc.Input(id=f'{tier}-input', type="number",
-                                              className="border border-2 border-gray-300 text-black rounded-md")),
+        table_cell("replace_value", dcc.Input(
+            id=f'{tier}-input',
+            type="number",
+            value=real_tier_lists[tier]['Replace_Value'] if tier in real_tier_lists.keys() else replace_value,
+            className="border border-2 border-gray-300 text-black rounded-md"
+        )),
     ])
 
 
 layout = page_container("Tiers", [
     html.Div(id="output", className="hidden"),
-
-    section_container("Max Intensity",
-                      "Select a maximum of intensity for a tier to be considered without Replace_Value", [
-                          dcc.Input(id="max_intensity", type="number", value=25,
-                                    className="border border-2 border-gray-300 rounded-md p-2"),
-                      ]),
+    section_container("Max Intensity","Select a maximum of intensity for a tier to be considered without Replace_Value", [
+        dcc.Input(id="max_intensity", type="number", value=25, className="border border-2 border-gray-300 rounded-md p-2"),
+    ]),
     section_container("Selection", "Select the tiers to be considered", [
         display_table_line(tier, 0, real_tier_lists) for tier in tiers
     ], id="tiers_table"),
 ])
 
 
-@callback(Output('tiers_table', 'children'), [Input('url', 'pathname')])
+@callback(Output('tiers_table', 'children'),
+          Input('url', 'pathname'))
 def update_tiers_table(pathname):
     real_tier_lists, real_tiers = get_parameters_tag()
     return [display_table_line(tier, 0, real_tier_lists) for tier in tiers]
@@ -65,50 +68,34 @@ def update_output(*args):
     if not dash.callback_context.triggered:
         raise PreventUpdate
 
-    max_intensity = args[0]
-    selected_values = args[1:len(tiers) + 1]
+    max_intensity = args[0] or 0
+
+    selected_tiers = args[1:len(tiers) + 1]
+    selected_tiers = [tier[0] for tier in selected_tiers if tier]
+
     replace_values = args[len(tiers) + 1:]
+    replace_tiers_label = [tier for tier, replace in zip(selected_tiers, replace_values) if replace]
 
-    selected_values = [tier[0] for tier in selected_values if tier]
-    checkbox_state = {f"{tier}_tag": tier in selected_values for tier in tiers}
+    checkbox_state = {f"{tier}_tag": tier in selected_tiers for tier in tiers}
     checkbox_state.update(
-        {f"{tier}_replace": "" if replace is None else str(replace) for tier, replace in zip(tiers, replace_values)})
-    checkbox_state['max_intensity'] = max_intensity
+        {f"{tier}_replace": "" if replace is None else str(replace) for tier, replace in zip(selected_tiers, replace_values)})
 
-    lst_choice = []
-    replace_choice = []
-    Max_Intensity = checkbox_state['max_intensity']
 
-    for label in checkbox_state.keys():
-        option1_checked = checkbox_state[label]
-        if option1_checked == True:
-            lst_choice.append(label.replace('_tag', ''))
 
-        if option1_checked == False:
-            if label in lst_choice:
-                lst_choice.remove(label.replace('_tag', ''))
+    lst_choice = selected_tiers
+    replace_choice = replace_tiers_label
 
-        if option1_checked != False and option1_checked != True:
-
-            if option1_checked:
-
-                replace_choice.append(label.replace('_replace', ''))
-
-            else:
-
-                if label.replace('_replace', '') in replace_choice:
-                    replace_choice.remove(label.replace('_tag', ''))
+    dct = {}
+    dct['TIER_LISTS'] = {}
 
     with open('data.json') as json_file:
         data = json.load(json_file)
-    dct = {}
-    dct['TIER_LISTS'] = {}
 
     for key in data['TIER_LISTS'].keys():
         if key in lst_choice:
             try:
-                #print path to json file
-                print(os.path.abspath('base_data.json'))
+                # #print path to json file
+                # print(os.path.abspath('base_data.json'))
                 with open('base_data.json') as json_file:
                     data2 = json.load(json_file)
                 dct = data2
@@ -117,7 +104,7 @@ def update_output(*args):
                         'Intensities': [],
                         'Replace_Value': ''
                     }
-                if len(data['TIER_LISTS'][key]) > Max_Intensity:
+                if len(data['TIER_LISTS'][key]) > max_intensity:
                     dct['TIER_LISTS'][key]['Intensities'] = None
                 else:
                     dct['TIER_LISTS'][key]['Intensities'] = data['TIER_LISTS'][key]
@@ -129,7 +116,7 @@ def update_output(*args):
                         'Replace_Value': ''
                     }
 
-                if len(data['TIER_LISTS'][key]) > Max_Intensity:
+                if len(data['TIER_LISTS'][key]) > max_intensity:
                     dct['TIER_LISTS'][key]['Intensities'] = None
                 else:
                     dct['TIER_LISTS'][key]['Intensities'] = data['TIER_LISTS'][key]
@@ -166,7 +153,7 @@ def update_output(*args):
                     }
                 value = checkbox_state[f"{key}_replace"]
 
-                if len(data['TIER_LISTS'][key]) > Max_Intensity:
+                if len(data['TIER_LISTS'][key]) > max_intensity:
                     dct['TIER_LISTS'][key]['Intensities'] = None
                 dct['TIER_LISTS'][key]['Replace_Value'] = value
             except:
@@ -194,3 +181,6 @@ def update_output(*args):
             dct2 = {}
 
     return no_update
+
+
+
