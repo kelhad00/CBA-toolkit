@@ -2,7 +2,7 @@
     "TIER_LISTS": {
         "S&L_0": {
             "Intensities": [],
-            "Replace_Value": ""
+            "Replace_Value": "12"
         },
         "Laughs_0": {
             "Intensities": [
@@ -10,7 +10,7 @@
                 "medium",
                 "high"
             ],
-            "Replace_Value": ""
+            "Replace_Value": "25"
         },
         "Smiles_0": {
             "Intensities": [
@@ -19,17 +19,13 @@
                 "medium",
                 "high"
             ],
-            "Replace_Value": ""
+            "Replace_Value": "32"
         },
         "Transcriptions": {
             "Intensities": [],
-            "Replace_Value": ""
+            "Replace_Value": "37"
         },
         "Nods": {
-            "Intensities": [],
-            "Replace_Value": ""
-        },
-        "Shakes": {
             "Intensities": [],
             "Replace_Value": ""
         },
@@ -47,6 +43,10 @@
         "EyeBrows": {
             "Intensities": [],
             "Replace_Value": ""
+        },
+        "Shakes": {
+            "Intensities": [],
+            "Replace_Value": "12"
         }
     }
 }

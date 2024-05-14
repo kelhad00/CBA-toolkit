@@ -11,6 +11,15 @@
                 "high"
             ],
             "Replace_Value": ""
+        },
+        "Smiles_0": {
+            "Intensities": [
+                "low",
+                "subtle",
+                "medium",
+                "high"
+            ],
+            "Replace_Value": ""
         }
     }
 }
