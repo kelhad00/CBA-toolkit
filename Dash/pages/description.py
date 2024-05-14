@@ -7,6 +7,7 @@ from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
 from Dash.pages.description_pages.information import display_general_informations
 from Dash.pages.description_pages.per_minute import display_per_minute_informations
+from Dash.pages.description_pages.statistics import display_statistics_informations
 
 from src.json_creation import create_json_from_directory
 
@@ -61,7 +62,7 @@ def display_page(pathname):
     elif pathname == '/description/per_minute':
         return display_per_minute_informations("database")
     elif pathname == '/description/stats':
-        return "Contenu de la page Statistics"
+        return display_statistics_informations("database")
     else:
         return "Page non trouvée"
 
