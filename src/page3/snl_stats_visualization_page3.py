@@ -89,8 +89,11 @@ def plot_absolute_duration(expression, choice, name_databases):
                 fig=None
         except :
             fig = None
-        df = df.drop('subject', axis=1)
-        df = df.rename(columns={'diff_time': 'Difference of time (ms)', 'startime': 'Start time (ms)', 'endtime': 'End time (ms)', 'duration': 'Duration (ms)', 'label': 'Entity'})
+        try :
+            df = df.drop('subject', axis=1)
+            df = df.rename(columns={'diff_time': 'Difference of time (ms)', 'startime': 'Start time (ms)', 'endtime': 'End time (ms)', 'duration': 'Duration (ms)', 'label': 'Entity'})
+        except:
+            pass
         return fig, df
     else:   
         Tiers=list(real_tier_lists.keys())
@@ -488,9 +491,9 @@ def plot_absolute_duration_from_tier(tier1, entity, tier2, choice, name_database
         fig (plotly.graph_objects.Figure): plot of the choice for the entity
         df (pandas.DataFrame): dataframe of the choice for the entity
     """
-    if tier2!='all':
+    if tier2 != 'all':
         try :
-            dg=get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, tier2, entity)
+            dg = get_db_from_func_no_pair_tier(DIR,eval("get_tier_from_tier"), name_databases, tier1, tier2, entity)
             if real_tier_lists[tier2]['Replace_Value'] != "" :
                     labels=[real_tier_lists[tier2]['Replace_Value'], "No_"+real_tier_lists[tier2]['Replace_Value']]
             else :

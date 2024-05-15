@@ -45,7 +45,6 @@ layout = page_container("Description", [
     Input('page-select', 'value')
 )
 def update_url(value):
-    print(value)
     if value is not None:
         return value
 
