@@ -67,19 +67,35 @@ def plot_expression_per_min_I(folder, expression, intensity):
             element=folder[i]
             split_elements.append(os.path.split(element))
         if all(item == 0 for item in lst):
+            print("No data to display")
             fig = None
         else:
             if real_tier_lists[expression]['Replace_Value'] != "" :
+                print("Replace value")
                 fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
                 title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
             else :
-                for i in range (len(real_tier_lists[expression]['Intensities'])):
-                    if intensity==real_tier_lists[expression]['Intensities'][i]:
-                        fig=px.bar(x=[split_elements[i][-1] for i in range(len(split_elements))], y=lst, color_discrete_sequence=[color_lst[i]]*len(lst),
-                        title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}', labels={'x': 'File', 'y': 'Count'})
+                print("No replace value")
+                for i in range(len(real_tier_lists[expression]['Intensities'])):
+                    if intensity == real_tier_lists[expression]['Intensities'][i]:
+                        print("Intensity found")
+                        print(len(lst))
+                        fig = px.bar(
+                            x=[split_elements[i][-1] for i in range(len(split_elements))],
+                            y=lst,
+                            color_discrete_sequence=[color_lst[i]]*len(lst),
+                            title=f'Count of {intensity} {expression} per minute in {get_database_name(folder)}',
+                            labels={'x': 'File', 'y': 'Count'}
+                        )
+                        print("figgg" + str(fig))
         if fig is not None:
             data = {'Filename': [split_elements[i][-1] for i in range(len(split_elements))], 'Count': lst}
             df = pd.DataFrame(data, columns=['Filename', 'Count'])
-    except:
+    except Exception as error:
+        print(error)
+        # print error
+
         fig=None
+
+    print("fig"+ str(fig))
     return fig, df

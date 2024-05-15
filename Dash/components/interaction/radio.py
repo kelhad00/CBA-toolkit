@@ -8,3 +8,6 @@ def radio(id, options, label, value=None):
         value=value,
         label=label,
     )
+
+def radio_items(options):
+    return [dmc.Radio(l, value=k) for k, l in options]

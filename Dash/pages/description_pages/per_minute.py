@@ -1,15 +1,19 @@
-from dash import html, callback, Output, Input
+from dash import html, callback, Output, Input, dcc
+
+import plotly.graph_objects as go
+
 import pandas as pd
 import dash_mantine_components as dmc
 import numpy as np
 
 from IBPY.extract_data import get_tier_intensities, get_max_min_time_tier, get_time_eaf, get_tier_count
 from src.page3.snl_stats_visualization_database import display_general_informations_files, display_specific_informations
+from src.page3.snl_stats_visualization_page3_express import plot_expression_per_min, plot_expression_per_min_I
 from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container, sub_section_container
 from Dash.components.interaction.select import select
-from Dash.components.interaction.radio import radio
+from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.containers.accordion import accordion, accordion_item
 import os
 
@@ -47,8 +51,9 @@ def display_per_minute_informations(database):
                     radio(
                         id="pov-radio-per-minute-all",
                         label="Select a point of view",
-                        options=[["intra", "Intra"], ["inter", "Inter"]],
-                    )
+                        options=[[None, "Intra"], [2, "Inter"]],
+                    ),
+                    html.Div(className="flex flex-col gap-4", id="output-per-minute-all", children=[]),
                 ]
             ),
             accordion_item(
@@ -63,14 +68,15 @@ def display_per_minute_informations(database):
                         options=[]
                     ),
                     radio(
-                        id="entity-radio-per-minute-all",
+                        id="entity-radio-per-minute-entity",
                         label="Select an entity",
                         options=[],
-                    )
+                    ),
+                    html.Div(className="flex flex-col gap-4", id="output-per-minute-entity", children=[]),
+
                 ],
             ),
         ]),
-        html.Div(className="flex flex-col gap-4", id="per-minute-output", children=[]),
     ])
 
 
@@ -101,6 +107,75 @@ def update_expression_select(pathname):
     tiers_data = [{"label": tier, "value": tier} for tier in name_tiers]
 
     return tiers_data, tiers_data
+
+@callback(
+    [Output('entity-radio-per-minute-entity', 'children'),Output('entity-radio-per-minute-entity', 'value')],
+    Input('expression-select-per-minute-entity', 'value'))
+def update_entity_radio(expression):
+    real_tier_lists, real_tiers = get_parameters_tag()
+
+    if expression is not None:
+        entities = real_tier_lists[expression]['Intensities']
+        if len(entities) > 0:
+            return radio_items([[entity, entity] for entity in entities]), entities[0]
+        else:
+            return radio_items([]), None
+    else:
+        return radio_items([]), None
+
+
+
+@callback(
+    Output('output-per-minute-all', 'children'),
+    [Input('database-select-per-minute', 'value'),
+     Input('expression-select-per-minute-all', 'value'),
+     Input('pov-radio-per-minute-all', 'value')])
+def update_output_per_minute_all(database, expression, pov):
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
+
+    if database is None or expression is None:
+        return []
+
+    database_paths = databases_paths[database.lower() + "_paths"]
+
+
+    fig, df3 = plot_expression_per_min(database_paths, expression, pov)
+
+    return dcc.Graph(figure=fig)
+
+
+@callback(
+    Output('output-per-minute-entity', 'children'),
+    [Input('database-select-per-minute', 'value'),
+     Input('expression-select-per-minute-entity', 'value'),
+     Input('entity-radio-per-minute-entity', 'value')])
+def update_output_per_minute_entity(database, expression, entity):
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
+
+    if database is None or expression is None or entity is None:
+        return []
+
+    database_paths = databases_paths[database.lower() + "_paths"]
+
+    print(database_paths, expression, entity)
+
+    fig, df4 = plot_expression_per_min_I(database_paths, expression, entity)
+
+    print(fig is None)
+
+    return dcc.Graph(figure=fig)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

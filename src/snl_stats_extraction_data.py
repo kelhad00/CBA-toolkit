@@ -3360,20 +3360,22 @@ def expression_per_min_I(folder, expression, intensity):
     m, n, nb=60000, 0, 0
     L=[]
     m_multiples=[m, m*2, m*3, m*4, m*5, m*6, m*7]
-    threshold_value=20000
+    threshold_value=30000
     count=[]
     for root in folder:
         lst=get_IR_list(root, expression, intensity)
         n=len(lst)
+
         eaf=pympi.Elan.Eaf(root)
         duration_annotated=check_duration(eaf)
         #if the duration annotated is near one value of m_multiples, we divide n by the corresponding value (1 or 2 or 3 .... )
         for i in m_multiples:
             if (i-threshold_value < duration_annotated < i+threshold_value):
+                test = True
                 nb=n/(i/m)
-                count.append(nb) 
+                count.append(nb)
             else:
                 pass
-    return count 
+    return count
 
 

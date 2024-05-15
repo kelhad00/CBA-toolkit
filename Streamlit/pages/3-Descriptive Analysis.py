@@ -102,6 +102,7 @@ def page1():
                 if case_choice==choices_case[_]:
                     case=case_choice
                     case_choice=case_list[_]
+            print(databases_choice, expression_choice, case_choice)
             if (plot_expression_per_min(databases_choice, expression_choice, case_choice)==None):
                 st.write("No data available")
             else:
@@ -123,6 +124,7 @@ def page1():
             else :
                 entity_choice = st.radio("Entity of the chosen expression: ", real_tier_lists[expression_choice]['Intensities'])
             if entity_choice is not None:
+                print(databases_choice, expression_choice, entity_choice)
                 if (plot_expression_per_min_I(databases_choice, expression_choice, entity_choice)==None) :
                     st.write("No data available")
                 else:

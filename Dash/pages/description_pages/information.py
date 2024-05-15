@@ -34,7 +34,7 @@ def display_general_informations(database):
             id="expression-select",
             options=[]
         ),
-        html.Div(className="flex flex-col gap-4", id="information-output", children=[]),
+        html.Div(className="flex flex-col gap-4 overflow-x-scroll", id="information-output", children=[]),
     ])
 
 @callback(
