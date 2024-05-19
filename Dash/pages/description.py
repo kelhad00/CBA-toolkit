@@ -26,12 +26,14 @@ options = [
 
 
 layout = page_container("Description", [
-    html.Div(className="nav-section-container", children=select(
+    html.Div(className="nav-section-container hidden", children=select(
         label="Select a page",
         value="/description/",
         id="page-select",
         options=options),
     ),
+
+
     section_container("","" ,[
         html.Div(id='page-content'),
     ]),

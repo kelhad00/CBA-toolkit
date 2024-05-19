@@ -41,7 +41,7 @@ def update_nav_section(pathname):
                 nav_section("Dashboard", [
                     {"name": "Home", "relative_path": "/", "active": "/" == pathname, "icon": home_icon},
                     {"name": "Description", "relative_path": "/description/", "active": "/description/" in pathname, "icon": information_icon},
-                    {"name": "Durations", "relative_path": "/durations", "active": "/durations" in pathname, "icon": time_icon},
+                    {"name": "Durations", "relative_path": "/durations/intra", "active": "/durations" in pathname, "icon": time_icon},
                     {"name": "Effects", "relative_path": "/effects", "active": "/effects" in pathname, "icon": effect_icon},
                 ]),
                 nav_section("Configuration", [
