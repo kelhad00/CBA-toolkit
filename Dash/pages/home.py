@@ -3,10 +3,11 @@ from dash import html
 import dash_mantine_components as dmc
 
 from Dash.components.containers.page import page_container
+from Dash.components.containers.section import section_container
 
 dash.register_page(__name__, path='/')
 
-layout = page_container("Home", [
+layout = section_container("Home",description=None, children=[
     dmc.Text("Uncover the Secrets of Communication with Conversational Behavior Analysis!"),
     dmc.Text("Revolutionizing the way you analyze nonverbal cues in conversations, our tool provides you with unprecedented insights into human interactions."),
     dmc.Text("Say goodbye to superficial analysis! Go beyond the words and decipher the true intentions and emotions of conversation participants with our powerful tool."),

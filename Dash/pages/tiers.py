@@ -42,7 +42,7 @@ def display_table_line(tier, replace_value, real_tier_lists):
     ])
 
 
-layout = page_container("Tiers", [
+layout = page_container(children=[
     html.Div(id="output", className="hidden"),
     section_container("Max Intensity","Select a maximum of intensity for a tier to be considered without Replace_Value", [
         dcc.Input(id="max_intensity", type="number", value=25, className="border border-2 border-gray-300 rounded-md p-2"),

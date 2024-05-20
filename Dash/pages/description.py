@@ -1,69 +1,133 @@
 import dash
-from dash import html,dcc, callback, Output, Input
-import dash_mantine_components as dmc
+import numpy as np
+import pandas as pd
+import os
 
-from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
-from Dash.pages.description_pages.information import display_general_informations
-from Dash.pages.description_pages.per_minute import display_per_minute_informations
-from Dash.pages.description_pages.statistics import display_statistics_informations
+from dash import html, callback, Output, Input
+import dash_mantine_components as dmc
 
-from src.json_creation import create_json_from_directory
-
+from Dash.components.interaction.table import create_table
+from IBPY.extract_data import get_tier_intensities, get_max_min_time_tier
+from src.page3.snl_stats_visualization_database import display_general_informations_files
+from src.snl_stats_extraction_data import get_parameters_tag, get_parameters
 
 dash.register_page(
     __name__,
     path="/description/",
-    path_template="/description/<page>",
 )
 
-options = [
-    {"label": "Database informations", "value": "/description/"},
-    {"label": "Expression per minute", "value": "/description/per_minute"},
-    {"label": "Statistics", "value": "/description/stats"},
-]
 
+layout = section_container("Database informations", "", children=[
+        select(
+            label="Select a database",
+            allowDeselect=True,
+            id="database-select",
+            options=[]
+        ),
+        select(
+            label="Select an expression",
+            value="GENERAL",
+            allowDeselect=True,
+            id="expression-select",
+            options=[]
+        ),
+        html.Div(className="flex flex-col gap-4 overflow-x-scroll", id="information-output", children=[]),
+    ])
 
-layout = page_container("Description", [
-    html.Div(className="nav-section-container hidden", children=select(
-        label="Select a page",
-        value="/description/",
-        id="page-select",
-        options=options),
-    ),
-
-
-    section_container("","" ,[
-        html.Div(id='page-content'),
-    ]),
-
-
-])
-
-
-@callback(
-    Output('url', 'pathname'),
-    Input('page-select', 'value')
-)
-def update_url(value):
-    if value is not None:
-        return value
 
 
 
 @callback(
-    Output('page-content', 'children'),
-    [Input('url', 'pathname')]
-)
-def display_page(pathname):
-    if pathname == '/description/':
-        # return "Contenu de la page Database informations"
-        return display_general_informations("database")
-    elif pathname == '/description/per_minute':
-        return display_per_minute_informations("database")
-    elif pathname == '/description/stats':
-        return display_statistics_informations("database")
+    Output('database-select', 'data'),
+    Input('url', 'pathname'))
+def update_database_select(pathname):
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
+    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
+    return [
+        {"label": database, "value": database} for database in name_databases
+    ]
+
+
+
+@callback(
+    Output('expression-select', 'data'),
+    Input('url', 'pathname'))
+def update_expression_select(pathname):
+    real_tier_lists, real_tiers = get_parameters_tag()
+    lst_tiers_choice = []
+
+    for tier in real_tier_lists.keys():
+        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
+            lst_tiers_choice.append(tier)
+
+    name_tiers = lst_tiers_choice + ["GENERAL"]
+
+    return [
+        {"label": tier, "value": tier} for tier in name_tiers
+    ]
+
+
+@callback(
+    Output('information-output', 'children'),
+    [Input('database-select', 'value'),
+     Input('expression-select', 'value')])
+def update_information_output(database, expression):
+    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
+    real_tier_lists, real_tiers = get_parameters_tag()
+
+    if database is None or expression is None:
+        return []
+
+    print()
+    database = databases_paths[database.lower() + "_paths"]
+
+    if expression == "GENERAL":
+        data = display_general_informations_files(database)
+        columns_names = ["Filename", "Duration"] + list(real_tier_lists.keys())
+        df = pd.DataFrame(data, columns=columns_names)
+        if df is not None:
+            csv = df.to_csv(index=False)
+            data = df.to_dict('records')
+            return [
+                dmc.Table(
+                    highlightOnHover=True,
+                    children=create_table(df)
+                ),
+                dmc.Button(className="w-fit", radius="md", children=[
+                    html.A(
+                        'Download CSV',
+                        id='download-link',
+                        download="database_general.csv",
+                        href="data:text/csv;charset=utf-8," + csv,
+                        target="_blank",
+                    )
+                ])
+            ]
+        else:
+            return html.Div("No data available")
+
     else:
-        return "Page non trouvée"
+        lst = []
+        lst_tier_count = get_tier_intensities(database, expression,
+                                              real_tier_lists[expression]['Intensities'],
+                                              real_tier_lists[expression].get('Kind'))
+        lst_min_time, lst_max_time = get_max_min_time_tier(database, expression)
+        temp = []
+        for i in range(len(database)):
+            for intensity in real_tier_lists[expression]['Intensities']:
+                temp.append(lst_tier_count[i][intensity])
+            file_info = os.path.split(database[i])[-1], lst_min_time[i], lst_max_time[i], *temp[:len(temp)]
+            lst.append(file_info)
+            temp.clear()
+
+        columns_names = ["Filename", "Min duration", "Max duration"] + real_tier_lists[expression]['Intensities']
+        df = pd.DataFrame(lst, columns=columns_names)
+        df = df.fillna(0)
+        df = df.replace([np.inf, -np.inf], 0)
+        return dmc.Table(
+                    highlightOnHover=True,
+                    children=create_table(df)
+                )
 

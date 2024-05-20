@@ -37,7 +37,7 @@ def display_table_line(file_name, nb_files):
 
 
 
-layout = page_container("Datasets", [
+layout = page_container(children=[
     section_container("Import Dataset","" ,[
         dcc.Upload(
             id='upload-data',
