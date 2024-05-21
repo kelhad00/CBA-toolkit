@@ -103,6 +103,7 @@ def page2():
                         database_list_choice=databases_lists[i]
                 figs_=st.selectbox(f"Figures {database_choice}: ", lst_by_tier) 
                 for entity in expression_values:
+                    print("hello", database_list_choice)
                     try : 
                         lst_=plot_absolute_duration_from_tier_folder(database_list_choice, database_choice, expression_choice_copy, expression_choice_2, entity) + plot_relative_duration_from_tier_folder(database_list_choice, database_choice, expression_choice_copy, expression_choice_2, entity)
                         if figs_==f"Absolute Duration {expression_choice_2.lower()}":

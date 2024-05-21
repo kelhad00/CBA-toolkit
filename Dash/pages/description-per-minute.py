@@ -137,6 +137,8 @@ def update_output_per_minute_all(database, expression, pov):
 
     database_paths = databases_paths[database.lower() + "_paths"]
 
+    print(database_paths)
+
 
     fig, df3 = plot_expression_per_min(database_paths, expression, pov)
 
