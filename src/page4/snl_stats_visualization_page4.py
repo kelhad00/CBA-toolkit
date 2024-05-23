@@ -326,27 +326,62 @@ def plot_inter_ad_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entit
     Returns:
         D (list): list of the plots + the dataframe
     """
-    df=get_db_from_func_pair_tier(DIR, get_inter_tier_ad_entity1_vs_entity2_folder, database, tier1, tier2, entity1, entity2)
+    print("database", database)
+    print("tier1", tier1)
+    print("tier2", tier2)
+    print("entity1", entity1)
+    print("entity2", entity2)
+
+    df = get_db_from_func_pair_tier(
+        DIR,
+        get_inter_tier_ad_entity1_vs_entity2_folder,
+        database, tier1, tier2, entity1, entity2
+    )
     name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
+    databases_= [value for value in databases_pair_paths.values()]
+
+    data_path = []
     for i in range(len(name_databases)):
-        if database==name_databases[i]:
-            data_path=databases_[i]
-    split_elements=[]
+        if database == name_databases[i]:
+            data_path = databases_[i]
+
+    split_elements = []
     for i in range(len(data_path)):
-        element=data_path[i]
+        element = data_path[i]
         split_elements.append(os.path.split(element))
+
     for i in range(len(df['conv'])):
-        df['conv'][i]=df['conv'][i]-1
+        df['conv'][i] = df['conv'][i]-1
+
     for i in range(len(df['conv'])):
-        temp=df['conv'][i]
-        df['conv'][i]=split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
-    fig1=px.scatter(df[df.database.eq(f'{database.lower()}')], x='conv', y='sum_time', color='label', symbol='role'
-    , orientation='v', title=f'{tier2} Absolute Duration - {entity1} vs {entity2} {tier1}',labels={"conv": "Pairs files",
-    "sum_time": "Absolute Duration","label": f"Entity of {tier2}", "role": f"Entity of {tier1}"})
+        temp = df['conv'][i]
+        df['conv'][i] = split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
+
+    fig1 = px.scatter(
+        df[df.database.eq(f'{database.lower()}')],
+        x='conv',
+        y='sum_time',
+        color='label',
+        symbol='role',
+        orientation='v',
+        title=f'{tier2} Absolute Duration - {entity1} vs {entity2} {tier1}',
+        labels={
+            "conv": "Pairs files",
+            "sum_time": "Absolute Duration","label": f"Entity of {tier2}",
+            "role": f"Entity of {tier1}"
+        }
+    )
+
     fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
     df.drop('time', axis=1)
-    df = df.rename(columns={"conv": "Files name", "sum_time": "Duration (ms)", "label": f"Entity of {tier2.lower()}", "role": f"Entity of {tier1.lower()}"})
+    df = df.rename(
+        columns={
+            "conv": "Files name",
+            "sum_time": "Duration (ms)",
+            "label": f"Entity of {tier2.lower()}",
+            "role": f"Entity of {tier1.lower()}"
+        }
+    )
     return [fig1, df]
 
 def plot_inter_rd_entity1_vs_entity2_tier(database, tier1, tier2, entity1, entity2):

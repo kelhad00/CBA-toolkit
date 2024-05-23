@@ -88,13 +88,9 @@ def get_title(url, options):
     for option in options:
         if option["href"] == "/":
             if option["href"] == url:
-                print(url)
-                print(option["label"])
                 return option["label"]
         else:
             if option["href"] in url:
-                print(url)
-                print(option["label"])
                 return option["label"]
     return "Page not found"
 
@@ -109,7 +105,7 @@ def update_page_title(url):
         {"label": "Home", "href": "/"},
         {"label": "Tiers", "href": "/tiers"},
         {"label": "Datasets", "href": "/datasets"},
-        {"label": "Effects", "href": "/effects"},
+        {"label": "Expression Effects", "href": "/expression"},
         {"label": "Durations", "href": "/durations/"},
     ]
 

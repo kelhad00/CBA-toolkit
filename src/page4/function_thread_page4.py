@@ -97,33 +97,69 @@ def create_inter_absolute_plot(database, queue, database_single, expression_choi
     """
     real_tier_lists , real_tiers = get_parameters_tag()
     
-    dg=get_db_from_func_pair(DIR, get_inter_tier_absolute_duration_folder, database, expression_choice, real_tier_lists)
-    name_databases=[key.replace('_paths','').upper() for key in databases.keys()]
-    databases_=[value for value in databases_pair_paths.values()]
+    dg = get_db_from_func_pair(
+        DIR,
+        get_inter_tier_absolute_duration_folder,
+        database, expression_choice, real_tier_lists
+    )
+    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
+    databases_ = [value for value in databases_pair_paths.values()]
+    print("database_pair_paths", databases_pair_paths )
+    print("name_databases", name_databases)
+    print("databases_", databases_)
+
+    data_path = []
     for i in range(len(name_databases)):
-        if database_single==name_databases[i]:
-            data_path=databases_[i]
-    split_elements=[]
+        if database_single == name_databases[i]:
+            data_path = databases_[i]
+    print("data_path", data_path)
+
+    split_elements = []
     for i in range(len(data_path)):
-        element=data_path[i]
+        element = data_path[i]
         split_elements.append(os.path.split(element))
+    print("split_elements", split_elements)
+
     for i in range(len(dg['conv'])):
-        dg['conv'][i]=dg['conv'][i]-1
+        dg['conv'][i] = dg['conv'][i]-1
+
     for i in range(len(dg['conv'])):
-        if dg['database'][i] == database_single.lower() :
-            temp=dg['conv'][i]
-            dg['conv'][i]=split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
-    fig1=px.scatter(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label'
-    , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv": "Interaction",
-    "duration": "Time difference","label": "Entity"})
+        if dg['database'][i] == database_single.lower():
+            temp = dg['conv'][i]
+            dg['conv'][i] = split_elements[2*int(temp)][-1]+' & '+split_elements[2*int(temp)+1][-1]
+
+    fig1 = px.scatter(
+        dg[dg.database.eq(f'{database_single.lower()}')],
+        x='conv',
+        y='duration',
+        color='label',
+        orientation='v',
+        title=f'{expression_choice} Absolute Duration per interaction',
+        labels={
+            "conv": "Interaction",
+            "duration": "Time difference",
+            "label": "Entity"
+        }
+    )
     fig1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
-    fig1_1=px.line(dg[dg.database.eq(f'{database_single.lower()}')], x='conv', y='duration', color='label', symbol='label'
-    , orientation='v', title=f'{expression_choice} Absolute Duration per interaction',labels={"conv": "Pairs files",
-    "duration": "Time difference","label": "Entity"})
+    fig1_1 = px.line(
+        dg[dg.database.eq(f'{database_single.lower()}')],
+        x='conv',
+        y='duration',
+        color='label',
+        symbol='label',
+        orientation='v',
+        title=f'{expression_choice} Absolute Duration per interaction',
+        labels={
+            "conv": "Pairs files",
+            "duration": "Time difference",
+            "label": "Entity"
+        }
+    )
     fig1_1.update_layout(xaxis_title="Files pairs", yaxis_title="Time (ms)")
     dg = dg.drop('time', axis=1)
     dg = dg.rename(columns={'duration': 'Duration (ms)', 'label': 'Entity', 'conv': 'Files name'})
-    L=[fig1, fig1_1, dg]
+    L = [fig1, fig1_1, dg]
     queue.put(L)
 
 def create_inter_relative_plot(database, queue, database_single, expression_choice) :

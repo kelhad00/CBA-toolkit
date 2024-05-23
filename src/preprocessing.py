@@ -288,7 +288,8 @@ def get_model_datas_eaf(input_path, output_path, format):
   eaf_files_short = []
   all_videos_datas = {}
   for file in eaf_files:
-    eaf_files_short.append(file[findIndexes(file, '\\')[-1]+1:])
+    # eaf_files_short.append(file[findIndexes(file, '\\')[-1]+1:])
+    eaf_files_short.append(os.path.basename(file))
   eaf_files_short_copy = eaf_files_short.copy()
   eaf_pairs = EAF_FORMATS[format](eaf_files_short)
   eaf_files_short = eaf_files_short_copy
@@ -316,14 +317,21 @@ def get_model_datas_ifadv(input_path, output_path):
   for file1 in eaf_files_input:     # Search for couple of people talking
     for file2 in eaf_files_output:
       print(file1, file2)
-      if Levenshtein.distance(file1[findIndexes(file1, '\\')[-1]+1:-4], file2[findIndexes(file2, '\\')[-1]+1:-4]) == 2:       #recover file name without ext and path to avoid particular case and determinate if files are associated (for ifadv videos)
+
+      file1_name = os.path.splitext(os.path.basename(file1))[0]
+      file2_name = os.path.splitext(os.path.basename(file2))[0]
+
+      # if Levenshtein.distance(file1[findIndexes(file1, '\\')[-1]+1:-4], file2[findIndexes(file2, '\\')[-1]+1:-4]) == 2:       #recover file name without ext and path to avoid particular case and determinate if files are associated (for ifadv videos)
+      if Levenshtein.distance(file1_name, file2_name) == 2:
         print("INFO:: IFADV eaf couple detected")
         print("INFO:: input datas", file1, "and output datas", file2, "treatment in progress.")
         
         model_datas = dict_preprocess(read_eaf_to_dict(file1), read_eaf_to_dict(file2))
         all_videos_datas['video_'+str(len(all_videos_datas))] = model_datas
 
-      elif len(findIndexes(file1, '_')) != 0 and len(findIndexes(file2, '_')) != 0 and file1[findIndexes(file1, '\\')[-1]+1:findIndexes(file1, '_')[-1]] == file2[findIndexes(file2, '\\')[-1]+1:findIndexes(file2, '_')[-1]]:    # recover couple of eaf files (for ccbd videos)
+      # elif len(findIndexes(file1, '_')) != 0 and len(findIndexes(file2, '_')) != 0 and file1[findIndexes(file1, '\\')[-1]+1:findIndexes(file1, '_')[-1]] == file2[findIndexes(file2, '\\')[-1]+1:findIndexes(file2, '_')[-1]]:    # recover couple of eaf files (for ccbd videos)
+      elif file1_name and file2_name and file1_name == file2_name:
+
         print("INFO:: CCDB eaf couple detected")
         print("INFO:: input datas", file1, "and output datas", file2, "treatment in progress.")
 

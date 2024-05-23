@@ -213,6 +213,7 @@ def page2():
             figs_roles=st.selectbox("Figures:", lst_by_tier)
             for entity1 in expression_values1:
                 expression_values2=expression_values1.copy()
+                print("expression_values2", expression_values2)
                 # expression_values2.remove(entity1)
                 if expression_values2:
                     for entity2 in expression_values2:

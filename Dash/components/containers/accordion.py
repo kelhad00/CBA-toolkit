@@ -30,9 +30,9 @@ def accordion_item(children, label, value, description=None):
                 html.Div(
                     [
                         dmc.Text(label),
-                        dmc.Text(description, size="sm", fw=400, c="dimmed"),
+                        dmc.Text(description, size="xs", fw=400, c="dimmed"),
                     ]
-                ), className="rounded-xl "
+                ), className="rounded-md "
             ),
             dmc.AccordionPanel(children=children,className="flex flex-col gap-4")
         ],
