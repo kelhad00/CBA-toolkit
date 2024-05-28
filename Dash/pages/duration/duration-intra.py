@@ -1,7 +1,10 @@
 import dash
 from dash import html, callback, Output, Input, dcc
+import dash_mantine_components as dmc
 
-
+from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions_select, get_expressions
 from Dash.components.containers.accordion import accordion, accordion_item
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
@@ -26,13 +29,19 @@ options = [
 ]
 
 
-layout = section_container("Intra Non Verbal Expressions Analysis", "It's an analysis based on each individual. We look here at the sequence of expressions of each individual in each eaf file of the datasets.", children=[
+layout = section_container("Intra Non Verbal Expressions Analysis", "Analysis based on each individual.", children=[
+        dmc.Alert(
+            "We look here at the sequence of expressions of each individual in each .eaf file of the datasets. All figures are based on the duration of the expressions of each individual in the datasets.",
+            title="Explanation",
+            color="gray",
+        ),
         accordion(
             multiple=True,
             value=["dataset", "expression"],
             children=[
             accordion_item(
                 label="By dataset",
+                description="Display the durations of a given expression in the selected databases.",
                 value="dataset",
                 children=[
                     select(
@@ -65,6 +74,7 @@ layout = section_container("Intra Non Verbal Expressions Analysis", "It's an ana
             ),
             accordion_item(
                 label="Divided by expressions for a specific dataset",
+                description="Display the durations of a specific expression divided by another expression in the selected databases.",
                 value="expression",
                 children=[
                     select(
@@ -103,12 +113,7 @@ layout = section_container("Intra Non Verbal Expressions Analysis", "It's an ana
     [Output('database-select-durations-intra-dataset', 'data'), Output('database-select-durations-intra-expression', 'data')],
     Input('url', 'pathname'))
 def update_database_select(pathname):
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
-
-    options = [
-        {"label": database, "value": database} for database in name_databases
-    ]
+    options = get_databases_select()
 
     return options, options
 
@@ -118,18 +123,8 @@ def update_database_select(pathname):
     [Output('expression-select-durations-intra-dataset', 'data'), Output('expression-select-durations-intra-expression-divided', 'data')],
     Input('url', 'pathname'))
 def update_expression_select(pathname):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    lst_tiers_choice = []
-
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = lst_tiers_choice
-
-    tiers_data = [{"label": tier, "value": tier} for tier in name_tiers]
-
-    return tiers_data, tiers_data
+    options = get_expressions_select()
+    return options, options
 
 @callback(
     [Output('expression-select-durations-intra-expression-analyzed', 'data'), Output('expression-select-durations-intra-expression-analyzed', 'value')],
@@ -138,14 +133,7 @@ def update_expression_analyzed_select(expression):
     if expression is None:
         return [], None
 
-    real_tier_lists, real_tiers = get_parameters_tag()
-    lst_tiers_choice = []
-
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = lst_tiers_choice
+    name_tiers = get_expressions()
 
     return [{"label": tier, "value": tier} for tier in name_tiers if tier != expression], None
 
@@ -174,21 +162,13 @@ def display_durations_intra_dataset(expression, databases, type_figure, type):
     Output('output-durations-expression-intra', 'children'),
     [Input('expression-select-durations-intra-expression-divided', 'value'), Input('expression-select-durations-intra-expression-analyzed', 'value'), Input('database-select-durations-intra-expression', 'value'), Input('figure-radio-durations-intra-expression', 'value')])
 def display_durations_intra_expression(expression_divided, expression_analyzed, database, type):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
     if expression_divided is None or expression_analyzed is None or database is None or type is None:
         return []
 
-    database_paths = databases_paths[database.lower() + "_paths"]
+    database_paths = get_database_paths(database)
+    expression_values = get_entities(expression_divided)
 
-    # if real_tier_lists[expression_divided]['Replace_Value'] != "":
-    #     expression_values = [real_tier_lists[expression_divided]['Replace_Value'],
-    #                          str("No_" + real_tier_lists[expression_divided]['Replace_Value'])]
-    # else:
-    expression_values = real_tier_lists[expression_divided]['Intensities']
-
-    print(database_paths)
 
     figures = []
     for entity in expression_values:

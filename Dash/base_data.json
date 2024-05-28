@@ -2,9 +2,9 @@
     "TIER_LISTS": {
         "Smiles_0": {
             "Intensities": [
+                "medium",
                 "low",
                 "subtle",
-                "medium",
                 "high"
             ],
             "Replace_Value": ""
@@ -18,6 +18,13 @@
                 "low",
                 "medium",
                 "high"
+            ],
+            "Replace_Value": ""
+        },
+        "Role": {
+            "Intensities": [
+                "spk",
+                "lsn"
             ],
             "Replace_Value": ""
         }

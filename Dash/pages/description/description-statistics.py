@@ -3,6 +3,9 @@ from dash import html, Output, Input, callback, dcc
 
 import dash_mantine_components as dmc
 
+from Dash.components.callbacks.dataset import get_databases
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions
 from Dash.components.containers.accordion import accordion, accordion_item
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio
@@ -21,13 +24,14 @@ dash.register_page(
 )
 
 
-layout = section_container("Statistics on non verbal expressions", "We look at some basic statistics about the database.", children=[
+layout = section_container("Statistics on non verbal expressions", "Some basic statistics about datasets.", children=[
         accordion(
             multiple=True,
             value=["normal", "divided"],
             children=[
             accordion_item(
                 label="By dataset",
+                description="Display some statistics about the expressions in each dataset.",
                 value="normal",
                 children=[
                     select(
@@ -55,6 +59,7 @@ layout = section_container("Statistics on non verbal expressions", "We look at s
             ),
             accordion_item(
                 label="Divided by expressions",
+                description="Display some statistics about the expressions in each dataset divided by another expression.",
                 value="divided",
                 children=[
                     select(
@@ -95,17 +100,11 @@ layout = section_container("Statistics on non verbal expressions", "We look at s
     [Output('expression-select-statistics-divided', 'data'), Output('expression-select-statistics-normal', 'data')],
     Input('url', 'pathname'))
 def update_expression_select(pathname):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    lst_tiers_choice = []
-
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = lst_tiers_choice + ["all"]
+    options = get_expressions()
+    name_tiers = options + ["all"]
 
     tiers_data_all = [{"label": tier, "value": tier} for tier in name_tiers]
-    tiers_data = [{"label": tier, "value": tier} for tier in lst_tiers_choice]
+    tiers_data = [{"label": tier, "value": tier} for tier in options]
 
     return tiers_data, tiers_data_all
 
@@ -116,17 +115,10 @@ def update_expression_select(pathname):
     Input('expression-select-statistics-divided', 'value')
 )
 def update_analyzed_expression_select(expression):
-    if (expression is None):
+    if expression is None:
         return [], None
 
-    real_tier_lists, real_tiers = get_parameters_tag()
-    lst_tiers_choice = []
-
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = lst_tiers_choice + ["all"]
+    name_tiers = get_expressions() + ["all"]
 
     return [{"label": tier, "value": tier} for tier in name_tiers if tier != expression], None
 
@@ -138,19 +130,17 @@ def update_analyzed_expression_select(expression):
      Input('type-radio-statistics-normal', 'value')]
 )
 def update_statistics_normal(expression, statistic, type):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
-
     if expression is None or statistic is None or type is None:
         return []
+
+    real_tier_lists, real_tiers = get_parameters_tag()
+    name_databases = get_databases()
 
     try:
         if expression != 'all':
             if real_tier_lists[expression]:
                 if type == 'absolute':
                     fig1_0, df1_0 = plot_absolute_duration(expression, statistic, name_databases)
-                    print(fig1_0)
                     return dcc.Graph(figure=fig1_0)
                 else:
                     fig2_0, df2_0 = plot_relative_duration(expression, statistic, name_databases)
@@ -185,18 +175,13 @@ def update_statistics_normal(expression, statistic, type):
     ]
 )
 def update_statistics_divided(expression_divided, expression_analyzed, statistic, type):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
-
     if expression_divided is None or expression_analyzed is None or statistic is None or type is None:
         return []
 
-    if real_tier_lists[expression_divided]['Replace_Value'] != "":
-        expression_values = [real_tier_lists[expression_divided]['Replace_Value'],
-                             str("No_" + real_tier_lists[expression_divided]['Replace_Value'])]
-    else:
-        expression_values = real_tier_lists[expression_divided]['Intensities']
+    real_tier_lists, real_tiers = get_parameters_tag()
+    name_databases = get_databases()
+    expression_values = get_entities(expression_divided)
+
 
     try:
         if expression_analyzed != 'all':
@@ -204,9 +189,14 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
                 if type == "absolute":
                     figures = []
                     for entity in expression_values:
-                        fig1_temp, df1_temp = plot_absolute_duration_from_tier(expression_divided, entity,
-                                                                               expression_analyzed, statistic,
-                                                                               name_databases)
+                        fig1_temp, df1_temp = plot_absolute_duration_from_tier(
+                            expression_divided,
+                            entity,
+                            expression_analyzed,
+                            statistic,
+                            name_databases
+                        )
+
                         figures.append(fig1_temp)
 
                     if all(fig is None for fig in figures):
@@ -217,10 +207,14 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
                 else:
                     figures = []
                     for entity in expression_values:
-                        fig1_temp, df1_temp = plot_relative_duration_from_tier(expression_divided, entity,
-                                                                               expression_analyzed, statistic,
-                                                                               name_databases)
-                        figures.extend(fig1_temp)
+                        fig1_temp, df1_temp = plot_relative_duration_from_tier(
+                            expression_divided,
+                            entity,
+                            expression_analyzed,
+                            statistic,
+                            name_databases
+                        )
+                        figures.append(fig1_temp)
 
                     if all(fig is None for fig in figures):
                         return f"No data available for {expression_divided} and {expression_analyzed}"
@@ -232,19 +226,16 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
 
         else:
             figures = []
-            print("here")
             if type == "absolute":
                 for entity in expression_values:
                     fig1_temp = plot_absolute_duration_from_tier(expression_divided, entity, expression_analyzed,
                                                                  statistic, name_databases)
                     figures.extend(fig1_temp)
-                    print(entity)
             else:
                 for entity in expression_values:
                     fig1_temp = plot_relative_duration_from_tier(expression_divided, entity, expression_analyzed,
                                                                  statistic, name_databases)
                     figures.extend(fig1_temp)
-            print("figure ", len(figures))
 
             if all(fig is None for fig in figures):
                 return f"No data available for {expression_divided} and {expression_analyzed}"

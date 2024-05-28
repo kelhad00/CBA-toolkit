@@ -119,14 +119,14 @@ def plot_track_following_expression_byI(dg, track_choice, check_choice):
 
 #Mimicry______________________________________________________________
 def plot_mimicry(L):
-    """ Plot probabilities and count mimicry per interaction.
+    """ Plot probabilities and count mimicry.py per interaction.
     L come from give_mimicry, or give_mimicry_folder1 or give_mimicry_folder2 or give_mimicry_folder3 or give_mimicry_folder4.
     
     Args:
         L (list): List of tuple (count, probability, database)
     Return : 
         Figure: Scatter (with line) plot figure
-        Dataframe: Dataframe of mimicry
+        Dataframe: Dataframe of mimicry.py
     """
     name_databases = [key.replace('_paths', '') for key in databases.keys()]
     databases_ = [value for value in databases_pair_paths.values()]

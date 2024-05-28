@@ -3,6 +3,9 @@ import numpy as np
 import pandas as pd
 import os
 
+from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
 from dash import html, callback, Output, Input
@@ -43,11 +46,7 @@ layout = section_container("Database informations", "", children=[
     Output('database-select', 'data'),
     Input('url', 'pathname'))
 def update_database_select(pathname):
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
-    return [
-        {"label": database, "value": database} for database in name_databases
-    ]
+    return get_databases_select()
 
 
 
@@ -55,14 +54,7 @@ def update_database_select(pathname):
     Output('expression-select', 'data'),
     Input('url', 'pathname'))
 def update_expression_select(pathname):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    lst_tiers_choice = []
-
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = lst_tiers_choice + ["GENERAL"]
+    name_tiers = get_expressions() + ["GENERAL"]
 
     return [
         {"label": tier, "value": tier} for tier in name_tiers
@@ -74,17 +66,15 @@ def update_expression_select(pathname):
     [Input('database-select', 'value'),
      Input('expression-select', 'value')])
 def update_information_output(database, expression):
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
     real_tier_lists, real_tiers = get_parameters_tag()
 
     if database is None or expression is None:
         return []
 
-    print()
-    database = databases_paths[database.lower() + "_paths"]
+    database_paths = get_database_paths(database)
 
     if expression == "GENERAL":
-        data = display_general_informations_files(database)
+        data = display_general_informations_files(database_paths)
         columns_names = ["Filename", "Duration"] + list(real_tier_lists.keys())
         df = pd.DataFrame(data, columns=columns_names)
         if df is not None:
@@ -110,19 +100,22 @@ def update_information_output(database, expression):
 
     else:
         lst = []
-        lst_tier_count = get_tier_intensities(database, expression,
-                                              real_tier_lists[expression]['Intensities'],
-                                              real_tier_lists[expression].get('Kind'))
-        lst_min_time, lst_max_time = get_max_min_time_tier(database, expression)
+        lst_tier_count = get_tier_intensities(
+            database_paths,
+            expression,
+            get_entities(expression),
+            real_tier_lists[expression].get('Kind')
+        )
+        lst_min_time, lst_max_time = get_max_min_time_tier(database_paths, expression)
         temp = []
-        for i in range(len(database)):
-            for intensity in real_tier_lists[expression]['Intensities']:
+        for i in range(len(database_paths)):
+            for intensity in get_entities(expression):
                 temp.append(lst_tier_count[i][intensity])
-            file_info = os.path.split(database[i])[-1], lst_min_time[i], lst_max_time[i], *temp[:len(temp)]
+            file_info = os.path.split(database_paths[i])[-1], lst_min_time[i], lst_max_time[i], *temp[:len(temp)]
             lst.append(file_info)
             temp.clear()
 
-        columns_names = ["Filename", "Min duration", "Max duration"] + real_tier_lists[expression]['Intensities']
+        columns_names = ["Filename", "Min duration", "Max duration"] + get_entities(expression)
         df = pd.DataFrame(lst, columns=columns_names)
         df = df.fillna(0)
         df = df.replace([np.inf, -np.inf], 0)

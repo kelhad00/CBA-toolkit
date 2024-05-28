@@ -125,7 +125,7 @@ def page3():
         st.subheader(f'For {expression_choiceA} / {expression_choiceB}')
         if st.checkbox("All entities"):
             if real_tier_lists[expression_choiceA] and real_tier_lists[expression_choiceB]:
-                delta = st.number_input('Delta time in ms (Time after which expression occuring still counts as mimicry):', min_value=0, step=1)
+                delta = st.number_input('Delta time in ms (Time after which expression occuring still counts as mimicry.py):', min_value=0, step=1)
                 max_eaf_durations = get_time_eaf(databases_list, tiers=None)
                 max_duration = min(max_eaf_durations) * 1000
                 if delta>max_duration:
@@ -197,7 +197,7 @@ def page3():
                     entities_B=st.radio(f"Entities for {expression_choiceB} of person B:", list(real_tier_lists[expression_choiceB]['Intensities']))
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)   
                 if entities_A and entities_B:
-                    delta = st.number_input('Delta time in ms (Time after which expression occuring still counts as mimicry):', min_value=0, step=1)
+                    delta = st.number_input('Delta time in ms (Time after which expression occuring still counts as mimicry.py):', min_value=0, step=1)
                     max_eaf_durations = get_time_eaf(databases_list, tiers=None)
                     max_duration = min(max_eaf_durations) * 1000
                     if delta>max_duration:
@@ -284,7 +284,8 @@ def page3():
 
         expression_choicesA=lst_tiers_choice
         expression_choicesB=lst_tiers_choice
-        if case_==1: 
+
+        if case_==1:
             A_choice=st.radio("Expression to analyse:", expression_choicesA, key=key)
             key += 1
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -312,7 +313,8 @@ def page3():
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             if real_tier_lists[A_choice] and real_tier_lists[B_choice]:     
                 width=st.slider("Select the width (period/window in ms to select): ", 1, 344, key='W2') 
-                shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S2') 
+                shift=st.slider("Select the shift (shift in ms of the selected window): ", 1, 344, key='S2')
+                print(A_choice, B_choice, databases_list, width, shift)
                 fig, df=plot_correlation(get_correlation_folder(A_choice, databases_list, width, shift, B_choice), databases_list)
                 if fig!=None:
                     st.plotly_chart(fig)

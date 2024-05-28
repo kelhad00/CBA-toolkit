@@ -2,6 +2,9 @@ import dash
 from dash import html,dcc, callback, Output, Input
 import dash_mantine_components as dmc
 
+from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions_select
 from Dash.components.containers.accordion import accordion_item, accordion
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
@@ -18,7 +21,7 @@ dash.register_page(
 )
 
 
-layout = section_container("Expression Per Minute", "We count the number of expressions/tiers we have in one minute in each dataset.", children=[
+layout = section_container("Expression Per Minute", "Count the number of expressions or tiers per minutes in each dataset.", children=[
         select(
             label="Select a database",
             allowDeselect=True,
@@ -78,38 +81,22 @@ layout = section_container("Expression Per Minute", "We count the number of expr
     Output('database-select-per-minute', 'data'),
     Input('url', 'pathname'))
 def update_database_select(pathname):
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-    name_databases = [key.replace('_paths', '').upper() for key in databases.keys()]
-    return [
-        {"label": database, "value": database} for database in name_databases
-    ]
+    return get_databases_select()
 
 
 @callback(
     [Output('expression-select-per-minute-all', 'data'), Output('expression-select-per-minute-entity', 'data')],
     Input('url', 'pathname'))
 def update_expression_select(pathname):
-    real_tier_lists, real_tiers = get_parameters_tag()
-    lst_tiers_choice = []
-
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] != None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = lst_tiers_choice
-
-    tiers_data = [{"label": tier, "value": tier} for tier in name_tiers]
-
-    return tiers_data, tiers_data
+    options = get_expressions_select()
+    return options, options
 
 @callback(
     [Output('entity-radio-per-minute-entity', 'children'),Output('entity-radio-per-minute-entity', 'value')],
     Input('expression-select-per-minute-entity', 'value'))
 def update_entity_radio(expression):
-    real_tier_lists, real_tiers = get_parameters_tag()
-
     if expression is not None:
-        entities = real_tier_lists[expression]['Intensities']
+        entities = get_entities(expression)
         if len(entities) > 0:
             return radio_items([[entity, entity] for entity in entities]), entities[0]
         else:
@@ -125,22 +112,17 @@ def update_entity_radio(expression):
      Input('expression-select-per-minute-all', 'value'),
      Input('pov-radio-per-minute-all', 'value')])
 def update_output_per_minute_all(database, expression, pov):
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
 
-    if database is None or expression is None:
+    if database is None or expression is None or pov is None:
         return []
 
-    if pov == "":
-        pov = None
-    elif pov == "2":
-        pov = 2
+    database_paths = get_database_paths(database)
 
-    database_paths = databases_paths[database.lower() + "_paths"]
-
-    print(database_paths)
-
-
-    fig, df3 = plot_expression_per_min(database_paths, expression, pov)
+    fig, df3 = plot_expression_per_min(
+        database_paths,
+        expression,
+        None if pov == "" else int(pov)
+    )
 
     return dcc.Graph(figure=fig)
 
@@ -151,18 +133,12 @@ def update_output_per_minute_all(database, expression, pov):
      Input('expression-select-per-minute-entity', 'value'),
      Input('entity-radio-per-minute-entity', 'value')])
 def update_output_per_minute_entity(database, expression, entity):
-    DIR, databases_pair_paths, databases_paths, tier_lists, databases, databases_pairs, tiers = get_parameters()
-
     if database is None or expression is None or entity is None:
         return []
 
-    database_paths = databases_paths[database.lower() + "_paths"]
-
-    print(database_paths, expression, entity)
+    database_paths = get_database_paths(database)
 
     fig, df4 = plot_expression_per_min_I(database_paths, expression, entity)
-
-    print(fig is None)
 
     return dcc.Graph(figure=fig)
 

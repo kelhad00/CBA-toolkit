@@ -23,15 +23,20 @@ def create_json_from_directory():
         None
     """
     script_dir=dirname(os.path.abspath(__file__))
-    root=os.path.abspath(os.path.join(script_dir, '..', 'data'))
+    root = os.path.abspath(os.path.join(script_dir, '..', 'data'))
     delete_file_if_exists('data.json')
     print('Creating JSON file from directory...')
-    parent_path=abspath(os.path.join(script_dir, '..'))
-    datasets=os.listdir(root)
-    datasets_full=[join(root, d) for d in datasets]
+    parent_path = abspath(os.path.join(script_dir, '..'))
+    datasets = os.listdir(root)
+    datasets_full = [join(root, d) for d in datasets]
     dct={}
     dct['FOLDER_PATHS']={}
-    dct['FOLDER_PATHS']['DIR']=join('..', relpath(relpath(root, os.getcwd()), parent_path))
+    dct['FOLDER_PATHS']['DIR'] = join(
+        '..',
+        relpath(
+            relpath(root, os.getcwd()),
+            parent_path)
+    )
     for i, folder_path in enumerate(datasets_full):
         dct['FOLDER_PATHS'][f'ROOT{i+1}']=join('..', relpath(relpath(folder_path, os.getcwd()), parent_path))
     # Add a sub-dictionary for the database paths
@@ -41,7 +46,17 @@ def create_json_from_directory():
         folder_name=datasets[d]
         temp=os.listdir(datasets_full[d])
         eaf_files=[f for f in temp if f.endswith('.eaf')]
-        dct['DATABASES_PATHS'][f'{folder_name}_paths']=[join('..', relpath(relpath(join(datasets_full[d], f), os.getcwd()), parent_path)) for f in eaf_files]
+        dct['DATABASES_PATHS'][f'{folder_name}_paths'] = [
+            join(
+                '..',
+                relpath(
+                    relpath(
+                        join(datasets_full[d], f),
+                        os.getcwd()
+                    ),
+                    parent_path)
+            ) for f in eaf_files
+        ]
         # Create pairs for the "DATABASES_PAIR_PATHS" sub-dictionary
         pair_func_name=f"form_pairs_{folder_name.lower()}"
         if hasattr(db, pair_func_name):

@@ -2872,15 +2872,15 @@ def expression_track_byI(check, track, DIR, databases_name, tier_lists):
     df1_g.columns=['Intensityf', 'Databasef', 'Current_level_'+track+'f', 'Countf', 'tot', 'Percentagef'] 
     return df_g, df1_g
 
-#Probabilities mimicry _________________________________________________________________________________________________________________________
+#Probabilities mimicry.py _________________________________________________________________________________________________________________________
 def give_mimicry(lA, lB, delta_t=0):
-    """ The function calculate the mimicry between two lists.
+    """ The function calculate the mimicry.py between two lists.
     
     Args :
         lA (list): list of tuples (start, stop, label) of expressions mimicked
         lB (list): list of tuples (start, stop, label) of expressions mimicking
         delta_t (int, optional): Defaults to 0.
-                                Time after which expression occuring still counts as mimicry.
+                                Time after which expression occuring still counts as mimicry.py.
                                 Should be in the same unit as the times in lstA and lstB 
     Returns:
         int: number of times B mimicked A (=len(the list described below))
@@ -2890,7 +2890,7 @@ def give_mimicry(lA, lB, delta_t=0):
     return (count_[0], round((count_[0]/len(lB)), 3))
 
 def give_mimicry_folder1(function, folder, filter=None, label=None):
-    """ Calculate mimicry of interactions on a folder
+    """ Calculate mimicry.py of interactions on a folder
 
     Args:
         function (function): It's a function giving the list of tuples (start, stop, label) of expressions mimicked and mimicking
@@ -2940,7 +2940,7 @@ def give_mimicry_folder1(function, folder, filter=None, label=None):
     return M
 
 def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, tierB, filter=None, label=None, delta_t=0, mimic_choice=None):
-    """ The function calculate the mimicry between two lists.
+    """ The function calculate the mimicry.py between two lists.
     
     Args:
         folder (list): List of the .eaf files path 
@@ -2953,7 +2953,7 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
         label (string or list, optional): If it's a string, it represents the intensity we want and if it's a list, 
         it represents the intensities we want to keep. Defaults to None.
         delta_t (int, optional): Defaults to 0.
-                                Time after which expression occuring still counts as mimicry.
+                                Time after which expression occuring still counts as mimicry.py.
                                 Should be in the same unit as the times in lstA and lstB
         mimic_choice (string, optional): It has to be B/A (A mimicking B) or A/B (B mimicking A). Defaults to None. 
     Returns:
@@ -3000,7 +3000,7 @@ def give_mimicry_folder2(folder, database_pairs, function1, function2, tierA, ti
     return M
 
 def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity, filter=None, label=None, delta_t=0):
-    """ The function calculate the mimicry between two lists with a filter.
+    """ The function calculate the mimicry.py between two lists with a filter.
     
     Args:
         folder (list): List of the .eaf files path 
@@ -3015,7 +3015,7 @@ def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, ti
         label (string or list, optional): If it's a string, it represents the intensity we want and if it's a list, 
         it represents the intensities we want to keep. Defaults to None.
         delta_t (int, optional): Defaults to 0.
-                                Time after which expression occuring still counts as mimicry.
+                                Time after which expression occuring still counts as mimicry.py.
                                 Should be in the same unit as the times in lstA and lstB 
     Returns:
         list: A list of tuples [(count, probability),....]
@@ -3058,7 +3058,7 @@ def give_mimicry_folder3(folder, database_pairs, function1, function2, tierA, ti
     return M
 
 def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, tierB, tier_filter, entity1, entity2, filter=None, label=None, delta_t=0, mimic_choice=None):
-    """ The function calculate the mimicry between two lists with a filter.
+    """ The function calculate the mimicry.py between two lists with a filter.
     
     Args:
         folder (list): List of the .eaf files path 
@@ -3074,7 +3074,7 @@ def give_mimicry_folder4(folder, database_pairs, function1, function2, tierA, ti
         label (string or list, optional): If it's a string, it represents the intensity we want and if it's a list, 
         it represents the intensities we want to keep. Defaults to None.
         delta_t (int, optional): Defaults to 0.
-                                Time after which expression occuring still counts as mimicry.
+                                Time after which expression occuring still counts as mimicry.py.
                                 Should be in the same unit as the times in lstA and lstB 
         mimic_choice (string, optional): It has to be B/A (A mimicking B) or A/B (B mimicking A). Defaults to None.
     Returns:

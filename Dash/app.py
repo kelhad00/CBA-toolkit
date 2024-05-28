@@ -45,7 +45,7 @@ def update_nav_section(pathname):
                     {"name": "Home", "relative_path": "/", "active": "/" == pathname, "icon": home_icon},
                     {"name": "Description", "relative_path": "/description/", "active": "/description/" in pathname, "icon": information_icon},
                     {"name": "Durations", "relative_path": "/durations/intra", "active": "/durations" in pathname, "icon": time_icon},
-                    {"name": "Expressions", "relative_path": "/expression", "active": "/expression" in pathname, "icon": effect_icon},
+                    {"name": "Tracking", "relative_path": "/tracking", "active": "/tracking" in pathname, "icon": effect_icon},
                     {"name": "Mimicry", "relative_path": "/mimicry", "active": "/mimicry" in pathname, "icon": mimicry_icon},
                     {"name": "Correlation", "relative_path": "/correlation", "active": "/correlation" in pathname, "icon": link_icon},
 
@@ -71,7 +71,7 @@ app.layout = dmc.MantineProvider(
             dcc.Location(id='url', refresh=False),
             html.Div(id='nav-section-container'),
             html.Div(className="w-full h-full overflow-y-scroll p-8", children=[
-                html.Div(className="flex flex-col gap-12 max-w-2xl", children=[
+                html.Div(className="flex flex-col gap-12 max-w-3xl", children=[
                     html.Div(className="flex gap-8 justify-between items-center flex-wrap", children=[
                         html.H1(className="text-3xl font-bold", id="page-title"),
                         html.Div(id='segment'),
@@ -105,8 +105,10 @@ def update_page_title(url):
         {"label": "Home", "href": "/"},
         {"label": "Tiers", "href": "/tiers"},
         {"label": "Datasets", "href": "/datasets"},
-        {"label": "Expression Effects", "href": "/expression"},
+        {"label": "Tracking", "href": "/tracking"},
         {"label": "Durations", "href": "/durations/"},
+        {"label": "Mimicry", "href": "/mimicry"},
+        {"label": "Correlation", "href": "/correlation"},
     ]
 
     return get_title(url, options)

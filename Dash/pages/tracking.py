@@ -2,6 +2,8 @@ import dash
 from dash import html, Output, callback, Input, dcc
 import dash_mantine_components as dmc
 
+from Dash.components.callbacks.dataset import get_databases
+from Dash.components.callbacks.expression import get_expressions_select
 from Dash.components.containers.accordion import accordion_item, accordion
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
@@ -10,23 +12,23 @@ from src.page5.snl_stats_visualization_page5 import plot_track_previous_expressi
     plot_track_previous_expression_byI, plot_track_following_expression_byI
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters, expression_track, expression_track_byI
 
-dash.register_page(__name__, path='/expression/')
+dash.register_page(__name__, path='/tracking/')
 
-layout = section_container("Intra Non Verbal Expressions Effects", "", children=[
+layout = section_container("Expressions Track", "Check what is before and after an expression in ploting percentage of the preceded and next expression for each individual", children=[
+    dmc.Alert(
+        "The goal is to see if there is any pattern or influence of the non verbal expressions in a same sequence while taking into account the expressions and their entities.",
+        title="Explanation",
+        color="gray",
+    ),
     accordion(
         multiple=True,
         value=["expression", "entity"],
         children=[
         accordion_item(
-            label="Expressions Track",
-            description="Check what is before and after an expression in ploting percentage of the preceded and next expression for each individual",
+            label="By expression",
+            description="Display the sequence of expressions of an individual.",
             value="expression",
             children=[
-                dmc.Alert(
-                    "We look at the sequence of expressions of an individual in order to see if there is any pattern or influence of the expressions in a same sequence.",
-                    title="Explanation",
-                    color="gray",
-                ),
                 select(
                     label="Select an expression (to check)",
                     allowDeselect=True,
@@ -43,7 +45,7 @@ layout = section_container("Intra Non Verbal Expressions Effects", "", children=
             ]
         ),
         accordion_item(
-            label="Expressions Track By Entity",
+            label="By entity",
             description="Same action but taking into account the entities of the expressions.",
             value="entity",
             children=[
@@ -70,18 +72,9 @@ layout = section_container("Intra Non Verbal Expressions Effects", "", children=
     [Output('expression-select-effects-intra-expression-track', 'data'), Output('expression-select-effects-intra-expression-check', 'data'), Output('expression-select-effects-intra-entity-track', 'data'), Output('expression-select-effects-intra-entity-check', 'data')],
     Input('url', 'pathname'))
 def update_expression_select(pathname):
-    real_tier_lists, real_tiers = get_parameters_tag()
+    options = get_expressions_select()
+    return options, options, options, options
 
-    lst_tiers_choice = []
-    for tier in real_tier_lists.keys():
-        if real_tier_lists[tier]['Intensities'] is not None or real_tier_lists[tier]['Replace_Value'] != "":
-            lst_tiers_choice.append(tier)
-
-    name_tiers = [
-        {"label": tier, "value": tier} for tier in lst_tiers_choice
-    ]
-
-    return name_tiers, name_tiers, name_tiers, name_tiers
 
 
 @callback(
@@ -94,7 +87,7 @@ def update_output_expression(expression_tracked, expression_checked):
     if expression_tracked is None or expression_checked is None:
         return []
 
-    databases = [key.replace('_paths', '').upper() for key in databases.keys()]
+    databases = get_databases()
 
     figures = []
     previous_figure, df = plot_track_previous_expression(
@@ -106,7 +99,6 @@ def update_output_expression(expression_tracked, expression_checked):
         ),
         expression_tracked
     )
-    print("prev", previous_figure)
     if previous_figure is not None:
         figures.append(dcc.Graph(figure=previous_figure))
 
@@ -119,7 +111,6 @@ def update_output_expression(expression_tracked, expression_checked):
         ),
         expression_tracked
     )
-    print("following ", following_figure)
     if following_figure is not None:
         figures.append(dcc.Graph(figure=following_figure))
 
@@ -137,7 +128,7 @@ def update_output_entity(expression_tracked, expression_checked):
     if expression_tracked is None or expression_checked is None:
         return []
 
-    databases = [key.replace('_paths', '').upper() for key in databases.keys()]
+    databases = get_databases()
 
     figures = []
 

@@ -11,6 +11,42 @@
                 "high"
             ],
             "Replace_Value": ""
+        },
+        "Smiles_0": {
+            "Intensities": [
+                "medium",
+                "low",
+                "subtle",
+                "high"
+            ],
+            "Replace_Value": ""
+        },
+        "Transcriptions": {
+            "Intensities": [],
+            "Replace_Value": ""
+        },
+        "Nods": {
+            "Intensities": [],
+            "Replace_Value": ""
+        },
+        "Shakes": {
+            "Intensities": [],
+            "Replace_Value": ""
+        },
+        "Tilt": {
+            "Intensities": [],
+            "Replace_Value": ""
+        },
+        "Role": {
+            "Intensities": [
+                "spk",
+                "lsn"
+            ],
+            "Replace_Value": ""
+        },
+        "EyeBrows": {
+            "Intensities": [],
+            "Replace_Value": ""
         }
     }
 }

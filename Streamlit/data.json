@@ -1,10 +1,29 @@
 {
     "FOLDER_PATHS": {
         "DIR": "../data",
-        "ROOT1": "../data/ndc",
-        "ROOT2": "../data/ccdb"
+        "ROOT1": "../data/ifadv",
+        "ROOT2": "../data/ndc",
+        "ROOT3": "../data/ccdb"
     },
     "DATABASES_PATHS": {
+        "ifadv_paths": [
+            "../data/ifadv/DVA8K.eaf",
+            "../data/ifadv/DVB1B.eaf",
+            "../data/ifadv/DVA7B.eaf",
+            "../data/ifadv/DVB5H.eaf",
+            "../data/ifadv/DVA1A.eaf",
+            "../data/ifadv/DVB8L.eaf",
+            "../data/ifadv/DVA3E.eaf",
+            "../data/ifadv/DVB6I.eaf",
+            "../data/ifadv/DVA2C.eaf",
+            "../data/ifadv/DVB4G.eaf",
+            "../data/ifadv/DVB7J.eaf",
+            "../data/ifadv/DVA5G.eaf",
+            "../data/ifadv/DVA4C.eaf",
+            "../data/ifadv/DVB3F.eaf",
+            "../data/ifadv/DVA6H.eaf",
+            "../data/ifadv/DVB2D.eaf"
+        ],
         "ndc_paths": [
             "../data/ndc/13_2_A_M.eaf",
             "../data/ndc/17_3_B_F.eaf",
@@ -59,6 +78,24 @@
         ]
     },
     "DATABASES_PAIR_PATHS": {
+        "ifadv_pairs": [
+            "../data/ifadv/DVA1A.eaf",
+            "../data/ifadv/DVB1B.eaf",
+            "../data/ifadv/DVA2C.eaf",
+            "../data/ifadv/DVB2D.eaf",
+            "../data/ifadv/DVA3E.eaf",
+            "../data/ifadv/DVB3F.eaf",
+            "../data/ifadv/DVA4C.eaf",
+            "../data/ifadv/DVB4G.eaf",
+            "../data/ifadv/DVA5G.eaf",
+            "../data/ifadv/DVB5H.eaf",
+            "../data/ifadv/DVA6H.eaf",
+            "../data/ifadv/DVB6I.eaf",
+            "../data/ifadv/DVA7B.eaf",
+            "../data/ifadv/DVB7J.eaf",
+            "../data/ifadv/DVA8K.eaf",
+            "../data/ifadv/DVB8L.eaf"
+        ],
         "ndc_pairs": [
             "../data/ndc/13_1_A_M.eaf",
             "../data/ndc/13_1_B_F.eaf",
@@ -118,9 +155,9 @@
             "high"
         ],
         "Smiles_0": [
+            "medium",
             "low",
             "subtle",
-            "medium",
             "high"
         ],
         "Transcriptions": [],
