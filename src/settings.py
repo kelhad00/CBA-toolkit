@@ -14,5 +14,5 @@ FRAME_TSTEP = 2000  # How many ms the frame move between each record
 EAF_FORMATS = {
     'ccdb': form_pairs_ccdb,
     'ifadv': form_pairs_ifadv,
-    'ndc': form_pairs_ndc
+    'ndc': form_pairs_ndcme
 }

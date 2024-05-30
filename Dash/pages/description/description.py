@@ -7,6 +7,7 @@ from Dash.components.callbacks.dataset import get_databases_select, get_database
 from Dash.components.callbacks.entity import get_entities
 from Dash.components.callbacks.expression import get_expressions
 from Dash.components.containers.section import section_container
+from Dash.components.interaction.button import download_button
 from Dash.components.interaction.select import select
 from dash import html, callback, Output, Input
 import dash_mantine_components as dmc
@@ -85,15 +86,7 @@ def update_information_output(database, expression):
                     highlightOnHover=True,
                     children=create_table(df)
                 ),
-                dmc.Button(className="w-fit", radius="md", children=[
-                    html.A(
-                        'Download CSV',
-                        id='download-link',
-                        download="database_general.csv",
-                        href="data:text/csv;charset=utf-8," + csv,
-                        target="_blank",
-                    )
-                ])
+                download_button(csv, "database_general.csv")
             ]
         else:
             return html.Div("No data available")

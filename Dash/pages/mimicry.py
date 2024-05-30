@@ -20,6 +20,16 @@ dash.register_page(__name__, path='/mimicry/')
 
 
 def update_entity_radio_entity_stats(person, expression):
+    """ Update the radio items for the entities.
+    Params:
+        person: The person selected.
+        expression: The expression selected.
+    Return:
+        list : radio option items.
+        str : label
+        str : value
+        str : className
+    """
     entities = get_entities(expression)
 
     if expression is not None:
@@ -28,118 +38,123 @@ def update_entity_radio_entity_stats(person, expression):
         else:
             return [], f"Select an entity for person {person} ({expression})", None, None
     else:
-        return [], None , None, "hidden"
+        return [], None, None, "hidden"
 
-layout = section_container("Mimicked Expression", "Check the capacity of someone to mimic someone else expression in an interaction.", children=[
-    select(
-        label="Select a database",
-        id="database-select-mimicry",
-        options=[],
-    ),
-    radio(
-        id="pov-radio-mimicry",
-        label="Select a point of view",
-        value="A/B",
-        options=[["A/B", "A mimicking B"], ["B/A", "B mimicking A"]],
-    ),
-    select(
-        label="Select an expression (person A)",
-        id="expression-A-select-mimicry",
-        options=[],
-    ),
-    select(
-        label="Select an expression (person B)",
-        id="expression-B-select-mimicry",
-        options=[],
-    ),
 
-    accordion(
-        multiple=True,
-        value=["all", "entity"],
-        children=[
-        accordion_item(
-            label="All entities",
-            description="",
-            value="all",
-            children=[
-                dmc.NumberInput(
-                    id="delta-input-mimicry-all",
-                    label="Delta time in ms",
-                    description="Time after which expression occuring still counts as mimicry.py",
-                    value=0,
-                    min=0,
-                    radius="md",
-                ),
-                html.Div(className="flex flex-col gap-4", id="output-mimicry-all", children=[]),
-                html.Span("Statistics divided by expressions", className="text-md font-medium"),
-                html.Div(children=[
-                    select(
-                        label="Select an expression",
-                        id="expression-select-mimicry-all-stats",
-                        options=[],
-                    ),
-                    radio(
-                        id="entity-A-radio-mimicry-all-stats",
-                        label="",
-                        options=[],
-                    ),
-                    radio(
-                        id="entity-B-radio-mimicry-all-stats",
-                        label="",
-                        options=[],
-                    ),
-                    html.Div(className="flex flex-col gap-4", id="output-mimicry-all-stats", children=[]),
-                ], className="flex flex-col gap-4 px-4"),
-            ]
+layout = section_container(
+    "Mimicked Expression",
+    "Check the capacity of someone to mimic someone else expression in an interaction.",
+    children=[
+        select(
+            label="Select a database",
+            id="database-select-mimicry",
+            options=[],
         ),
-        accordion_item(
-            label="By entity",
-            description="",
-            value="entity",
-            children=[
-                radio(
-                    id="entity-A-radio-mimicry-entity",
-                    label="Select an entity (for Laughs_0 of person A)",
-                    options=[],
-                ),
-                radio(
-                    id="entity-B-radio-mimicry-entity",
-                    label="Select an entity (for Laughs_0 of person B)",
-                    options=[],
-                ),
-                dmc.NumberInput(
-                    id="delta-input-mimicry-entity",
-                    label="Delta time in ms",
-                    description="Time after which expression occuring still counts as mimicry.py",
-                    value=0,
-                    min=0,
-                    radius="md",
-
-                ),
-                html.Div(className="flex flex-col gap-4", id="output-mimicry-entity", children=[]),
-                html.Span("Statistics divided by expressions", className="text-md font-medium"),
-                html.Div(children=[
-                    select(
-                        label="Select an expression",
-                        id="expression-select-mimicry-entity-stats",
-                        options=[],
-                    ),
-                    radio(
-                        id="entity-A-radio-mimicry-entity-stats",
-                        label="",
-                        options=[],
-                    ),
-                    radio(
-                        id="entity-B-radio-mimicry-entity-stats",
-                        label="",
-                        options=[],
-                    ),
-                    html.Div(className="flex flex-col gap-4", id="output-mimicry-entity-stats", children=[]),
-                ], className="flex flex-col gap-4 px-4"),
-            ],
+        radio(
+            id="pov-radio-mimicry",
+            label="Select a point of view",
+            value="A/B",
+            options=[["A/B", "A mimicking B"], ["B/A", "B mimicking A"]],
         ),
-    ]),
-])
+        select(
+            label="Select an expression (person A)",
+            id="expression-A-select-mimicry",
+            options=[],
+        ),
+        select(
+            label="Select an expression (person B)",
+            id="expression-B-select-mimicry",
+            options=[],
+        ),
+
+        accordion(
+            multiple=True,
+            value=["all", "entity"],
+            children=[
+            accordion_item(
+                label="All entities",
+                description="",
+                value="all",
+                children=[
+                    dmc.NumberInput(
+                        id="delta-input-mimicry-all",
+                        label="Delta time in ms",
+                        description="Time after which expression occuring still counts as mimicry.py",
+                        value=0,
+                        min=0,
+                        radius="md",
+                    ),
+                    html.Div(className="flex flex-col gap-4", id="output-mimicry-all", children=[]),
+                    html.Span("Statistics divided by expressions", className="text-md font-medium"),
+                    html.Div(children=[
+                        select(
+                            label="Select an expression",
+                            id="expression-select-mimicry-all-stats",
+                            options=[],
+                        ),
+                        radio(
+                            id="entity-A-radio-mimicry-all-stats",
+                            label="",
+                            options=[],
+                        ),
+                        radio(
+                            id="entity-B-radio-mimicry-all-stats",
+                            label="",
+                            options=[],
+                        ),
+                        html.Div(className="flex flex-col gap-4", id="output-mimicry-all-stats", children=[]),
+                    ], className="flex flex-col gap-4 px-4"),
+                ]
+            ),
+            accordion_item(
+                label="By entity",
+                description="",
+                value="entity",
+                children=[
+                    radio(
+                        id="entity-A-radio-mimicry-entity",
+                        label="Select an entity (for Laughs_0 of person A)",
+                        options=[],
+                    ),
+                    radio(
+                        id="entity-B-radio-mimicry-entity",
+                        label="Select an entity (for Laughs_0 of person B)",
+                        options=[],
+                    ),
+                    dmc.NumberInput(
+                        id="delta-input-mimicry-entity",
+                        label="Delta time in ms",
+                        description="Time after which expression occuring still counts as mimicry.py",
+                        value=0,
+                        min=0,
+                        radius="md",
+
+                    ),
+                    html.Div(className="flex flex-col gap-4", id="output-mimicry-entity", children=[]),
+                    html.Span("Statistics divided by expressions", className="text-md font-medium"),
+                    html.Div(children=[
+                        select(
+                            label="Select an expression",
+                            id="expression-select-mimicry-entity-stats",
+                            options=[],
+                        ),
+                        radio(
+                            id="entity-A-radio-mimicry-entity-stats",
+                            label="",
+                            options=[],
+                        ),
+                        radio(
+                            id="entity-B-radio-mimicry-entity-stats",
+                            label="",
+                            options=[],
+                        ),
+                        html.Div(className="flex flex-col gap-4", id="output-mimicry-entity-stats", children=[]),
+                    ], className="flex flex-col gap-4 px-4"),
+                ],
+            ),
+        ]),
+    ]
+)
 
 
 @callback(
@@ -191,12 +206,10 @@ def update_delta_max(database):
      Input('pov-radio-mimicry', 'value'),
      Input('delta-input-mimicry-all', 'value')])
 def update_output_mimicry_all(database, expression_A, expression_B, pov, delta):
-
     if database is None or expression_A is None or expression_B is None or pov is None or delta is None or delta == "":
         return []
 
     database_paths = get_database_paths(database)
-
 
     try:
         figure_count, figure_proba, df = plot_mimicry(
@@ -217,6 +230,7 @@ def update_output_mimicry_all(database, expression_A, expression_B, pov, delta):
         ]
 
     except Exception as e:
+        print(e)
         return "No data available"
 
 
@@ -258,6 +272,8 @@ def update_output_mimicry_all(database, expression_A, expression_B, entity_A, en
         ]
 
     except Exception as e:
+
+        print(e)
         return "No data available"
 
 
@@ -275,6 +291,7 @@ def update_output_mimicry_entity(database, expression_A, expression_B, entity_A,
         return []
 
     database_paths = get_database_paths(database)
+
     try:
         figure_count, figure_proba, df = plot_mimicry(
             give_mimicry_folder2(
@@ -297,6 +314,8 @@ def update_output_mimicry_entity(database, expression_A, expression_B, entity_A,
         ]
 
     except Exception as e:
+
+        print(e)
         return "No data available"
 
 
@@ -317,32 +336,34 @@ def update_output_mimicry_entity_stats(database, expression_A, expression_B, ent
         return []
 
     database_paths = get_database_paths(database)
-    try:
-        figure_count, figure_proba, df = plot_mimicry(
-            give_mimicry_folder4(
-                database_paths,
-                database.lower(),
-                get_tier_from_tier,
-                get_tier_from_tier,
-                expression_A,
-                expression_B,
-                tier_filter=tier_filter,
-                entity1=entity_A_stats,
-                entity2=entity_B_stats,
-                filter='Intensity',
-                label=[str.lower(entity_A), str.lower(entity_B)],
-                delta_t=delta,
-                mimic_choice=pov
-            )
+
+    # try:
+    figure_count, figure_proba, df = plot_mimicry(
+        give_mimicry_folder4(
+            database_paths,
+            database.lower(),
+            get_tier_from_tier,
+            get_tier_from_tier,
+            expression_A,
+            expression_B,
+            tier_filter=tier_filter,
+            entity1=entity_A_stats,
+            entity2=entity_B_stats,
+            filter='Intensity',
+            label=[str.lower(entity_A), str.lower(entity_B)],
+            delta_t=delta,
+            mimic_choice=pov
         )
+    )
 
-        return [
-            dcc.Graph(figure=figure_count),
-            dcc.Graph(figure=figure_proba),
-        ]
+    return [
+        dcc.Graph(figure=figure_count),
+        dcc.Graph(figure=figure_proba),
+    ]
 
-    except Exception as e:
-        return "No data available"
+    # except Exception as e:
+    #     print(e)
+    #     return "No data available"
 
 
 @callback(

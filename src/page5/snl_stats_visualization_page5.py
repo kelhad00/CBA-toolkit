@@ -130,6 +130,17 @@ def plot_mimicry(L):
     """
     name_databases = [key.replace('_paths', '') for key in databases.keys()]
     databases_ = [value for value in databases_pair_paths.values()]
+
+    #
+    # # get all the paths of the files in ../data/ndcme
+    # test = os.path.join(DIR, 'ndcme')
+    # # put all the files in a list
+    # data_path = []
+    # for root, dirs, files in os.walk(test):
+    #     for file in files:
+    #         data_path.append(os.path.join(root, file))
+
+
     for i in range(len(name_databases)):
         if L[0][2] == name_databases[i]:
             data_path = databases_[i]
@@ -140,6 +151,9 @@ def plot_mimicry(L):
         split_elements.append(os.path.split(element))
     for i in range(0, len(split_elements), 2): 
         Pair_files.append(split_elements[i][-1] + ' & ' + split_elements[i+1][-1])
+
+    # print("Pair_files", len(Pair_files), Pair_files)
+
     
     M = []
     df = list_to_df(L, ['count', 'probability', 'database'])
@@ -156,11 +170,15 @@ def plot_mimicry(L):
         
         fig_count = make_subplots(1, len(lst))
         fig_probability = make_subplots(1, len(lst))
-        
+
         for i, j in zip([i for i in range(1, len(lst) + 1)], M):
             for k in range(len(j['interaction'])):
-                j['interaction'][k] = Pair_files[(int(j['interaction'][k]) - 1)]
-            
+                index = int(j['interaction'][k]) - 1
+                if index >= len(Pair_files):
+                    print(f"Skipping index {index} as it's out of range")
+                    continue
+                j['interaction'][k] = Pair_files[index]
+
             fig_count.add_trace(pg.Scatter(x=j['interaction'], y=j['count'], marker_color=colors[1], name=f'Count {lst[i-1]}'), 1, i)
             fig_probability.add_trace(pg.Scatter(x=j['interaction'], y=j.probability, marker_color=colors[0], name=f'Propbabilities {lst[i-1]}'), 1, i)
         

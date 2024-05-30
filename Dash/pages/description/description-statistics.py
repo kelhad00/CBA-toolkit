@@ -7,6 +7,7 @@ from Dash.components.callbacks.dataset import get_databases
 from Dash.components.callbacks.entity import get_entities
 from Dash.components.callbacks.expression import get_expressions
 from Dash.components.containers.accordion import accordion, accordion_item
+from Dash.components.containers.graph import graph_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio
 from Dash.components.interaction.select import select
@@ -122,7 +123,49 @@ def update_analyzed_expression_select(expression):
 
     return [{"label": tier, "value": tier} for tier in name_tiers if tier != expression], None
 
-
+#
+# @callback(
+#     Output('output-statistics-normal', 'children'),
+#     [Input('expression-select-statistics-normal', 'value'),
+#      Input('statistics-select-statistics-normal', 'value'),
+#      Input('type-radio-statistics-normal', 'value')]
+# )
+# def update_statistics_normal(expression, statistic, type):
+#     if expression is None or statistic is None or type is None:
+#         return []
+#
+#     real_tier_lists, real_tiers = get_parameters_tag()
+#     name_databases = get_databases()
+#
+#     try:
+#         if expression != 'all':
+#             if real_tier_lists[expression]:
+#                 if type == 'absolute':
+#                     fig, df = plot_absolute_duration(expression, statistic, name_databases)
+#                     return dcc.Graph(figure=fig)
+#                 else:
+#                     fig, df = plot_relative_duration(expression, statistic, name_databases)
+#                     return dcc.Graph(figure=fig)
+#
+#
+#         else:
+#             figures = []
+#             if type == 'absolute':
+#                 fig, df = plot_absolute_duration(expression, statistic, name_databases)
+#                 figures.extend(fig)
+#             else:
+#                 fig, df = plot_relative_duration(expression, statistic, name_databases)
+#                 figures.extend(fig)
+#
+#
+#             # graph_container(fig, df.to_csv(index=False), f"{expression}_{statistic}.csv")
+#             return [dcc.Graph(figure=fig) for fig in figures if fig is not None]
+#
+#         return f"No Data available for {expression}"
+#
+#     except Exception as e:
+#         print(e)
+#         return f"No Data available for {expression}"
 @callback(
     Output('output-statistics-normal', 'children'),
     [Input('expression-select-statistics-normal', 'value'),
@@ -140,23 +183,24 @@ def update_statistics_normal(expression, statistic, type):
         if expression != 'all':
             if real_tier_lists[expression]:
                 if type == 'absolute':
-                    fig1_0, df1_0 = plot_absolute_duration(expression, statistic, name_databases)
-                    return dcc.Graph(figure=fig1_0)
+                    fig, df = plot_absolute_duration(expression, statistic, name_databases)
+                    return graph_container(fig, df.to_csv(index=False), f"{expression}_{statistic}.csv")
                 else:
-                    fig2_0, df2_0 = plot_relative_duration(expression, statistic, name_databases)
-                    return dcc.Graph(figure=fig2_0)
-
+                    fig, df = plot_relative_duration(expression, statistic, name_databases)
+                    return graph_container(fig, df.to_csv(index=False), f"{expression}_{statistic}.csv")
 
         else:
-            figures1 = []
+            figures = []
             if type == 'absolute':
-                fig1_1 = plot_absolute_duration(expression, statistic, name_databases)
-                figures1.extend(fig1_1)
+                fig = plot_absolute_duration(expression, statistic, name_databases)
+                figures.extend(fig)
+                print(len(fig))
+                print(fig)
             else:
-                fig2_1 = plot_relative_duration(expression, statistic, name_databases)
-                figures1.extend(fig2_1)
+                fig = plot_relative_duration(expression, statistic, name_databases)
+                figures.extend(fig)
 
-            return [dcc.Graph(figure=fig) for fig in figures1 if fig is not None]
+            return [dcc.Graph(figure=fig) for fig in figures if fig is not None]
 
         return f"No Data available for {expression}"
 
@@ -197,12 +241,12 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
                             name_databases
                         )
 
-                        figures.append(fig1_temp)
+                        figures.append((fig1_temp, df1_temp))
 
-                    if all(fig is None for fig in figures):
+                    if all(fig[0] is None for fig in figures):
                         return f"No data available for {expression_divided} and {expression_analyzed}"
                     else:
-                        return [dcc.Graph(figure=fig) for fig in figures if fig is not None]
+                        return [graph_container(fig[0], fig[1].to_csv(index=False), f"{expression_divided}_{expression_analyzed}_{statistic}_statistic.csv") for fig in figures if fig is not None]
 
                 else:
                     figures = []
@@ -214,12 +258,12 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
                             statistic,
                             name_databases
                         )
-                        figures.append(fig1_temp)
+                        figures.append((fig1_temp, df1_temp))
 
-                    if all(fig is None for fig in figures):
+                    if all(fig[0] is None for fig in figures):
                         return f"No data available for {expression_divided} and {expression_analyzed}"
                     else:
-                        return [dcc.Graph(figure=fig) for fig in figures if fig is not None]
+                        return [graph_container(fig[0], fig[1].to_csv(index=False), f"{expression_divided}_{expression_analyzed}_{statistic}_statistic.csv") for fig in figures if fig is not None]
 
             else:
                 return f"No data available for {expression_analyzed} with {expression_divided}"

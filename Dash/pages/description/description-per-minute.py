@@ -8,6 +8,7 @@ from Dash.components.callbacks.expression import get_expressions_select
 from Dash.components.containers.accordion import accordion_item, accordion
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
+from Dash.components.interaction.button import download_button
 from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
 
@@ -118,13 +119,13 @@ def update_output_per_minute_all(database, expression, pov):
 
     database_paths = get_database_paths(database)
 
-    fig, df3 = plot_expression_per_min(
+    fig, df = plot_expression_per_min(
         database_paths,
         expression,
         None if pov == "" else int(pov)
     )
 
-    return dcc.Graph(figure=fig)
+    return [dcc.Graph(figure=fig), download_button(df.to_csv(index=False), f"{database}_{expression}_all_per_minute.csv")]
 
 
 @callback(
@@ -138,9 +139,9 @@ def update_output_per_minute_entity(database, expression, entity):
 
     database_paths = get_database_paths(database)
 
-    fig, df4 = plot_expression_per_min_I(database_paths, expression, entity)
+    fig, df = plot_expression_per_min_I(database_paths, expression, entity)
 
-    return dcc.Graph(figure=fig)
+    return [dcc.Graph(figure=fig), download_button(df.to_csv(index=False), f"{database}_{expression}_{entity}_per_minute.csv")]
 
 
 

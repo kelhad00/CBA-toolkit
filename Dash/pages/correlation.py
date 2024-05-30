@@ -1,6 +1,5 @@
 import dash
 from dash import html, Output, callback, Input, dcc
-import dash_mantine_components as dmc
 
 from Dash.components.callbacks.dataset import get_database_paths, get_databases_select
 from Dash.components.callbacks.entity import get_entities
@@ -10,10 +9,30 @@ from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
 from Dash.components.interaction.slider import slider
+
 from src.page5.snl_stats_visualization_page5 import plot_correlation
 from src.snl_stats_extraction_data import get_correlation_folder, get_correlation_byI, get_correlation_by_entity
 
 dash.register_page(__name__, path='/correlation/')
+
+
+def update_entities_radio(expression, entity):
+    """ Update the radio items for the entities.
+    Params:
+        expression: The expression selected.
+        entity: The entity selected.
+    Return:
+        list : radio option items.
+    """
+    if not expression:
+        return []
+
+    entities = get_entities(expression)
+    if entity != "all":
+        entities.append("all")
+
+    return radio_items([[entity, entity] for entity in entities])
+
 
 layout = section_container("Correlation Analysis", "Check if an expression has an effect on another one.", children=[
     select(
@@ -96,6 +115,7 @@ layout = section_container("Correlation Analysis", "Check if an expression has a
 def update_database_select(pathname):
     return get_databases_select()
 
+
 @callback(
     [Output("expression-A-select-correlation", "data"), Output("expression-B-select-correlation", "data")],
     Input("url", "pathname")
@@ -133,17 +153,6 @@ def update_output_mimicry_all(database, expression_A, expression_B, width, shift
     return dcc.Graph(figure=figure)
 
 
-
-def update_entities_radio(expression, entity):
-    if not expression:
-        return []
-
-    entities = get_entities(expression)
-    if entity != "all":
-        entities.append("all")
-
-    return radio_items([[entity, entity] for entity in entities])
-
 @callback(
     [Output("entity-A-radio-correlation-entity", "children"), Output("entity-A-radio-correlation-entity", "label"),  Output("entity-A-radio-correlation-entity", "className")],
     [Input("entity-B-radio-correlation-entity", "value"), Input("expression-A-select-correlation", "value")],
@@ -151,13 +160,13 @@ def update_entities_radio(expression, entity):
 def update_entity_A_radio(entity_B, expression_A):
     return update_entities_radio(expression_A, entity_B), f"Select an entity for person A ({expression_A})", "hidden" if expression_A is None else None
 
+
 @callback(
     [Output("entity-B-radio-correlation-entity", "children"), Output("entity-B-radio-correlation-entity", "label"),  Output("entity-B-radio-correlation-entity", "className")],
     [Input("entity-A-radio-correlation-entity", "value"), Input("expression-B-select-correlation", "value")],
 )
 def update_entity_B_radio(entity_A, expression_B):
     return update_entities_radio(expression_B, entity_A),  f"Select an entity for person B ({expression_B})", "hidden" if expression_B is None else None
-
 
 
 @callback(

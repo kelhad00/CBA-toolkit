@@ -1,23 +1,42 @@
 import dash
 from dash import html, dcc, callback, Input, Output, State, no_update
 from dash.dependencies import ALL
+
 import os
 import zipfile
 import base64
 import io
 import shutil
 import ast
+import keyword
 
-from Dash.assets.icons.Delete import delete_icon
+
 from Dash.components.interaction.table import table_line, table_cell, table_container
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 
+from Dash.assets.icons.Delete import delete_icon
 
 dash.register_page(__name__)
 
 
+def sanitize_function_name(name):
+    valid_chars = []
+    for char in name:
+        if char.isalnum() or char == "_":
+            valid_chars.append(char)
+    sanitized_name = ''.join(valid_chars)
+    if keyword.iskeyword(sanitized_name):
+        sanitized_name += "_"
+    return sanitized_name
+
+
+
 def display_directories():
+    """ Display the directories in the data folder.
+    Return:
+        list : list of table line that contains the directories.
+    """
     relative_path = os.path.join("..", "data")
     path = os.path.abspath(relative_path)
     entries = os.listdir(path)
@@ -27,6 +46,13 @@ def display_directories():
 
 
 def display_table_line(file_name, nb_files):
+    """ Display a table line for a directory.
+    Params:
+        file_name: The name of the directory.
+        nb_files: The number of files in the directory.
+    Return:
+        html.Div : A table line.
+    """
     return table_line([
         table_cell("name", file_name),
         table_cell("files", nb_files),
@@ -36,9 +62,8 @@ def display_table_line(file_name, nb_files):
     ])
 
 
-
 layout = page_container(children=[
-    section_container("Import Dataset","" ,[
+    section_container("Import Dataset", "", [
         dcc.Upload(
             id='upload-data',
             accept='.zip',
@@ -56,6 +81,7 @@ layout = page_container(children=[
 
 ])
 
+
 @callback(
     Output('directory-list', 'children'),
     [Input({'type': 'delete-button', 'index': ALL}, 'n_clicks'),
@@ -65,11 +91,16 @@ layout = page_container(children=[
      State('directory-list', 'children')],
 )
 def update_directory_list(n_clicks, pathname, upload_children, ids, current_children):
+    # Determine the input that triggered the callback
     ctx = dash.callback_context
     input = ctx.triggered[0]['prop_id']
-    print("triggered" + str(input))
+
+    # if Routing or upload of a new dataset
     if input == 'url.pathname' or input == 'output-data-upload.children':
-        return display_directories() if pathname or upload_children else no_update
+        if pathname or upload_children:
+            return display_directories()
+        else:
+            return no_update
 
     else:
         if n_clicks is not None and 1 in n_clicks:
@@ -77,8 +108,6 @@ def update_directory_list(n_clicks, pathname, upload_children, ids, current_chil
             index = n_clicks.index(1)
             # Get the file_name associated with the clicked button
             file_name = ids[index]['index']
-            print(file_name)
-            # Call the function you want to execute
             delete_dataset_uploaded(file_name)
         return display_directories()
 
@@ -92,74 +121,83 @@ def update_output(contents, filename):
     if contents is not None:
         # Split the 'contents' into the data type and the base64 encoded data
         content_type, content_string = contents.split(',')
-
-        # Decode the base64 string
         decoded = base64.b64decode(content_string)
-
-        # Use BytesIO to handle the decoded content as a file
         file = io.BytesIO(decoded)
-
         file_name = filename.split(".")[0]
         relative_path = os.path.join("..", "data")
         path = os.path.abspath(relative_path)
+
         if not os.path.exists(path):
-            # Creation of the directory
             os.makedirs(path)
+
         with zipfile.ZipFile(file, "r") as zip_ref:
             files = zip_ref.namelist()
-
             only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]
-            subfolders = [f for f in files if zip_ref.getinfo(f).is_dir()]
+            eaf_files = [file for file in only_files if file.endswith(".eaf")]
+
+            subfolders = [f for f in files if zip_ref.getinfo(f).is_dir() and f != file_name]
+
+            # Only keep the subfolders name
             split_subfolders = []
             for folder in subfolders:
                 folder_path = os.path.normpath(folder)
-                split_subfolders.append(os.path.split(folder_path)[-1])
+                if os.path.dirname(folder_path):
+                    base_name = os.path.basename(folder_path)
+                    split_subfolders.append(base_name)
+
             for folder in split_subfolders:
                 os.makedirs(os.path.join(path, folder), exist_ok=True)
-            eaf_files = []
-            for file in only_files:
-                if file.endswith(".eaf"):
-                    eaf_files.append(file)
 
-            print(subfolders)
-            print(split_subfolders)
+            print("split_subfolders", split_subfolders)
+            print("only_files", only_files)
 
-            if 'IB' in split_subfolders:
-                split_subfolders.remove('IB')
+            # if 'IB' in split_subfolders:
+            #     split_subfolders.remove('IB')
 
             # delete IB/.DS_Store in the zip file with os
             if 'IB/.DS_Store' in only_files:
                 only_files.remove('IB/.DS_Store')
 
             if len(eaf_files) == 0 or len(eaf_files) != len(only_files):
-                return "Invalid directory"
+                return "Invalid directory. Please upload a dataset with only .eaf files."
 
             zip_ref.extractall(path)
+
             for folder in split_subfolders:
                 doss = os.path.join(path, file_name)
-                print(doss)
                 doss2 = os.path.join(doss, folder)
-                print(doss2)
+
                 for file2 in os.listdir(doss2):
                     src_path = os.path.join(doss2, file2)
                     destination_path = os.path.join(os.path.join(path, folder), file2)
-
-                    print(src_path)
-                    print(destination_path)
-                    # Verification if the file is a file (and not a subfolder)
                     if os.path.isfile(src_path):
                         shutil.move(src_path, destination_path)
+
             if split_subfolders:
                 shutil.rmtree(os.path.join(path, file_name))
+
             dataset_name = file_name
             add_form_pairs_function(dataset_name)
+
+            # rename dataset that are not valid python variable names
+            for folder in split_subfolders:
+                if not folder.isidentifier():
+                    folder_correct = sanitize_function_name(folder)
+                    os.rename(os.path.join(path, folder), os.path.join(path, folder_correct))
+
         return html.Div([
             '✅File Name: ' + file_name,
         ])
 
+
 def add_form_pairs_function(dataset_name):
+    """Add a form_pairs function to the db.py file.
+    Args:
+        dataset_name (str): name of the dataset.
+    """
     relative_path = os.path.join("..", "IBPY")
     db_py_path = os.path.join(relative_path, "db.py")
+
     form_pairs_code = f'''
 def form_pairs_{dataset_name}(lst):
     """Return filename pairs [(), (), ...].
@@ -190,10 +228,13 @@ def form_pairs_{dataset_name}(lst):
     new_tree = ast.parse(form_pairs_code)
     new_function_def = new_tree.body[0]
     new_function_def.name = f"form_pairs_{dataset_name}"
+
     # Add function to existing AST
     tree.body.append(new_function_def)
+
     # Convert the modified AST to text
     modified_code = ast.unparse(tree)
+
     # Write the modified code back to db.py file
     with open(db_py_path, "w") as file:
         file.write(modified_code)
@@ -201,13 +242,15 @@ def form_pairs_{dataset_name}(lst):
 
 
 
-
 def delete_dataset_uploaded(dataset_name):
+    """Delete the dataset uploaded.
+    Args:
+        dataset_name (str): name of the dataset.
+    """
     try:
         relative_path = os.path.join("..", "data")
         path = os.path.abspath(relative_path)
         path_dataset_to_delete = os.path.join(path, dataset_name)
-        print(path_dataset_to_delete)
         shutil.rmtree(path_dataset_to_delete)
     except:
         print("No database uploaded")
