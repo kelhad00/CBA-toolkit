@@ -1,6 +1,9 @@
+import pandas as pd
+
 from Dash.components.callbacks.dataset import get_databases_select
 from Dash.components.callbacks.expression import get_expressions_select, get_expressions
 from Dash.components.containers.accordion import accordion, accordion_item
+from Dash.components.containers.graph import graph_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio
 from Dash.components.interaction.select import select
@@ -55,7 +58,14 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                         id="type-radio-durations-inter-dataset",
                         label="Select a type",
                         value="absolute",
-                        options=[["absolute", "Absolute"], ["relative", "Relative"]],
+                        options=[
+                            ["absolute", dmc.Tooltip(children="Absolute",
+                                                     label="The sum of all difference of time over the entire video",
+                                                     radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="Absolute",
+                                                     label="The percentage of the absolute duration compared to the total duration of the video.",
+                                                     radius="md", withArrow=True)],
+                        ],
                     ),
                     html.Div(className="flex flex-col gap-4", id="output-durations-dataset-inter", children=[]),
                 ]
@@ -87,7 +97,14 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                         id="figure-radio-durations-inter-expression",
                         label="Select a type",
                         value="absolute",
-                        options=[["absolute", "Absolute"], ["relative", "Relative"]],
+                        options=[
+                            ["absolute", dmc.Tooltip(children="Absolute",
+                                                     label="The sum of all difference of time over the entire video",
+                                                     radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="Absolute",
+                                                     label="The percentage of the absolute duration compared to the total duration of the video.",
+                                                     radius="md", withArrow=True)],
+                        ],
                     ),
                     html.Div(className="flex flex-col gap-4", id="output-durations-expression-inter", children=[]),
                 ],
@@ -128,23 +145,23 @@ def update_expression_analyzed_select(expression):
 
 
 
-
 @callback(
     Output('output-durations-dataset-inter', 'children'),
     [Input('expression-select-durations-inter-dataset', 'value'), Input('database-select-durations-inter-dataset', 'value'), Input('figure-radio-durations-inter-dataset', 'value'), Input('type-radio-durations-inter-dataset', 'value')])
 def display_durations_intra_dataset(expression, databases, type_figure, type):
     real_tier_lists, real_tiers = get_parameters_tag()
 
-    if expression is None or databases is None:
+    if expression is None or databases == []:
         return None
 
     if real_tier_lists[expression]:
         if type == "absolute":
             figures = plot_inter_absolute_duration(databases, expression)
-            return [dcc.Graph(figure=figures[i][int(type_figure)]) for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
+            return [graph_container(figure=figures[i][int(type_figure)], csv=figures[i][2].to_csv(index=False), name=f"{databases}_{i}_{expression}_duration_inter") for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
+
         else:
             figures = plot_inter_relative_duration(databases, expression)
-            return [dcc.Graph(figure=figures[i][int(type_figure)]) for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
+            return [graph_container(figure=figures[i][int(type_figure)], csv=figures[i][2].to_csv(index=False), name=f"{databases}_{i}_{expression}_duration_inter") for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
 
 
     return "No data available"
@@ -163,7 +180,6 @@ def display_durations_intra_expression(expression_divided, expression_analyzed, 
     # get entity of the expressions
     entities_divided = real_tier_lists[expression_divided]['Intensities']
 
-    print(entities_divided)
 
     figures = []
     for entity_divided in entities_divided:
@@ -171,10 +187,10 @@ def display_durations_intra_expression(expression_divided, expression_analyzed, 
         for entity_analyzed in entities_analyzed:
             if type == "absolute":
                 figure, df = plot_inter_ad_entity1_vs_entity2_tier(database, expression_divided, expression_analyzed, entity_divided, entity_analyzed)
-                figures.append(dcc.Graph(figure=figure) if figure is not None else f"No data available for {entity_divided} vs {entity_analyzed} in {database}")
+                figures.append(graph_container(figure, df.to_csv(index=False), f"{database}_{entity_divided}_{expression_analyzed}_{entity_divided}_{entity_analyzed}_duration_inter") if figure is not None else f"No data available for {entity_divided} vs {entity_analyzed} in {database}")
             else:
                 figure, df = plot_inter_rd_entity1_vs_entity2_tier(database, expression_divided, expression_analyzed, entity_divided, entity_analyzed)
-                figures.append(dcc.Graph(figure=figure) if figure is not None else f"No data available for {entity_divided} vs {entity_analyzed} in {database}")
+                figures.append(graph_container(figure, df.to_csv(index=False), f"{database}_{entity_divided}_{expression_analyzed}_{entity_divided}_{entity_analyzed}_duration_inter") if figure is not None else f"No data available for {entity_divided} vs {entity_analyzed} in {database}")
 
 
     return figures

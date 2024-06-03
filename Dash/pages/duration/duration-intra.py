@@ -6,6 +6,7 @@ from Dash.components.callbacks.dataset import get_databases_select, get_database
 from Dash.components.callbacks.entity import get_entities
 from Dash.components.callbacks.expression import get_expressions_select, get_expressions
 from Dash.components.containers.accordion import accordion, accordion_item
+from Dash.components.containers.graph import graph_container
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio
@@ -67,7 +68,14 @@ layout = section_container("Intra Non Verbal Expressions Analysis", "Analysis ba
                         id="type-radio-durations-intra-dataset",
                         label="Select a type",
                         value="absolute",
-                        options=[["absolute", "Absolute"], ["relative", "Relative"]],
+                        options=[
+                            ["absolute", dmc.Tooltip(children="Absolute",
+                                                     label="The sum of all difference of time over the entire video",
+                                                     radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="Absolute",
+                                                     label="The percentage of the absolute duration compared to the total duration of the video.",
+                                                     radius="md", withArrow=True)],
+                        ],
                     ),
                     html.Div(className="flex flex-col gap-4", id="output-durations-dataset-intra", children=[]),
                 ]
@@ -99,7 +107,14 @@ layout = section_container("Intra Non Verbal Expressions Analysis", "Analysis ba
                         id="figure-radio-durations-intra-expression",
                         label="Select a type",
                         value="absolute",
-                        options=[["absolute", "Absolute"], ["relative", "Relative"]],
+                        options=[
+                            ["absolute", dmc.Tooltip(children="Absolute",
+                                                     label="The sum of all difference of time over the entire video",
+                                                     radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="Absolute",
+                                                     label="The percentage of the absolute duration compared to the total duration of the video.",
+                                                     radius="md", withArrow=True)],
+                        ],
                     ),
                     html.Div(className="flex flex-col gap-4", id="output-durations-expression-intra", children=[]),
                 ],
@@ -149,10 +164,10 @@ def display_durations_intra_dataset(expression, databases, type_figure, type):
     if real_tier_lists[expression]:
         if type == "absolute":
             figures = plot_intra_absolute_duration(databases, expression)
-            return [dcc.Graph(figure=figures[i][int(type_figure)]) for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
+            return [graph_container(figure=figures[i][int(type_figure)], csv=figures[i][2].to_csv(index=False), name=f"{databases}_{i}_{expression}_duration_intra") for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
         else:
             figures = plot_intra_relative_duration(databases, expression)
-            return [dcc.Graph(figure=figures[i][int(type_figure)]) for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
+            return [graph_container(figure=figures[i][int(type_figure)], csv=figures[i][2].to_csv(index=False), name=f"{databases}_{i}_{expression}_duration_intra") for i in range(len(figures)) if figures[i][int(type_figure)] is not None] or "No data available"
 
 
     return "No data available"
@@ -169,7 +184,6 @@ def display_durations_intra_expression(expression_divided, expression_analyzed, 
     database_paths = get_database_paths(database)
     expression_values = get_entities(expression_divided)
 
-
     figures = []
     for entity in expression_values:
         if type == "absolute":
@@ -180,7 +194,7 @@ def display_durations_intra_expression(expression_divided, expression_analyzed, 
                 expression_analyzed,
                 entity
             )
-            figures.append(figure)
+            figures.append((figure, df))
         else:
             figure, df = plot_relative_duration_from_tier_folder(
                 database_paths,
@@ -189,9 +203,9 @@ def display_durations_intra_expression(expression_divided, expression_analyzed, 
                 expression_analyzed,
                 entity
             )
-            figures.append(figure)
+            figures.append((figure, df))
 
-    return [dcc.Graph(figure=figures[i]) for i in range(len(figures)) if figures[i] is not None] or "No data available"
+    return [graph_container(figure=figures[i][0], csv=figures[i][1].to_csv(index=False), name=f"{database}_{expression_divided}_{expression_analyzed}_duration_intra.csv") for i in range(len(figures)) if figures[i][0] is not None] or "No data available"
 
 
 

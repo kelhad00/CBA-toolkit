@@ -5,6 +5,7 @@ from Dash.components.callbacks.dataset import get_database_paths, get_databases_
 from Dash.components.callbacks.entity import get_entities
 from Dash.components.callbacks.expression import get_expressions_select
 from Dash.components.containers.accordion import accordion, accordion_item
+from Dash.components.containers.graph import graph_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
@@ -150,7 +151,7 @@ def update_output_mimicry_all(database, expression_A, expression_B, width, shift
         database_paths
     )
 
-    return dcc.Graph(figure=figure)
+    return graph_container(figure, df.to_csv(index=False), f"{expression_A}_{expression_B}_correlation")
 
 
 @callback(
@@ -223,4 +224,4 @@ def update_output_correlation_entity(database, expression_A, expression_B, entit
             database_paths
         )
 
-    return dcc.Graph(figure=figure)
+    return graph_container(figure, df.to_csv(index=False), f"{expression_A}_{entity_A}_{expression_B}_{entity_B}_correlation")

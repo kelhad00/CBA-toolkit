@@ -52,7 +52,10 @@ layout = section_container("Statistics on non verbal expressions", "Some basic s
                         id="type-radio-statistics-normal",
                         label="Select a type",
                         value="absolute",
-                        options=[["absolute", "Absolute"], ["relative", "Relative"]],
+                        options=[
+                            ["absolute", dmc.Tooltip(children="Absolute", label="The sum of all difference of time over the entire video", radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="Absolute", label="The percentage of the absolute duration compared to the total duration of the video.", radius="md", withArrow=True)],
+                        ],
                     ),
                     html.Div(id="output-statistics-normal")
 
@@ -86,7 +89,14 @@ layout = section_container("Statistics on non verbal expressions", "Some basic s
                         id="type-radio-statistics-divided",
                         label="Select a type",
                         value="absolute",
-                        options=[["absolute", "Absolute"], ["relative", "Relative"]],
+                        options=[
+                            ["absolute", dmc.Tooltip(children="Absolute",
+                                                     label="The sum of all difference of time over the entire video",
+                                                     radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="Absolute",
+                                                     label="The percentage of the absolute duration compared to the total duration of the video.",
+                                                     radius="md", withArrow=True)],
+                        ]
                     ),
                     html.Div(id="output-statistics-divided")
 

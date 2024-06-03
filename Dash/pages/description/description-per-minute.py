@@ -48,7 +48,10 @@ layout = section_container("Expression Per Minute", "Count the number of express
                         id="pov-radio-per-minute-all",
                         label="Select a point of view",
                         value="",
-                        options=[["", "Intra"], ["2", "Inter"]],
+                        options=[
+                            ["", dmc.Tooltip(children="Intra", label="we count the number of expressions/tiers we have in one minute in each file/individual.", radius="md", withArrow=True)],
+                            ["2", dmc.Tooltip(children="Inter", label="we count the number of expressions/tiers we have in one minute in each interaction.", radius="md", withArrow=True)]
+                        ],
                     ),
                     html.Div(className="flex flex-col gap-4", id="output-per-minute-all", children=[]),
                 ]

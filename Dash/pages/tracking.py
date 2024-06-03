@@ -5,6 +5,7 @@ import dash_mantine_components as dmc
 from Dash.components.callbacks.dataset import get_databases
 from Dash.components.callbacks.expression import get_expressions_select
 from Dash.components.containers.accordion import accordion_item, accordion
+from Dash.components.containers.graph import graph_container
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
@@ -100,7 +101,7 @@ def update_output_expression(expression_tracked, expression_checked):
         expression_tracked
     )
     if previous_figure is not None:
-        figures.append(dcc.Graph(figure=previous_figure))
+        figures.append(graph_container(figure=previous_figure, csv=df.to_csv(index=False), name=f"{expression_tracked}_{expression_checked}_track_previous"))
 
     following_figure, df = plot_track_following_expression(
         expression_track(
@@ -112,7 +113,7 @@ def update_output_expression(expression_tracked, expression_checked):
         expression_tracked
     )
     if following_figure is not None:
-        figures.append(dcc.Graph(figure=following_figure))
+        figures.append(graph_container(figure=following_figure, csv=df.to_csv(index=False), name=f"{expression_tracked}_{expression_checked}_track_following"))
 
     return figures
 
@@ -144,7 +145,7 @@ def update_output_entity(expression_tracked, expression_checked):
         expression_checked,
     )
     if previous_figure is not None:
-        figures.append(dcc.Graph(figure=previous_figure))
+        figures.append(graph_container(figure=previous_figure, csv=df.to_csv(index=False), name=f"{expression_tracked}_{expression_checked}_track_previous"))
 
     following_figure, df = plot_track_following_expression_byI(
         expression_track_byI(
@@ -158,7 +159,7 @@ def update_output_entity(expression_tracked, expression_checked):
         expression_checked,
     )
     if following_figure is not None:
-        figures.append(dcc.Graph(figure=following_figure))
+        figures.append(graph_container(figure=following_figure, csv=df.to_csv(index=False), name=f"{expression_tracked}_{expression_checked}_track_following"))
 
     return figures
 

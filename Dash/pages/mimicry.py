@@ -8,6 +8,7 @@ from Dash.components.callbacks.expression import get_expressions_select, get_exp
 from Dash.components.containers.accordion import accordion_item, accordion
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
+from Dash.components.interaction.button import download_button
 from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
 from IBPY.extract_data import get_time_eaf
@@ -227,6 +228,7 @@ def update_output_mimicry_all(database, expression_A, expression_B, pov, delta):
         return [
             dcc.Graph(figure=figure_count),
             dcc.Graph(figure=figure_proba),
+            download_button(df.to_csv(index=False), f"{database}_{expression_A}_{expression_B}_mimicry.csv")
         ]
 
     except Exception as e:
@@ -269,6 +271,7 @@ def update_output_mimicry_all(database, expression_A, expression_B, entity_A, en
         return [
             dcc.Graph(figure=figure_count),
             dcc.Graph(figure=figure_proba),
+            download_button(df.to_csv(index=False), f"{database}_{expression_A}_{expression_B}_{entity_A}_{entity_B}_mimicry.csv")
         ]
 
     except Exception as e:
@@ -311,6 +314,7 @@ def update_output_mimicry_entity(database, expression_A, expression_B, entity_A,
         return [
             dcc.Graph(figure=figure_count),
             dcc.Graph(figure=figure_proba),
+            download_button(df.to_csv(index=False), f"{database}_{expression_A}_{expression_B}_{entity_A}_{entity_B}_mimicry.csv")
         ]
 
     except Exception as e:
@@ -359,6 +363,7 @@ def update_output_mimicry_entity_stats(database, expression_A, expression_B, ent
     return [
         dcc.Graph(figure=figure_count),
         dcc.Graph(figure=figure_proba),
+        download_button(df.to_csv(index=False), f"{database}_{expression_A}_{expression_B}_{entity_A}_{entity_B}_{entity_A_stats}_{entity_B_stats}_mimicry.csv")
     ]
 
     # except Exception as e:
