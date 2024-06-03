@@ -10,16 +10,15 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 * [annotations]: contains ELAN Template Files (etf) for annotation to use in your own projects.
 * [data]: contains the data used for the statistics and machine learning parts of the project. This folder is not included in the repository, it will be created thanks to the MainPage of the Streamlit interface with your database of choice.
 * [src]: contains all functions we need to process data from our datasets for the machine learning part and all extraction and vizualisation functions related to the statistics of expressions in our datasets. This also creates the custom json according to the contents of the data folder.
-* [Streamlit]: contains the needed files to display the Non Verbal Expressions and ML statistics done in the corresponding folders in an interactive web page.
-* main.py: main file to launch the Streamlit interface.
+* [Dash]: contains the needed files to display the Non Verbal Expressions and ML statistics done in the corresponding folders in an interactive web page.
 * pair_data.py : example code
 
 ## How to run the code 
 
-To launch Streamlit, run the following command from the terminal:
+To launch Dash, run the following command from the terminal:
 ```python
-python main.py 
-
+cd Dash
+python app.py
 ```
 
 ## IMPORTANT
@@ -54,7 +53,6 @@ After that, you need to create a virtual environment to use web interface (Strea
     Step 2 : Launch Visual Studio Code from your tool.
     Step 3 : Open project folder.
     Step 4 : Install dependencies (libraries). All dependencies are on requirements.txt
-                - To install dependencies you need to open terminal on Visual Studio Code and write ``` pip install [name of the library] ``` 
-                                                FOR EXAMPLES : ``` pip install streamlit ```
+                - To install dependencies you need to open terminal on Visual Studio Code and write ``` pip install -r requirements.txt ``` 
 
 That's it, your project is set up to start !

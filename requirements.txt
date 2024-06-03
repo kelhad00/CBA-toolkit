@@ -10,5 +10,5 @@ seaborn
 streamlit-ace
 pyunpack
 fuzzywuzzy
-
 dash
+dash-mantine-components
