@@ -1,6 +1,7 @@
 import dash
 from dash import html, dcc, callback, Input, Output, State, no_update
 from dash.dependencies import ALL
+import dash_mantine_components as dmc
 
 import os
 import zipfile
@@ -63,7 +64,7 @@ def display_table_line(file_name, nb_files):
 
 
 layout = page_container(children=[
-    section_container("Import Dataset", "", [
+    section_container("Import Dataset", "Add new files to analyze", [
         dcc.Upload(
             id='upload-data',
             accept='.zip',
@@ -77,6 +78,57 @@ layout = page_container(children=[
     ]),
     section_container("All Datasets", "", [
         table_container(children=display_directories(), id="directory-list"),
+    ]),
+    section_container("Paring functions", "Add paring function to analyze the interaction between multiple characters", [
+        dmc.Alert(
+           html.Div(className="flex flex-col gap-2", children=[
+               html.Span("Here upload your own function(s) to configure the paring of the interaction in order to explore your dataset. It only must be done if the way of naming the eaf files by interaction pairs is different from 'A_1_...' & 'B_1_...'."),
+               html.Span("The function must be named 'form_pairs_(dataset_name)' and must take a list of filenames as input and return a list of pairs of filenames." ),
+           ]),
+            title="Explanation",
+            color="gray",
+        ),
+        dcc.Upload(
+            id='upload-paring',
+            accept='.py',
+            children=html.Div([
+                'Drag and Drop or ',
+                html.A('Select Files')
+            ]),
+            className="flex items-center justify-center w-full h-64 bg-gray-100 border-2 border-dashed border-gray-300 rounded-md cursor-pointer",
+        ),
+        html.Div(id='output-paring-upload'),
+
+        dmc.Alert(
+            title="Example",
+            color="gray",
+            children=dmc.Prism(
+                """# Example of a paring function for CCDB dataset
+def form_pairs_ccdb(lst):
+    '''Return filename pairs [(), (), ...].
+    Args:
+        lst (list): list of filenames without the path.
+    Returns:
+        list: [(),(),...].
+    '''
+    final = []
+    replace_with = {'dizzy': 'monk', 'monk': 'dizzy'}
+    i = 0
+    while i < len(lst):
+        key = lst[i].split('_')[-1].split('.')[0]
+        pair = lst[i].replace(key, replace_with[key])
+        if pair in lst:
+            final.append((lst[i], pair))
+            lst.remove(lst[i])
+            lst.remove(pair)
+        else:
+            i = +1
+    for l in lst:
+        continue
+    return final""",
+                language="python",
+            ),
+        )
     ]),
 
 ])
@@ -110,6 +162,73 @@ def update_directory_list(n_clicks, pathname, upload_children, ids, current_chil
             file_name = ids[index]['index']
             delete_dataset_uploaded(file_name)
         return display_directories()
+
+
+@callback(
+    Output('output-paring-upload', 'children'),
+    Input('upload-paring', 'contents'),
+    State('upload-paring', 'filename')
+)
+def update_output(contents, filename):
+    if contents is not None:
+        # Split the 'contents' into the data type and the base64 encoded data
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        file = io.BytesIO(decoded)
+        content = file.read()
+
+        try:
+            tree = ast.parse(content)
+        except:
+            return "Invalid file. Please upload a valid python file."
+
+        try:
+            relative_path = os.path.join("..", "IBPY")
+            file_path = os.path.join(relative_path, "db.py")
+            path = os.path.abspath(file_path)
+
+            with open(path, 'r') as f_destination:
+                code_destination = f_destination.read()
+                tree_destination = ast.parse(code_destination)
+        except:
+            return "No db.py file found."
+
+        if tree and tree_destination:
+            try:
+                functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+                functions_destination = [node.name for node in ast.walk(tree_destination) if isinstance(node, ast.FunctionDef)]
+                print(functions)
+
+                duplicates_between_files = set(functions) & set(functions_destination)
+
+                # check if the function is named correctly
+                if not functions or not all([f.startswith("form_pairs_") for f in functions]):
+                    print(functions)
+                    return "Invalid function name. Please upload a function named 'form_pairs_(dataset_name)'."
+
+                # check if some functions have the same name
+                if len(set(functions)) != len(functions):
+                    return "Invalid function name. Please upload a function with a unique name."
+
+                # Remove existing function from AST
+                if duplicates_between_files:
+                    for node in ast.walk(tree_destination):
+                        if isinstance(node, ast.FunctionDef) and node.name in duplicates_between_files:
+                            tree_destination.body.remove(node)
+
+                with open(path, 'w') as f_destination:
+                    f_destination.write(ast.unparse(tree_destination))
+                    f_destination.write("\n")
+                    f_destination.write("\n")
+                    f_destination.write(content.decode("utf-8"))
+
+                return html.Div([
+                    '✅File Name: ' + str(functions),
+                ])
+
+            except Exception as e:
+                print(e)
+                return "Error while updating the db.py file."
 
 
 @callback(
