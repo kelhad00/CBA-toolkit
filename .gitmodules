@@ -1,4 +1,4 @@
 [submodule "IBPY"]
 	path = IBPY
-	url = git@github.com:kelhad00/IBPY.git
-	branch = dev
+	url = git@github.com:antoine-maes/IBPY.git
+	branch = CBA-Dash
