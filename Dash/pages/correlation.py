@@ -11,7 +11,7 @@ from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
 from Dash.components.interaction.slider import slider
 
-from src.page5.snl_stats_visualization_page5 import plot_correlation
+from src.effect.snl_stats_visualization_page5 import plot_correlation
 from src.snl_stats_extraction_data import get_correlation_folder, get_correlation_byI, get_correlation_by_entity
 
 dash.register_page(__name__, path='/correlation/')

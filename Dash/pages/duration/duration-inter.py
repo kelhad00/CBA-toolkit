@@ -11,13 +11,13 @@ from dash import html, Output, callback, Input, dcc
 import dash
 import dash_mantine_components as dmc
 
-from src.page4.snl_stats_visualization_page4 import plot_inter_absolute_duration, plot_inter_relative_duration, \
+from src.duration.snl_stats_visualization_page4 import plot_inter_absolute_duration, plot_inter_relative_duration, \
     plot_inter_ad_entity1_vs_entity2_tier, plot_inter_rd_entity1_vs_entity2_tier
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters
 
 dash.register_page(
     __name__,
-    path='/durations/inter',
+    path='/duration/inter',
 )
 
 layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis based on each interaction between two persons. ", children=[
@@ -38,24 +38,24 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                     select(
                         label="Select an expression",
                         allowDeselect=True,
-                        id="expression-select-durations-inter-dataset",
+                        id="expression-select-description-inter-dataset",
                         options=[]
                     ),
                     select(
                         label="Select a database",
                         multiple=True,
-                        id="database-select-durations-inter-dataset",
+                        id="database-select-description-inter-dataset",
                         options=[],
                         value=[]
                     ),
                     radio(
-                        id="figure-radio-durations-inter-dataset",
+                        id="figure-radio-description-inter-dataset",
                         label="Select a figure",
                         value="0",
                         options=[["0", "Scatter"], ["1", "Line"]],
                     ),
                     radio(
-                        id="type-radio-durations-inter-dataset",
+                        id="type-radio-description-inter-dataset",
                         label="Select a type",
                         value="absolute",
                         options=[
@@ -67,7 +67,7 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                                                      radius="md", withArrow=True)],
                         ],
                     ),
-                    html.Div(className="flex flex-col gap-4", id="output-durations-dataset-inter", children=[]),
+                    html.Div(className="flex flex-col gap-4", id="output-description-dataset-inter", children=[]),
                 ]
             ),
             accordion_item(
@@ -78,23 +78,23 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                     select(
                         label="Select an expression (divided by)",
                         allowDeselect=True,
-                        id="expression-select-durations-inter-expression-divided",
+                        id="expression-select-description-inter-expression-divided",
                         options=[]
                     ),
                     select(
                         label="Select an expression (analyzed)",
                         allowDeselect=True,
-                        id="expression-select-durations-inter-expression-analyzed",
+                        id="expression-select-description-inter-expression-analyzed",
                         options=[]
                     ),
                     select(
                         label="Select a database",
                         allowDeselect=True,
-                        id="database-select-durations-inter-expression",
+                        id="database-select-description-inter-expression",
                         options=[]
                     ),
                     radio(
-                        id="figure-radio-durations-inter-expression",
+                        id="figure-radio-description-inter-expression",
                         label="Select a type",
                         value="absolute",
                         options=[
@@ -106,7 +106,7 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                                                      radius="md", withArrow=True)],
                         ],
                     ),
-                    html.Div(className="flex flex-col gap-4", id="output-durations-expression-inter", children=[]),
+                    html.Div(className="flex flex-col gap-4", id="output-description-expression-inter", children=[]),
                 ],
             ),
         ]),
@@ -116,7 +116,7 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
 
 
 @callback(
-    [Output('database-select-durations-inter-dataset', 'data'), Output('database-select-durations-inter-expression', 'data')],
+    [Output('database-select-description-inter-dataset', 'data'), Output('database-select-description-inter-expression', 'data')],
     Input('url', 'pathname'))
 def update_database_select(pathname):
     options = get_databases_select()
@@ -125,7 +125,7 @@ def update_database_select(pathname):
 
 
 @callback(
-    [Output('expression-select-durations-inter-dataset', 'data'), Output('expression-select-durations-inter-expression-divided', 'data')],
+    [Output('expression-select-description-inter-dataset', 'data'), Output('expression-select-description-inter-expression-divided', 'data')],
     Input('url', 'pathname'))
 def update_expression_select(pathname):
     options = get_expressions_select()
@@ -133,8 +133,8 @@ def update_expression_select(pathname):
     return options, options
 
 @callback(
-    [Output('expression-select-durations-inter-expression-analyzed', 'data'), Output('expression-select-durations-inter-expression-analyzed', 'value')],
-    Input('expression-select-durations-inter-expression-divided', 'value'))
+    [Output('expression-select-description-inter-expression-analyzed', 'data'), Output('expression-select-description-inter-expression-analyzed', 'value')],
+    Input('expression-select-description-inter-expression-divided', 'value'))
 def update_expression_analyzed_select(expression):
     if expression is None:
         return [], None
@@ -146,8 +146,8 @@ def update_expression_analyzed_select(expression):
 
 
 @callback(
-    Output('output-durations-dataset-inter', 'children'),
-    [Input('expression-select-durations-inter-dataset', 'value'), Input('database-select-durations-inter-dataset', 'value'), Input('figure-radio-durations-inter-dataset', 'value'), Input('type-radio-durations-inter-dataset', 'value')])
+    Output('output-description-dataset-inter', 'children'),
+    [Input('expression-select-description-inter-dataset', 'value'), Input('database-select-description-inter-dataset', 'value'), Input('figure-radio-description-inter-dataset', 'value'), Input('type-radio-description-inter-dataset', 'value')])
 def display_durations_intra_dataset(expression, databases, type_figure, type):
     real_tier_lists, real_tiers = get_parameters_tag()
 
@@ -169,8 +169,8 @@ def display_durations_intra_dataset(expression, databases, type_figure, type):
 
 
 @callback(
-    Output('output-durations-expression-inter', 'children'),
-    [Input('expression-select-durations-inter-expression-divided', 'value'), Input('expression-select-durations-inter-expression-analyzed', 'value'), Input('database-select-durations-inter-expression', 'value'), Input('figure-radio-durations-inter-expression', 'value')])
+    Output('output-description-expression-inter', 'children'),
+    [Input('expression-select-description-inter-expression-divided', 'value'), Input('expression-select-description-inter-expression-analyzed', 'value'), Input('database-select-description-inter-expression', 'value'), Input('figure-radio-description-inter-expression', 'value')])
 def display_durations_intra_expression(expression_divided, expression_analyzed, database, type):
     real_tier_lists, real_tiers = get_parameters_tag()
 

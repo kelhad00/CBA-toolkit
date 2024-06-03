@@ -26,26 +26,26 @@
 #                     select(
 #                         label="Select an expression",
 #                         allowDeselect=True,
-#                         id="expression-select-durations-intra-dataset",
+#                         id="expression-select-description-intra-dataset",
 #                         options=[]
 #                     ),
 #                     select(
 #                         label="Select a database",
 #                         allowDeselect=True,
-#                         id="database-select-durations-intra-dataset",
+#                         id="database-select-description-intra-dataset",
 #                         options=[]
 #                     ),
 #                     radio(
-#                         id="figure-radio-durations-intra-dataset",
+#                         id="figure-radio-description-intra-dataset",
 #                         label="Select a figure",
 #                         options=[[None, "Scatter"], [2, "Line"]],
 #                     ),
 #                     radio(
-#                         id="type-radio-durations-intra-dataset",
+#                         id="type-radio-description-intra-dataset",
 #                         label="Select a type",
 #                         options=[[None, "Absolute"], [2, "Relative"]],
 #                     ),
-#                     html.Div(className="flex flex-col gap-4", id="output-durations-intra", children=[]),
+#                     html.Div(className="flex flex-col gap-4", id="output-description-intra", children=[]),
 #                 ]
 #             ),
 #             accordion_item(

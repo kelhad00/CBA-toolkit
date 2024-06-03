@@ -12,7 +12,7 @@ from Dash.components.interaction.button import download_button
 from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
 from IBPY.extract_data import get_time_eaf
-from src.page5.snl_stats_visualization_page5 import plot_track_previous_expression, plot_track_following_expression, \
+from src.effect.snl_stats_visualization_page5 import plot_track_previous_expression, plot_track_following_expression, \
     plot_track_previous_expression_byI, plot_track_following_expression_byI, plot_mimicry
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters, expression_track, expression_track_byI, \
     give_mimicry_folder2, get_tier_dict_conv_folder, get_tier_from_tier, give_mimicry_folder4

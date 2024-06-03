@@ -13,7 +13,7 @@ from Dash.components.interaction.radio import radio, radio_items
 from Dash.components.interaction.select import select
 
 from src.json_creation import create_json_from_directory
-from src.page3.snl_stats_visualization_page3_express import plot_expression_per_min_I, plot_expression_per_min
+from src.description.snl_stats_visualization_page3_express import plot_expression_per_min_I, plot_expression_per_min
 from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
 
 dash.register_page(

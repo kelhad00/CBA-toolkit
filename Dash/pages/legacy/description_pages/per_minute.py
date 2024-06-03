@@ -7,8 +7,8 @@
 # import numpy as np
 #
 # from IBPY.extract_data import get_tier_intensities, get_max_min_time_tier, get_time_eaf, get_tier_count
-# from src.page3.snl_stats_visualization_database import display_general_informations_files, display_specific_informations
-# from src.page3.snl_stats_visualization_page3_express import plot_expression_per_min, plot_expression_per_min_I
+# from src.description.snl_stats_visualization_database import display_general_informations_files, display_specific_informations
+# from src.description.snl_stats_visualization_page3_express import plot_expression_per_min, plot_expression_per_min_I
 # from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
 # from Dash.components.containers.page import page_container
 # from Dash.components.containers.section import section_container, sub_section_container

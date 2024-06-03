@@ -9,7 +9,7 @@ from Dash.components.containers.graph import graph_container
 from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.select import select
-from src.page5.snl_stats_visualization_page5 import plot_track_previous_expression, plot_track_following_expression, \
+from src.effect.snl_stats_visualization_page5 import plot_track_previous_expression, plot_track_following_expression, \
     plot_track_previous_expression_byI, plot_track_following_expression_byI
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters, expression_track, expression_track_byI
 

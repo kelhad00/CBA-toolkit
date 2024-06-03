@@ -14,7 +14,7 @@ import dash_mantine_components as dmc
 
 from Dash.components.interaction.table import create_table
 from IBPY.extract_data import get_tier_intensities, get_max_min_time_tier
-from src.page3.snl_stats_visualization_database import display_general_informations_files
+from src.description.snl_stats_visualization_database import display_general_informations_files
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters
 
 dash.register_page(

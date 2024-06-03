@@ -44,7 +44,7 @@ def update_nav_section(pathname):
                 nav_section("Dashboard", [
                     {"name": "Home", "relative_path": "/", "active": "/" == pathname, "icon": home_icon},
                     {"name": "Description", "relative_path": "/description/", "active": "/description/" in pathname, "icon": information_icon},
-                    {"name": "Durations", "relative_path": "/durations/intra", "active": "/durations" in pathname, "icon": time_icon},
+                    {"name": "Durations", "relative_path": "/duration/intra", "active": "/duration" in pathname, "icon": time_icon},
                     {"name": "Tracking", "relative_path": "/tracking", "active": "/tracking" in pathname, "icon": effect_icon},
                     {"name": "Mimicry", "relative_path": "/mimicry", "active": "/mimicry" in pathname, "icon": mimicry_icon},
                     {"name": "Correlation", "relative_path": "/correlation", "active": "/correlation" in pathname, "icon": link_icon},
@@ -101,12 +101,12 @@ def get_title(url, options):
 )
 def update_page_title(url):
     options = [
-        {"label": "Description", "href" : "/description/"},
+        {"label": "Description", "href": "/description/"},
         {"label": "Home", "href": "/"},
         {"label": "Tiers", "href": "/tiers"},
         {"label": "Datasets", "href": "/datasets"},
         {"label": "Tracking", "href": "/tracking"},
-        {"label": "Durations", "href": "/durations/"},
+        {"label": "Durations", "href": "/duration/"},
         {"label": "Mimicry", "href": "/mimicry"},
         {"label": "Correlation", "href": "/correlation"},
     ]
@@ -126,13 +126,13 @@ def update_segment(pathname):
     ]
 
     durations = [
-        {"label": "Intra", "href": "/durations/intra", "active": "/durations/intra" in pathname},
-        {"label": "Inter", "href": "/durations/inter", "active": "/durations/inter" in pathname},
+        {"label": "Intra", "href": "/duration/intra", "active": "/duration/intra" in pathname},
+        {"label": "Inter", "href": "/duration/inter", "active": "/duration/inter" in pathname},
     ]
 
     if "/description" in pathname:
         return segment(description)
-    elif "/durations" in pathname:
+    elif "/duration" in pathname:
         return segment(durations)
     else:
         return None

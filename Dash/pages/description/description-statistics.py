@@ -11,7 +11,7 @@ from Dash.components.containers.graph import graph_container
 from Dash.components.containers.section import section_container
 from Dash.components.interaction.radio import radio
 from Dash.components.interaction.select import select
-from src.page3.snl_stats_visualization_page3 import plot_absolute_duration, plot_relative_duration, \
+from src.description.snl_stats_visualization_page3 import plot_absolute_duration, plot_relative_duration, \
     plot_absolute_duration_from_tier, plot_relative_duration_from_tier
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters
 
