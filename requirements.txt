@@ -11,3 +11,4 @@ pyunpack
 fuzzywuzzy
 dash
 dash-mantine-components
+dash_svg
