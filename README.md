@@ -21,6 +21,33 @@ cd Dash
 python app.py
 ```
 
+### IMPORTANT POUR SARRA
+
+aller sur ma branche de CBA 
+```bash 
+git checkout rebuild-dash
+```
+
+Mise à jour du submodule IBPY
+```bash 
+Git submodule sync
+```
+
+Aller dans IBPY
+```bash 
+Cd IBPY
+```
+
+Récupérer toutes les branches de IBPY (sur mon fork de IBPY)
+```bash 
+git fetch origin
+```
+
+Aller sur la branche CBA-Dash
+```bash 
+git checkout CBA-Dash
+```
+
 ## IMPORTANT
 
 For the proper functioning of this toolbox, it is necessary to implement your different datasets with annotated files in EAF format under the same template. You will be asked to provide them to the interface in zip format, one folder at a time.

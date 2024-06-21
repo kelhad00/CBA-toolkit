@@ -27,7 +27,15 @@ def create_json_from_directory():
     delete_file_if_exists('data.json')
     print('Creating JSON file from directory...')
     parent_path = abspath(os.path.join(script_dir, '..'))
-    datasets = os.listdir(root)
+
+    try:
+        datasets = os.listdir(root)
+    except FileNotFoundError:
+        print(f"Error: The directory {root} does not exist.")
+        # create data folder
+        os.makedirs(root)
+        datasets = os.listdir(root)
+
     datasets_full = [join(root, d) for d in datasets]
     dct={}
     dct['FOLDER_PATHS']={}
