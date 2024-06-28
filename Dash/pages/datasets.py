@@ -40,7 +40,10 @@ def display_directories():
     """
     relative_path = os.path.join("..", "data")
     path = os.path.abspath(relative_path)
-    entries = os.listdir(path)
+    try:
+        entries = os.listdir(path)
+    except:
+        entries = []
     directories = [entry for entry in entries if os.path.isdir(os.path.join(path, entry))]
     nb_files_directories = [len(os.listdir(os.path.join(path, directory))) for directory in directories]
     return [display_table_line(directory, nb_files) for directory, nb_files in zip(directories, nb_files_directories)]

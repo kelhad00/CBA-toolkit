@@ -10,5 +10,5 @@ streamlit-ace
 pyunpack
 fuzzywuzzy
 dash
-dash-mantine-components
+dash-mantine-components==0.12.1
 dash_svg
