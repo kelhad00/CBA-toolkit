@@ -312,7 +312,7 @@ def order_datasets(eaf_files, path):
         folder_path = os.path.join(path, folder)
         if folder_path not in datasets:
             # check if the folder is empty of eaf files
-            if not os.listdir(folder_path) or not any(file.endswith(".eaf") for file in os.listdir(folder_path)):
+            if not any(file.endswith(".eaf") for file in os.listdir(folder_path)):
                 shutil.rmtree(folder_path)
 
     return datasets
