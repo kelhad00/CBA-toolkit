@@ -17,6 +17,7 @@ from Dash.components.containers.page import page_container
 from Dash.components.containers.section import section_container
 
 from Dash.assets.icons.Delete import delete_icon
+from src.json_creation import create_json_from_directory
 
 dash.register_page(__name__)
 
@@ -85,7 +86,8 @@ layout = page_container(children=[
     section_container("Paring functions", "Add paring function to analyze the interaction between multiple characters", [
         dmc.Alert(
            html.Div(className="flex flex-col gap-2", children=[
-               html.Span("Here upload your own function(s) to configure the paring of the interaction in order to explore your dataset. It only must be done if the way of naming the eaf files by interaction pairs is different from 'A_1_...' & 'B_1_...'."),
+               html.Span("Here upload your own function(s) to configure the paring of the interaction in order to explore your dataset. "
+                         "It only must be done if the way of naming the eaf files by interaction pairs is different from 'A_1_...' & 'B_1_...'."),
                html.Span("The function must be named 'form_pairs_(dataset_name)' and must take a list of filenames as input and return a list of pairs of filenames." ),
            ]),
             title="Explanation",
@@ -256,57 +258,40 @@ def update_output(contents, filename):
             files = zip_ref.namelist()
             only_files = [f for f in files if not zip_ref.getinfo(f).is_dir()]
             eaf_files = [file for file in only_files if file.endswith(".eaf")]
-
-            subfolders = [f for f in files if zip_ref.getinfo(f).is_dir() and f != file_name]
-
-            # Only keep the subfolders name
-            split_subfolders = []
-            for folder in subfolders:
-                folder_path = os.path.normpath(folder)
-                if os.path.dirname(folder_path):
-                    base_name = os.path.basename(folder_path)
-                    split_subfolders.append(base_name)
-
-            for folder in split_subfolders:
-                os.makedirs(os.path.join(path, folder), exist_ok=True)
-
-            print("split_subfolders", split_subfolders)
-            print("only_files", only_files)
-
-            # if 'IB' in split_subfolders:
-            #     split_subfolders.remove('IB')
-
-            # delete IB/.DS_Store in the zip file with os
-            if 'IB/.DS_Store' in only_files:
-                only_files.remove('IB/.DS_Store')
-
-            if len(eaf_files) == 0 or len(eaf_files) != len(only_files):
-                return "Invalid directory. Please upload a dataset with only .eaf files."
-
             zip_ref.extractall(path)
 
-            for folder in split_subfolders:
-                doss = os.path.join(path, file_name)
-                doss2 = os.path.join(doss, folder)
+        eaf_files = [os.path.join(path, eaf_file) for eaf_file in eaf_files]
 
-                for file2 in os.listdir(doss2):
-                    src_path = os.path.join(doss2, file2)
-                    destination_path = os.path.join(os.path.join(path, folder), file2)
-                    if os.path.isfile(src_path):
-                        shutil.move(src_path, destination_path)
+        datasets = set()
 
-            if split_subfolders:
-                shutil.rmtree(os.path.join(path, file_name))
+        for eaf_file in eaf_files:
+            parent_folder = os.path.dirname(eaf_file).split("/")[-1]
+            dataset_folder = os.path.join(path, parent_folder)
+            os.makedirs(dataset_folder, exist_ok=True)
+            datasets.add(dataset_folder)
 
-            dataset_name = file_name
-            add_form_pairs_function(dataset_name)
+            if os.path.dirname(eaf_file) != dataset_folder:
+                shutil.move(eaf_file, dataset_folder)
+
+        #delete empty folders
+        for folder in os.listdir(path):
+            folder_path = os.path.join(path, folder)
+            if folder_path not in datasets:
+                shutil.rmtree(folder_path)
+
+
+        for dataset in datasets:
+            dataset = os.path.split(dataset)[-1]
+
+            # add a form_pairs function to the db.py file
+            add_form_pairs_function(dataset)
 
             # rename dataset that are not valid python variable names
-            for folder in split_subfolders:
-                if not folder.isidentifier():
-                    folder_correct = sanitize_function_name(folder)
-                    os.rename(os.path.join(path, folder), os.path.join(path, folder_correct))
+            if not dataset.isidentifier():
+                folder_correct = sanitize_function_name(dataset)
+                os.rename(os.path.join(path, dataset), os.path.join(path, folder_correct))
 
+        create_json_from_directory()
         return html.Div([
             '✅File Name: ' + file_name,
         ])
@@ -374,6 +359,7 @@ def delete_dataset_uploaded(dataset_name):
         path = os.path.abspath(relative_path)
         path_dataset_to_delete = os.path.join(path, dataset_name)
         shutil.rmtree(path_dataset_to_delete)
+        create_json_from_directory()
     except:
         print("No database uploaded")
 
