@@ -247,10 +247,9 @@ def update_output(contents, filename):
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
         file = io.BytesIO(decoded)
-        file_name = filename.split(".")[0]
+
         relative_path = os.path.join("..", "data")
         path = os.path.abspath(relative_path)
-
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -260,42 +259,63 @@ def update_output(contents, filename):
             eaf_files = [file for file in only_files if file.endswith(".eaf")]
             zip_ref.extractall(path)
 
+        # Get the absolute path of the extracted files
         eaf_files = [os.path.join(path, eaf_file) for eaf_file in eaf_files]
 
-        datasets = set()
-
-        for eaf_file in eaf_files:
-            parent_folder = os.path.dirname(eaf_file).split("/")[-1]
-            dataset_folder = os.path.join(path, parent_folder)
-            os.makedirs(dataset_folder, exist_ok=True)
-            datasets.add(dataset_folder)
-
-            if os.path.dirname(eaf_file) != dataset_folder:
-                shutil.move(eaf_file, dataset_folder)
-
-        #delete empty folders
-        for folder in os.listdir(path):
-            folder_path = os.path.join(path, folder)
-            if folder_path not in datasets:
-                shutil.rmtree(folder_path)
-
+        # order the datasets in the data folder
+        datasets = order_datasets(eaf_files, path)
 
         for dataset in datasets:
             dataset = os.path.split(dataset)[-1]
-
-            # add a form_pairs function to the db.py file
-            add_form_pairs_function(dataset)
 
             # rename dataset that are not valid python variable names
             if not dataset.isidentifier():
                 folder_correct = sanitize_function_name(dataset)
                 os.rename(os.path.join(path, dataset), os.path.join(path, folder_correct))
+                dataset = folder_correct
+
+            # add a form_pairs function to the db.py file
+            add_form_pairs_function(dataset)
 
         create_json_from_directory()
         return html.Div([
-            '✅File Name: ' + file_name,
+            '✅Successfully uploaded dataset(s)',
         ])
 
+
+def order_datasets(eaf_files, path):
+    '''
+    Order the datasets in the data folder. we only keep the eaf files in the dataset folder (the parent dir).
+    Args:
+        eaf_files:
+        path:
+
+    Returns:
+        set of datasets
+    '''
+    datasets = set()
+
+    # move eaf files to the dataset folder
+    for eaf_file in eaf_files:
+        parent_folder = os.path.dirname(eaf_file).split("/")[-1]
+        dataset_folder = os.path.join(path, parent_folder)
+        os.makedirs(dataset_folder, exist_ok=True)
+        datasets.add(dataset_folder)
+
+        if os.path.dirname(eaf_file) != dataset_folder:
+            # check if the file already exists in the folder
+            if not os.path.isfile(os.path.join(dataset_folder, os.path.basename(eaf_file))):
+                shutil.move(eaf_file, dataset_folder)
+
+    # delete empty folders
+    for folder in os.listdir(path):
+        folder_path = os.path.join(path, folder)
+        if folder_path not in datasets:
+            # check if the folder is empty of eaf files
+            if not os.listdir(folder_path) or not any(file.endswith(".eaf") for file in os.listdir(folder_path)):
+                shutil.rmtree(folder_path)
+
+    return datasets
 
 def add_form_pairs_function(dataset_name):
     """Add a form_pairs function to the db.py file.

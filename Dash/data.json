@@ -1,9 +1,65 @@
 {
     "FOLDER_PATHS": {
         "DIR": "../data",
-        "ROOT1": "../data/ccdb"
+        "ROOT1": "../data/ifadv",
+        "ROOT2": "../data/ndcme",
+        "ROOT3": "../data/ccdb"
     },
     "DATABASES_PATHS": {
+        "ifadv_paths": [
+            "../data/ifadv/DVA8K.eaf",
+            "../data/ifadv/DVB1B.eaf",
+            "../data/ifadv/DVA7B.eaf",
+            "../data/ifadv/DVB5H.eaf",
+            "../data/ifadv/DVA1A.eaf",
+            "../data/ifadv/DVB8L.eaf",
+            "../data/ifadv/DVA3E.eaf",
+            "../data/ifadv/DVB6I.eaf",
+            "../data/ifadv/DVA2C.eaf",
+            "../data/ifadv/DVB4G.eaf",
+            "../data/ifadv/DVB7J.eaf",
+            "../data/ifadv/DVA5G.eaf",
+            "../data/ifadv/DVA4C.eaf",
+            "../data/ifadv/DVB3F.eaf",
+            "../data/ifadv/DVA6H.eaf",
+            "../data/ifadv/DVB2D.eaf"
+        ],
+        "ndcme_paths": [
+            "../data/ndcme/13_2_A_M.eaf",
+            "../data/ndcme/17_3_B_F.eaf",
+            "../data/ndcme/8_4_A_M.eaf",
+            "../data/ndcme/20_2_A_M.eaf",
+            "../data/ndcme/18_1_B_M.eaf",
+            "../data/ndcme/17_1_A_F.eaf",
+            "../data/ndcme/21_1_A_M.eaf",
+            "../data/ndcme/17_2_B_F.eaf",
+            "../data/ndcme/14_1_A_M.eaf",
+            "../data/ndcme/13_4_B_F.eaf",
+            "../data/ndcme/8_4_B_M.eaf",
+            "../data/ndcme/17_3_A_F.eaf",
+            "../data/ndcme/13_1_A_M.eaf",
+            "../data/ndcme/17_1_B_F.eaf",
+            "../data/ndcme/21_2_A_M.eaf",
+            "../data/ndcme/20_2_B_M.eaf",
+            "../data/ndcme/18_1_A_M.eaf",
+            "../data/ndcme/14_2_A_M.eaf",
+            "../data/ndcme/21_1_B_M.eaf",
+            "../data/ndcme/17_2_A_F.eaf",
+            "../data/ndcme/13_2_B_F.eaf",
+            "../data/ndcme/17_4_B_F.eaf",
+            "../data/ndcme/8_3_A_M.eaf",
+            "../data/ndcme/13_3_B_F.eaf",
+            "../data/ndcme/8_2_A_M.eaf",
+            "../data/ndcme/14_1_B_F.eaf",
+            "../data/ndcme/13_4_A_M.eaf",
+            "../data/ndcme/8_1_B_M.eaf",
+            "../data/ndcme/13_1_B_F.eaf",
+            "../data/ndcme/8_3_B_M.eaf",
+            "../data/ndcme/17_4_A_F.eaf",
+            "../data/ndcme/8_2_B_M.eaf",
+            "../data/ndcme/14_2_B_F.eaf",
+            "../data/ndcme/8_1_A_M.eaf"
+        ],
         "ccdb_paths": [
             "../data/ccdb/P14_P7_2502_dizzy.eaf",
             "../data/ccdb/P12_P2_1402_monk.eaf",
@@ -22,6 +78,58 @@
         ]
     },
     "DATABASES_PAIR_PATHS": {
+        "ifadv_pairs": [
+            "../data/ifadv/DVA1A.eaf",
+            "../data/ifadv/DVB1B.eaf",
+            "../data/ifadv/DVA2C.eaf",
+            "../data/ifadv/DVB2D.eaf",
+            "../data/ifadv/DVA3E.eaf",
+            "../data/ifadv/DVB3F.eaf",
+            "../data/ifadv/DVA4C.eaf",
+            "../data/ifadv/DVB4G.eaf",
+            "../data/ifadv/DVA5G.eaf",
+            "../data/ifadv/DVB5H.eaf",
+            "../data/ifadv/DVA6H.eaf",
+            "../data/ifadv/DVB6I.eaf",
+            "../data/ifadv/DVA7B.eaf",
+            "../data/ifadv/DVB7J.eaf",
+            "../data/ifadv/DVA8K.eaf",
+            "../data/ifadv/DVB8L.eaf"
+        ],
+        "ndcme_pairs": [
+            "../data/ndcme/13_1_A_M.eaf",
+            "../data/ndcme/13_1_B_F.eaf",
+            "../data/ndcme/13_2_A_M.eaf",
+            "../data/ndcme/13_2_B_F.eaf",
+            "../data/ndcme/13_4_A_M.eaf",
+            "../data/ndcme/13_4_B_F.eaf",
+            "../data/ndcme/14_1_A_M.eaf",
+            "../data/ndcme/14_1_B_F.eaf",
+            "../data/ndcme/14_2_A_M.eaf",
+            "../data/ndcme/14_2_B_F.eaf",
+            "../data/ndcme/17_1_A_F.eaf",
+            "../data/ndcme/17_1_B_F.eaf",
+            "../data/ndcme/17_2_A_F.eaf",
+            "../data/ndcme/17_2_B_F.eaf",
+            "../data/ndcme/17_3_A_F.eaf",
+            "../data/ndcme/17_3_B_F.eaf",
+            "../data/ndcme/17_4_A_F.eaf",
+            "../data/ndcme/17_4_B_F.eaf",
+            "../data/ndcme/18_1_A_M.eaf",
+            "../data/ndcme/18_1_B_M.eaf",
+            "../data/ndcme/20_2_A_M.eaf",
+            "../data/ndcme/20_2_B_M.eaf",
+            "../data/ndcme/21_1_A_M.eaf",
+            "../data/ndcme/21_1_B_M.eaf",
+            "../data/ndcme/8_1_A_M.eaf",
+            "../data/ndcme/8_1_B_M.eaf",
+            "../data/ndcme/8_2_A_M.eaf",
+            "../data/ndcme/8_2_B_M.eaf",
+            "../data/ndcme/8_3_A_M.eaf",
+            "../data/ndcme/8_3_B_M.eaf",
+            "../data/ndcme/8_4_A_M.eaf",
+            "../data/ndcme/8_4_B_M.eaf"
+        ],
         "ccdb_pairs": [
             "../data/ccdb/P14_P7_2502_dizzy.eaf",
             "../data/ccdb/P14_P7_2502_monk.eaf",
@@ -42,14 +150,14 @@
     "TIER_LISTS": {
         "S&L_0": [],
         "Laughs_0": [
-            "high",
-            "medium",
-            "low"
-        ],
-        "Smiles_0": [
-            "subtle",
             "low",
             "medium",
+            "high"
+        ],
+        "Smiles_0": [
+            "medium",
+            "low",
+            "subtle",
             "high"
         ],
         "Transcriptions": [],
@@ -57,8 +165,8 @@
         "Shakes": [],
         "Tilt": [],
         "Role": [
-            "lsn",
-            "spk"
+            "spk",
+            "lsn"
         ],
         "EyeBrows": []
     }
