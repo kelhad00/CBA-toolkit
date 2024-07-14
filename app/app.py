@@ -6,16 +6,16 @@ import dash
 from dash import Dash, html, dcc, Output, Input
 import dash_mantine_components as dmc
 
-from Dash.assets.icons.Database import database_search_icon
-from Dash.assets.icons.Home import home_icon
-from Dash.assets.icons.Information import information_icon
-from Dash.assets.icons.Link import link_icon
-from Dash.assets.icons.Mimicry import mimicry_icon
-from Dash.assets.icons.Tier import tier_icon
-from Dash.assets.icons.Time import time_icon
-from Dash.assets.icons.Effect import effect_icon
-from Dash.components.containers.page import page_container
-from Dash.components.interaction.segment import segment
+from app.assets.icons.Database import database_search_icon
+from app.assets.icons.Home import home_icon
+from app.assets.icons.Information import information_icon
+from app.assets.icons.Link import link_icon
+from app.assets.icons.Mimicry import mimicry_icon
+from app.assets.icons.Tier import tier_icon
+from app.assets.icons.Time import time_icon
+from app.assets.icons.Effect import effect_icon
+from app.components.containers.page import page_container
+from app.components.interaction.segment import segment
 
 external_scripts = [
     {'src': 'https://cdn.tailwindcss.com'}

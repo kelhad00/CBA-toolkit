@@ -3,14 +3,14 @@ from dash import html, Output, Input, callback, dcc
 
 import dash_mantine_components as dmc
 
-from Dash.components.callbacks.dataset import get_databases
-from Dash.components.callbacks.entity import get_entities
-from Dash.components.callbacks.expression import get_expressions
-from Dash.components.containers.accordion import accordion, accordion_item
-from Dash.components.containers.graph import graph_container
-from Dash.components.containers.section import section_container
-from Dash.components.interaction.radio import radio
-from Dash.components.interaction.select import select
+from app.components.callbacks.dataset import get_databases
+from app.components.callbacks.entity import get_entities
+from app.components.callbacks.expression import get_expressions
+from app.components.containers.accordion import accordion, accordion_item
+from app.components.containers.graph import graph_container
+from app.components.containers.section import section_container
+from app.components.interaction.radio import radio
+from app.components.interaction.select import select
 from src.description.snl_stats_visualization_page3 import plot_absolute_duration, plot_relative_duration, \
     plot_absolute_duration_from_tier, plot_relative_duration_from_tier
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters
@@ -18,18 +18,16 @@ from src.snl_stats_extraction_data import get_parameters_tag, get_parameters
 statistics_list = ["All", "Standard deviation", "Mean", "Median", "Max", "Min"]
 statistics_options = [{"label": stat, "value": stat} for stat in statistics_list]
 
-
 dash.register_page(
     __name__,
     path="/description/stats",
 )
 
-
 layout = section_container("Statistics on non verbal expressions", "Some basic statistics about datasets.", children=[
-        accordion(
-            multiple=True,
-            value=["normal", "divided"],
-            children=[
+    accordion(
+        multiple=True,
+        value=["normal", "divided"],
+        children=[
             accordion_item(
                 label="By dataset",
                 description="Display some statistics about the expressions in each dataset.",
@@ -53,8 +51,12 @@ layout = section_container("Statistics on non verbal expressions", "Some basic s
                         label="Select a type",
                         value="absolute",
                         options=[
-                            ["absolute", dmc.Tooltip(children="Absolute", label="The sum of all difference of time over the entire video", radius="md", withArrow=True)],
-                            ["relative", dmc.Tooltip(children="Absolute", label="The percentage of the absolute duration compared to the total duration of the video.", radius="md", withArrow=True)],
+                            ["absolute", dmc.Tooltip(children="Absolute",
+                                                     label="The sum of all difference of time over the entire video",
+                                                     radius="md", withArrow=True)],
+                            ["relative", dmc.Tooltip(children="relative",
+                                                     label="The percentage of the absolute duration compared to the total duration of the video.",
+                                                     radius="md", withArrow=True)],
                         ],
                     ),
                     html.Div(id="output-statistics-normal")
@@ -93,7 +95,7 @@ layout = section_container("Statistics on non verbal expressions", "Some basic s
                             ["absolute", dmc.Tooltip(children="Absolute",
                                                      label="The sum of all difference of time over the entire video",
                                                      radius="md", withArrow=True)],
-                            ["relative", dmc.Tooltip(children="Absolute",
+                            ["relative", dmc.Tooltip(children="Relative",
                                                      label="The percentage of the absolute duration compared to the total duration of the video.",
                                                      radius="md", withArrow=True)],
                         ]
@@ -103,8 +105,8 @@ layout = section_container("Statistics on non verbal expressions", "Some basic s
                 ],
             ),
         ]),
-        html.Div(className="flex flex-col gap-4", id="per-minute-output", children=[]),
-    ])
+    html.Div(className="flex flex-col gap-4", id="per-minute-output", children=[]),
+])
 
 
 @callback(
@@ -132,6 +134,7 @@ def update_analyzed_expression_select(expression):
     name_tiers = get_expressions() + ["all"]
 
     return [{"label": tier, "value": tier} for tier in name_tiers if tier != expression], None
+
 
 #
 # @callback(
@@ -236,7 +239,6 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
     name_databases = get_databases()
     expression_values = get_entities(expression_divided)
 
-
     try:
         if expression_analyzed != 'all':
             if real_tier_lists[expression_analyzed]:
@@ -256,7 +258,9 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
                     if all(fig[0] is None for fig in figures):
                         return f"No data available for {expression_divided} and {expression_analyzed}"
                     else:
-                        return [graph_container(fig[0], fig[1].to_csv(index=False), f"{expression_divided}_{expression_analyzed}_{statistic}_statistic.csv") for fig in figures if fig is not None]
+                        return [graph_container(fig[0], fig[1].to_csv(index=False),
+                                                f"{expression_divided}_{expression_analyzed}_{statistic}_statistic.csv")
+                                for fig in figures if fig is not None]
 
                 else:
                     figures = []
@@ -273,7 +277,9 @@ def update_statistics_divided(expression_divided, expression_analyzed, statistic
                     if all(fig[0] is None for fig in figures):
                         return f"No data available for {expression_divided} and {expression_analyzed}"
                     else:
-                        return [graph_container(fig[0], fig[1].to_csv(index=False), f"{expression_divided}_{expression_analyzed}_{statistic}_statistic.csv") for fig in figures if fig is not None]
+                        return [graph_container(fig[0], fig[1].to_csv(index=False),
+                                                f"{expression_divided}_{expression_analyzed}_{statistic}_statistic.csv")
+                                for fig in figures if fig is not None]
 
             else:
                 return f"No data available for {expression_analyzed} with {expression_divided}"

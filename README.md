@@ -1,6 +1,3 @@
-This toolkit is still under development...
-
-
 # CBA
 The Conversation Behavior Analysis toolkit aims at offering the means for analyzing phenomena occurring in conversations such as mimicry, overlapping expressions, expressions timing, etc.
 
@@ -8,16 +5,29 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 ## Content
 
 * [annotations]: contains ELAN Template Files (etf) for annotation to use in your own projects.
+* [app]: contains the needed files to display the Non Verbal Expressions and ML statistics done in the corresponding folders in an interactive web page.
 * [data]: contains the data used for the statistics and machine learning parts of the project. This folder is not included in the repository, it will be created thanks to the MainPage of the Streamlit interface with your database of choice.
+* [IBPY]: submodule containing all the utils functions needed to extract data from the database.
 * [src]: contains all functions we need to process data from our datasets for the machine learning part and all extraction and vizualisation functions related to the statistics of expressions in our datasets. This also creates the custom json according to the contents of the data folder.
-* [Dash]: contains the needed files to display the Non Verbal Expressions and ML statistics done in the corresponding folders in an interactive web page.
 * pair_data.py : example code
+
+## Installation 
+
+To install the toolkit, clone the repository and install the dependencies with the following command:
+```bash
+pip install -r requirements.txt
+```
+
+You also should install the IBPY submodule with the following command:
+```bash
+git submodule sync
+```
 
 ## How to run the code 
 
-To launch Dash, run the following command from the terminal:
-```python
-cd Dash
+To launch the application, run the following command from the terminal:
+```bash
+cd app
 python app.py
 ```
 
@@ -30,7 +40,7 @@ git checkout rebuild-dash
 
 Mise à jour du submodule IBPY
 ```bash 
-Git submodule sync
+git submodule sync
 ```
 
 Aller dans IBPY
@@ -45,7 +55,7 @@ git fetch origin
 
 Aller sur la branche CBA-Dash
 ```bash 
-git checkout CBA-Dash
+git checkout CBA-app
 ```
 
 ## IMPORTANT
@@ -68,18 +78,3 @@ python pair_data.py --path_ifadv <path to the IFADV audio, video or eaf files>
 python pair_data.py --path_ndc <path to the NDC-ME audio, video or eaf files>
 
 ```
-## Installation
-
-To install the toolkit, clone the repository and install : 
-
-First of all, you need to clone the repository on github (https://github.com/kelhad00/CBA-toolkit/tree/dev) or download it.
-
-After that, you need to create a virtual environment to use web interface (Streamlit) :
-
-    Step 1 : Install Environment creation Tool (Anaconda or Miniconda for examples).
-    Step 2 : Launch Visual Studio Code from your tool.
-    Step 3 : Open project folder.
-    Step 4 : Install dependencies (libraries). All dependencies are on requirements.txt
-                - To install dependencies you need to open terminal on Visual Studio Code and write ``` pip install -r requirements.txt ``` 
-
-That's it, your project is set up to start !

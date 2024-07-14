@@ -3,16 +3,16 @@ import numpy as np
 import pandas as pd
 import os
 
-from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
-from Dash.components.callbacks.entity import get_entities
-from Dash.components.callbacks.expression import get_expressions
-from Dash.components.containers.section import section_container
-from Dash.components.interaction.button import download_button
-from Dash.components.interaction.select import select
+from app.components.callbacks.dataset import get_databases_select, get_database_paths
+from app.components.callbacks.entity import get_entities
+from app.components.callbacks.expression import get_expressions
+from app.components.containers.section import section_container
+from app.components.interaction.button import download_button
+from app.components.interaction.select import select
 from dash import html, callback, Output, Input
 import dash_mantine_components as dmc
 
-from Dash.components.interaction.table import create_table
+from app.components.interaction.table import create_table
 from IBPY.extract_data import get_tier_intensities, get_max_min_time_tier
 from src.description.snl_stats_visualization_database import display_general_informations_files
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters

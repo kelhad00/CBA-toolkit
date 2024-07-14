@@ -8,11 +8,11 @@
 # from src.description.snl_stats_visualization_page3 import plot_absolute_duration, plot_relative_duration, \
 #     plot_absolute_duration_from_tier, plot_relative_duration_from_tier
 # from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
-# from Dash.components.containers.page import page_container
-# from Dash.components.containers.section import section_container, sub_section_container
-# from Dash.components.interaction.select import select
-# from Dash.components.interaction.radio import radio
-# from Dash.components.containers.accordion import accordion, accordion_item
+# from app.components.containers.page import page_container
+# from app.components.containers.section import section_container, sub_section_container
+# from app.components.interaction.select import select
+# from app.components.interaction.radio import radio
+# from app.components.containers.accordion import accordion, accordion_item
 # import os
 #
 #

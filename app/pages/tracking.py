@@ -2,13 +2,13 @@ import dash
 from dash import html, Output, callback, Input, dcc
 import dash_mantine_components as dmc
 
-from Dash.components.callbacks.dataset import get_databases
-from Dash.components.callbacks.expression import get_expressions_select
-from Dash.components.containers.accordion import accordion_item, accordion
-from Dash.components.containers.graph import graph_container
-from Dash.components.containers.page import page_container
-from Dash.components.containers.section import section_container
-from Dash.components.interaction.select import select
+from app.components.callbacks.dataset import get_databases
+from app.components.callbacks.expression import get_expressions_select
+from app.components.containers.accordion import accordion_item, accordion
+from app.components.containers.graph import graph_container
+from app.components.containers.page import page_container
+from app.components.containers.section import section_container
+from app.components.interaction.select import select
 from src.effect.snl_stats_visualization_page5 import plot_track_previous_expression, plot_track_following_expression, \
     plot_track_previous_expression_byI, plot_track_following_expression_byI
 from src.snl_stats_extraction_data import get_parameters_tag, get_parameters, expression_track, expression_track_byI

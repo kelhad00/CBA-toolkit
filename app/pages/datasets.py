@@ -12,11 +12,11 @@ import ast
 import keyword
 
 
-from Dash.components.interaction.table import table_line, table_cell, table_container
-from Dash.components.containers.page import page_container
-from Dash.components.containers.section import section_container
+from app.components.interaction.table import table_line, table_cell, table_container
+from app.components.containers.page import page_container
+from app.components.containers.section import section_container
 
-from Dash.assets.icons.Delete import delete_icon
+from app.assets.icons.Delete import delete_icon
 from src.json_creation import create_json_from_directory
 
 dash.register_page(__name__)

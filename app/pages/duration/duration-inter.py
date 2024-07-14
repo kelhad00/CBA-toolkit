@@ -1,12 +1,12 @@
 import pandas as pd
 
-from Dash.components.callbacks.dataset import get_databases_select
-from Dash.components.callbacks.expression import get_expressions_select, get_expressions
-from Dash.components.containers.accordion import accordion, accordion_item
-from Dash.components.containers.graph import graph_container
-from Dash.components.containers.section import section_container
-from Dash.components.interaction.radio import radio
-from Dash.components.interaction.select import select
+from app.components.callbacks.dataset import get_databases_select
+from app.components.callbacks.expression import get_expressions_select, get_expressions
+from app.components.containers.accordion import accordion, accordion_item
+from app.components.containers.graph import graph_container
+from app.components.containers.section import section_container
+from app.components.interaction.radio import radio
+from app.components.interaction.select import select
 from dash import html, Output, callback, Input, dcc
 import dash
 import dash_mantine_components as dmc
@@ -62,7 +62,7 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                             ["absolute", dmc.Tooltip(children="Absolute",
                                                      label="The sum of all difference of time over the entire video",
                                                      radius="md", withArrow=True)],
-                            ["relative", dmc.Tooltip(children="Absolute",
+                            ["relative", dmc.Tooltip(children="Relative",
                                                      label="The percentage of the absolute duration compared to the total duration of the video.",
                                                      radius="md", withArrow=True)],
                         ],
@@ -101,7 +101,7 @@ layout = section_container("Inter Non Verbal Expressions Analysis", "Analysis ba
                             ["absolute", dmc.Tooltip(children="Absolute",
                                                      label="The sum of all difference of time over the entire video",
                                                      radius="md", withArrow=True)],
-                            ["relative", dmc.Tooltip(children="Absolute",
+                            ["relative", dmc.Tooltip(children="Relative",
                                                      label="The percentage of the absolute duration compared to the total duration of the video.",
                                                      radius="md", withArrow=True)],
                         ],

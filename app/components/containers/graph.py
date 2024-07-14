@@ -1,6 +1,6 @@
 from dash import html, dcc
 
-from Dash.components.interaction.button import download_button
+from app.components.interaction.button import download_button
 
 
 def graph_container(figure, csv, name=None):

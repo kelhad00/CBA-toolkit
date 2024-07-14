@@ -6,9 +6,9 @@
 # from IBPY.extract_data import get_tier_intensities, get_max_min_time_tier, get_time_eaf, get_tier_count
 # from src.description.snl_stats_visualization_database import display_general_informations_files, display_specific_informations
 # from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
-# from Dash.components.containers.page import page_container
-# from Dash.components.containers.section import section_container
-# from Dash.components.interaction.select import select
+# from app.components.containers.page import page_container
+# from app.components.containers.section import section_container
+# from app.components.interaction.select import select
 # import os
 #
 # def create_table(df):
