@@ -1,8 +1,65 @@
 {
     "FOLDER_PATHS": {
-        "DIR": "../data"
+        "DIR": "../data",
+        "ROOT1": "../data/ccdb"
     },
-    "DATABASES_PATHS": {},
-    "DATABASES_PAIR_PATHS": {},
-    "TIER_LISTS": {}
+    "DATABASES_PATHS": {
+        "ccdb_paths": [
+            "../data/ccdb/P14_P7_2502_dizzy.eaf",
+            "../data/ccdb/P12_P2_1402_monk.eaf",
+            "../data/ccdb/P15_P13_2402_dizzy.eaf",
+            "../data/ccdb/P18_P1_2102_monk.eaf",
+            "../data/ccdb/P15_P13_2402_monk.eaf",
+            "../data/ccdb/P12_P3_2202_monk.eaf",
+            "../data/ccdb/P18_P1_2102_dizzy.eaf",
+            "../data/ccdb/P12_P2_1402_dizzy.eaf",
+            "../data/ccdb/P18_P10_2102_dizzy.eaf",
+            "../data/ccdb/P14_P7_2502_monk.eaf",
+            "../data/ccdb/P16_P6_0903_monk.eaf",
+            "../data/ccdb/P12_P3_2202_dizzy.eaf",
+            "../data/ccdb/P18_P10_2102_monk.eaf",
+            "../data/ccdb/P16_P6_0903_dizzy.eaf"
+        ]
+    },
+    "DATABASES_PAIR_PATHS": {
+        "ccdb_pairs": [
+            "../data/ccdb/P14_P7_2502_dizzy.eaf",
+            "../data/ccdb/P14_P7_2502_monk.eaf",
+            "../data/ccdb/P12_P2_1402_monk.eaf",
+            "../data/ccdb/P12_P2_1402_dizzy.eaf",
+            "../data/ccdb/P15_P13_2402_dizzy.eaf",
+            "../data/ccdb/P15_P13_2402_monk.eaf",
+            "../data/ccdb/P18_P1_2102_monk.eaf",
+            "../data/ccdb/P18_P1_2102_dizzy.eaf",
+            "../data/ccdb/P12_P3_2202_monk.eaf",
+            "../data/ccdb/P12_P3_2202_dizzy.eaf",
+            "../data/ccdb/P18_P10_2102_dizzy.eaf",
+            "../data/ccdb/P18_P10_2102_monk.eaf",
+            "../data/ccdb/P16_P6_0903_monk.eaf",
+            "../data/ccdb/P16_P6_0903_dizzy.eaf"
+        ]
+    },
+    "TIER_LISTS": {
+        "S&L_0": [],
+        "Laughs_0": [
+            "high",
+            "medium",
+            "low"
+        ],
+        "Smiles_0": [
+            "subtle",
+            "low",
+            "medium",
+            "high"
+        ],
+        "Transcriptions": [],
+        "Nods": [],
+        "Shakes": [],
+        "Tilt": [],
+        "Role": [
+            "lsn",
+            "spk"
+        ],
+        "EyeBrows": []
+    }
 }
