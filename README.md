@@ -27,8 +27,8 @@ git submodule sync
 
 To launch the application, run the following command from the terminal:
 ```bash
-cd application
-python application.py
+cd Dash
+python app.py
 ```
 
 ## IMPORTANT
