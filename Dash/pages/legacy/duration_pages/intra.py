@@ -1,7 +1,7 @@
-# from app.components.containers.accordion import accordion, accordion_item
-# from app.components.containers.section import section_container
-# from app.components.interaction.radio import radio
-# from app.components.interaction.select import select
+# from Dash.components.containers.accordion import accordion, accordion_item
+# from Dash.components.containers.section import section_container
+# from Dash.components.interaction.radio import radio
+# from Dash.components.interaction.select import select
 # from dash import html
 #
 #
@@ -13,52 +13,44 @@
 #     return [html.Thead(header), html.Tbody(rows)]
 #
 #
-# def display_durations_inter(database):
-#     return section_container("Inter Non Verbal Expressions Analysis", "It's an analysis based on each interaction between two persons. All figures are based on the duration of the expressions of each interaction (so two files) in the datasets.", children=[
+# def display_durations_intra(database):
+#     return section_container("Intra Non Verbal Expressions Analysis", "It's an analysis based on each individual. We look here at the sequence of expressions of each individual in each eaf file of the datasets.", children=[
 #         accordion(
 #             multiple=True,
-#             value=["all", "entity"],
+#             value=["dataset", "expression"],
 #             children=[
 #             accordion_item(
 #                 label="By dataset",
-#                 description="Display the number of expressions per minute for all entities in the database.",
-#                 value="all",
+#                 value="dataset",
 #                 children=[
 #                     select(
 #                         label="Select an expression",
 #                         allowDeselect=True,
-#                         id="expression-select-per-minute-all",
+#                         id="expression-select-description-intra-dataset",
 #                         options=[]
 #                     ),
 #                     select(
 #                         label="Select a database",
 #                         allowDeselect=True,
-#                         id="database-select-per-minute",
+#                         id="database-select-description-intra-dataset",
 #                         options=[]
 #                     ),
 #                     radio(
-#                         id="pov-radio-per-minute-all",
+#                         id="figure-radio-description-intra-dataset",
 #                         label="Select a figure",
 #                         options=[[None, "Scatter"], [2, "Line"]],
-#                     ),
-#                     select(
-#                         label="Select a database",
-#                         allowDeselect=True,
-#                         id="database-select-per-minute",
-#                         options=[]
 #                     ),
 #                     radio(
-#                         id="pov-radio-per-minute-all",
-#                         label="Select a figure",
-#                         options=[[None, "Scatter"], [2, "Line"]],
+#                         id="type-radio-description-intra-dataset",
+#                         label="Select a type",
+#                         options=[[None, "Absolute"], [2, "Relative"]],
 #                     ),
-#                     html.Div(className="flex flex-col gap-4", id="output-per-minute-all", children=[]),
+#                     html.Div(className="flex flex-col gap-4", id="output-description-intra", children=[]),
 #                 ]
 #             ),
 #             accordion_item(
 #                 label="Divided by expressions for a specific dataset",
-#                 description="We are looking at the stats of a specific expression to analyse compare to another one during an interaction.",
-#                 value="entity",
+#                 value="expression",
 #                 children=[
 #                     select(
 #                         label="Select an expression",

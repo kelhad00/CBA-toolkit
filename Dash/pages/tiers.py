@@ -10,9 +10,9 @@ import os
 
 from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
 
-from app.components.interaction.table import table_line, table_cell, table_container
-from app.components.containers.page import page_container
-from app.components.containers.section import section_container
+from Dash.components.interaction.table import table_line, table_cell, table_container
+from Dash.components.containers.page import page_container
+from Dash.components.containers.section import section_container
 
 dash.register_page(__name__, name='Tiers')
 

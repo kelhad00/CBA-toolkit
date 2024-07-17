@@ -10,11 +10,11 @@
 # from src.description.snl_stats_visualization_database import display_general_informations_files, display_specific_informations
 # from src.description.snl_stats_visualization_page3_express import plot_expression_per_min, plot_expression_per_min_I
 # from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
-# from app.components.containers.page import page_container
-# from app.components.containers.section import section_container, sub_section_container
-# from app.components.interaction.select import select
-# from app.components.interaction.radio import radio, radio_items
-# from app.components.containers.accordion import accordion, accordion_item
+# from Dash.components.containers.page import page_container
+# from Dash.components.containers.section import section_container, sub_section_container
+# from Dash.components.interaction.select import select
+# from Dash.components.interaction.radio import radio, radio_items
+# from Dash.components.containers.accordion import accordion, accordion_item
 # import os
 #
 #

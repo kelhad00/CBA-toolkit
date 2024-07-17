@@ -2,15 +2,15 @@ import dash
 from dash import html, Output, callback, Input, dcc
 import dash_mantine_components as dmc
 
-from app.components.callbacks.dataset import get_databases_select, get_database_paths
-from app.components.callbacks.entity import get_entities
-from app.components.callbacks.expression import get_expressions_select, get_expressions
-from app.components.containers.accordion import accordion_item, accordion
-from app.components.containers.page import page_container
-from app.components.containers.section import section_container
-from app.components.interaction.button import download_button
-from app.components.interaction.radio import radio, radio_items
-from app.components.interaction.select import select
+from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions_select, get_expressions
+from Dash.components.containers.accordion import accordion_item, accordion
+from Dash.components.containers.page import page_container
+from Dash.components.containers.section import section_container
+from Dash.components.interaction.button import download_button
+from Dash.components.interaction.radio import radio, radio_items
+from Dash.components.interaction.select import select
 from IBPY.extract_data import get_time_eaf
 from src.effect.snl_stats_visualization_page5 import plot_track_previous_expression, plot_track_following_expression, \
     plot_track_previous_expression_byI, plot_track_following_expression_byI, plot_mimicry

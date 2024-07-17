@@ -2,9 +2,9 @@ import dash
 from dash import html, dcc
 import dash_mantine_components as dmc
 
-from app.components.containers.page import page_container
-from app.components.containers.section import section_container
-from app.components.containers.page import page_container
+from Dash.components.containers.page import page_container
+from Dash.components.containers.section import section_container
+from Dash.components.containers.page import page_container
 
 
 dash.register_page(__name__, path='/')

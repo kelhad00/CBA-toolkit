@@ -2,21 +2,21 @@ import dash
 from dash import html, callback, Output, Input, dcc
 import dash_mantine_components as dmc
 
-from app.components.callbacks.dataset import get_databases_select, get_database_paths
-from app.components.callbacks.entity import get_entities
-from app.components.callbacks.expression import get_expressions_select, get_expressions
-from app.components.containers.accordion import accordion, accordion_item
-from app.components.containers.graph import graph_container
-from app.components.containers.page import page_container
-from app.components.containers.section import section_container
-from app.components.interaction.radio import radio
-from app.components.interaction.select import select
+from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions_select, get_expressions
+from Dash.components.containers.accordion import accordion, accordion_item
+from Dash.components.containers.graph import graph_container
+from Dash.components.containers.page import page_container
+from Dash.components.containers.section import section_container
+from Dash.components.interaction.radio import radio
+from Dash.components.interaction.select import select
 from src.duration.snl_stats_visualization_page4 import plot_intra_absolute_duration, plot_intra_relative_duration, \
     plot_absolute_duration_from_tier_folder, plot_relative_duration_from_tier_folder
 from src.snl_stats_extraction_data import get_parameters, get_parameters_tag
 
-# from app.pages.duration_pages.inter import display_durations_inter
-# from app.pages.duration_pages.intra import display_durations_intra
+# from Dash.pages.duration_pages.inter import display_durations_inter
+# from Dash.pages.duration_pages.intra import display_durations_intra
 
 dash.register_page(
     __name__,
@@ -72,7 +72,7 @@ layout = section_container("Intra Non Verbal Expressions Analysis", "Analysis ba
                             ["absolute", dmc.Tooltip(children="Absolute",
                                                      label="The sum of all difference of time over the entire video",
                                                      radius="md", withArrow=True)],
-                            ["relative", dmc.Tooltip(children="Relative",
+                            ["relative", dmc.Tooltip(children="Absolute",
                                                      label="The percentage of the absolute duration compared to the total duration of the video.",
                                                      radius="md", withArrow=True)],
                         ],
@@ -111,7 +111,7 @@ layout = section_container("Intra Non Verbal Expressions Analysis", "Analysis ba
                             ["absolute", dmc.Tooltip(children="Absolute",
                                                      label="The sum of all difference of time over the entire video",
                                                      radius="md", withArrow=True)],
-                            ["relative", dmc.Tooltip(children="Relative",
+                            ["relative", dmc.Tooltip(children="Absolute",
                                                      label="The percentage of the absolute duration compared to the total duration of the video.",
                                                      radius="md", withArrow=True)],
                         ],

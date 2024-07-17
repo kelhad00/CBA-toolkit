@@ -2,15 +2,15 @@ import dash
 from dash import html,dcc, callback, Output, Input
 import dash_mantine_components as dmc
 
-from app.components.callbacks.dataset import get_databases_select, get_database_paths
-from app.components.callbacks.entity import get_entities
-from app.components.callbacks.expression import get_expressions_select
-from app.components.containers.accordion import accordion_item, accordion
-from app.components.containers.page import page_container
-from app.components.containers.section import section_container
-from app.components.interaction.button import download_button
-from app.components.interaction.radio import radio, radio_items
-from app.components.interaction.select import select
+from Dash.components.callbacks.dataset import get_databases_select, get_database_paths
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions_select
+from Dash.components.containers.accordion import accordion_item, accordion
+from Dash.components.containers.page import page_container
+from Dash.components.containers.section import section_container
+from Dash.components.interaction.button import download_button
+from Dash.components.interaction.radio import radio, radio_items
+from Dash.components.interaction.select import select
 
 from src.json_creation import create_json_from_directory
 from src.description.snl_stats_visualization_page3_express import plot_expression_per_min_I, plot_expression_per_min

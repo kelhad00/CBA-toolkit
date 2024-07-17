@@ -1,15 +1,15 @@
 import dash
 from dash import html, Output, callback, Input, dcc
 
-from app.components.callbacks.dataset import get_database_paths, get_databases_select
-from app.components.callbacks.entity import get_entities
-from app.components.callbacks.expression import get_expressions_select
-from app.components.containers.accordion import accordion, accordion_item
-from app.components.containers.graph import graph_container
-from app.components.containers.section import section_container
-from app.components.interaction.radio import radio, radio_items
-from app.components.interaction.select import select
-from app.components.interaction.slider import slider
+from Dash.components.callbacks.dataset import get_database_paths, get_databases_select
+from Dash.components.callbacks.entity import get_entities
+from Dash.components.callbacks.expression import get_expressions_select
+from Dash.components.containers.accordion import accordion, accordion_item
+from Dash.components.containers.graph import graph_container
+from Dash.components.containers.section import section_container
+from Dash.components.interaction.radio import radio, radio_items
+from Dash.components.interaction.select import select
+from Dash.components.interaction.slider import slider
 
 from src.effect.snl_stats_visualization_page5 import plot_correlation
 from src.snl_stats_extraction_data import get_correlation_folder, get_correlation_byI, get_correlation_by_entity
