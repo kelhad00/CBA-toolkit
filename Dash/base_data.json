@@ -1,0 +1,32 @@
+{
+    "TIER_LISTS": {
+        "Smiles_0": {
+            "Intensities": [
+                "medium",
+                "low",
+                "subtle",
+                "high"
+            ],
+            "Replace_Value": ""
+        },
+        "S&L_0": {
+            "Intensities": [],
+            "Replace_Value": ""
+        },
+        "Laughs_0": {
+            "Intensities": [
+                "low",
+                "medium",
+                "high"
+            ],
+            "Replace_Value": ""
+        },
+        "Role": {
+            "Intensities": [
+                "spk",
+                "lsn"
+            ],
+            "Replace_Value": ""
+        }
+    }
+}
