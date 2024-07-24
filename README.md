@@ -5,7 +5,7 @@ The Conversation Behavior Analysis toolkit aims at offering the means for analyz
 ## Content
 
 * [annotations]: contains ELAN Template Files (etf) for annotation to use in your own projects.
-* [app]: contains the needed files to display the Non Verbal Expressions and ML statistics done in the corresponding folders in an interactive web page.
+* [Dash]: contains the needed files to display the Non Verbal Expressions and ML statistics done in the corresponding folders in an interactive web page.
 * [data]: contains the data used for the statistics and machine learning parts of the project. This folder is not included in the repository, it will be created thanks to the MainPage of the Streamlit interface with your database of choice.
 * [IBPY]: submodule containing all the utils functions needed to extract data from the database.
 * [src]: contains all functions we need to process data from our datasets for the machine learning part and all extraction and vizualisation functions related to the statistics of expressions in our datasets. This also creates the custom json according to the contents of the data folder.
